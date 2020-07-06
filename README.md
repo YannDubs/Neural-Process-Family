@@ -1,2 +1,2 @@
-# NPF
-neural process family refactored
+# Neural Process Family
+

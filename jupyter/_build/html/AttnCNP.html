@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Attentive Conditional Neural Process (AttnCNP) &#8212; Neural Process Family</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/sphinx-book-theme.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/mystnb.js"></script>
+    <script src="_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  <img src="_static/logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Neural Process Family</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  
+  <ul class="nav sidenav_l1">
+  <li class="">
+    <a href="CNPFs.html">Conditional NPFs</a>
+  </li>
+  <li class="">
+    <a href="LNPFs.html">Latent NPFs</a>
+  </li>
+  <li class="">
+    <a href="Additional.html">Additional</a>
+  </li>
+  <li class="">
+    <a href="zbibliography.html">Bibliography</a>
+  </li>
+</ul>
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+
+            
+            <div class="dropdown-buttons">
+                <!-- ipynb file if we had a myst markdown file -->
+                
+                <!-- Download raw file -->
+                <a class="dropdown-buttons" href="_sources/AttnCNP.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.ipynb</button></a>
+                <!-- Download PDF via print -->
+                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+            </div>
+            
+        </div>
+
+        <!-- Source interaction buttons -->
+        
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+        
+    </div>
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#inference" class="nav-link">Inference</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#gps-dataset" class="nav-link">GPs Dataset</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h4">
+            <a href="#samples-from-a-single-gp" class="nav-link">Samples from a single GP</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h4">
+            <a href="#samples-from-gps-with-varying-kernel-hyperparameters" class="nav-link">Samples from GPs with varying kernel hyperparameters</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h4">
+            <a href="#samples-from-gps-with-varying-kernels" class="nav-link">Samples from GPs with varying Kernels</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+            </ul>
+        </li>
+    
+    </ul>
+</nav>
+
+
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="attentive-conditional-neural-process-attncnp">
+<h1>Attentive Conditional Neural Process (AttnCNP)<a class="headerlink" href="#attentive-conditional-neural-process-attncnp" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf.utils.datasplit</span> <span class="kn">import</span> <span class="n">CntxtTrgtGetter</span><span class="p">,</span> <span class="n">GetRandomIndcs</span><span class="p">,</span> <span class="n">get_all_indcs</span>
+<span class="kn">from</span> <span class="nn">utils.data.dataloader</span> <span class="kn">import</span> <span class="n">cntxt_trgt_collate</span>
+<span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">get_all_gp_datasets</span>
+
+<span class="n">datasets</span><span class="p">,</span> <span class="n">test_datasets</span><span class="p">,</span> <span class="n">valid_datasets</span> <span class="o">=</span> <span class="n">get_all_gp_datasets</span><span class="p">()</span>
+
+<span class="n">get_cntxt_trgt</span> <span class="o">=</span> <span class="n">CntxtTrgtGetter</span><span class="p">(</span>
+    <span class="n">contexts_getter</span><span class="o">=</span><span class="n">GetRandomIndcs</span><span class="p">(</span><span class="n">min_n_indcs</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_n_indcs</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+    <span class="n">targets_getter</span><span class="o">=</span><span class="n">get_all_indcs</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">cntxt_trgt_collate</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span><span class="n">get_cntxt_trgt</span><span class="p">)</span>  <span class="c1"># make a loader out of it</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># CNP Docstring</span>
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">AttnCNP</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">AttnCNP</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+    Attentive conditional neural process. I.e. deterministic version of [1].
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimension of features.
+
+    y_dim : int
+        Dimension of y values.
+
+    XYEncoder : nn.Module, optional
+        Encoder module which maps {x_transf_i, y_i} -&gt; {r_i}. C.f. ConditionalNeuralProcess for more
+        details. Only used if `is_self_attn==False`.
+
+    attention : callable or str, optional
+        Type of attention to use. More details in `get_attender`.
+
+    attention_kwargs : dict, optional
+        Additional arguments to `get_attender`.
+
+    self_attention_kwargs : dict, optional
+        Additional arguments to `SelfAttention`.
+
+    is_self_attn : bool, optional
+        Whether to use self attention in the encoder. 
+
+    kwargs :
+        Additional arguments to `NeuralProcessFamily`.
+
+    References
+    ----------
+    [1] Kim, Hyunjik, et al. &quot;Attentive neural processes.&quot; arXiv preprint
+        arXiv:1901.05761 (2019).
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">AttnCNP</span>
+<span class="kn">from</span> <span class="nn">npf.architectures</span> <span class="kn">import</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">merge_flat_input</span>
+<span class="kn">from</span> <span class="nn">utils.helpers</span> <span class="kn">import</span> <span class="n">count_parameters</span>
+
+<span class="n">R_DIM</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">X_DIM</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Y_DIM</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">AttnCNP</span><span class="p">,</span>
+    <span class="n">X_DIM</span><span class="p">,</span>
+    <span class="n">Y_DIM</span><span class="p">,</span>
+    <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
+    <span class="n">attention</span><span class="o">=</span><span class="s2">&quot;transformer&quot;</span><span class="p">,</span>
+    <span class="n">is_self_attn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">XYEncoder</span><span class="o">=</span><span class="n">merge_flat_input</span><span class="p">(</span>  <span class="c1"># MLP takes single input but we give x and y so merge them</span>
+        <span class="n">partial</span><span class="p">(</span><span class="n">MLP</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">),</span> <span class="n">is_sum_merge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">n_params</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number Parameters: </span><span class="si">{</span><span class="n">n_params</span><span class="si">:</span><span class="s2">,d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Number Parameters: 252,738
+</pre></div>
+</div>
+<div class="stderr docutils container">
+<pre class="stderr literal-block">/private/home/yannd/projects/NPF/npf/architectures/mlp.py:77: UserWarning: hidden_size=32 smaller than output=128 and input=128. Setting it to 128.
+  warnings.warn(
+</pre>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">CNPFLoss</span>
+<span class="kn">from</span> <span class="nn">utils.train</span> <span class="kn">import</span> <span class="n">train_models</span>
+
+<span class="n">IS_RETRAIN</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether to load precomputed model or retrain</span>
+
+<span class="n">trainers</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+    <span class="n">datasets</span><span class="p">,</span>
+    <span class="p">{</span><span class="s2">&quot;AttnCNP&quot;</span><span class="p">:</span> <span class="n">model</span><span class="p">},</span>
+    <span class="n">CNPFLoss</span><span class="p">,</span>  <span class="c1"># Standard loss for conditional NPFs</span>
+    <span class="n">test_datasets</span><span class="o">=</span><span class="n">test_datasets</span><span class="p">,</span>
+    <span class="n">valid_datasets</span><span class="o">=</span><span class="n">valid_datasets</span><span class="p">,</span>
+    <span class="n">chckpnt_dirname</span><span class="o">=</span><span class="s2">&quot;results/npfs/1D/&quot;</span><span class="p">,</span>
+    <span class="n">is_retrain</span><span class="o">=</span><span class="n">IS_RETRAIN</span><span class="p">,</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">cntxt_trgt_collate</span><span class="p">,</span>
+    <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">cntxt_trgt_collate</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># use GPU if available</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">decay_lr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># decrease learning rate by 10 during training</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading RBF_Kernel/AttnCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>RBF_Kernel/AttnCNP/run_0 | best epoch: 8 | train loss: 16.1296 | valid loss: 12.5755 | test log likelihood: 125.8116
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Periodic_Kernel/AttnCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Periodic_Kernel/AttnCNP/run_0 | best epoch: 47 | train loss: -97.7838 | valid loss: -148.8572 | test log likelihood: 84.7087
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Matern_Kernel/AttnCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Matern_Kernel/AttnCNP/run_0 | best epoch: 47 | train loss: -52.5891 | valid loss: -94.5612 | test log likelihood: 38.5182
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Noisy_Matern_Kernel/AttnCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Noisy_Matern_Kernel/AttnCNP/run_0 | best epoch: 19 | train loss: 88.0334 | valid loss: 57.3685 | test log likelihood: -94.9146
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Vary_Matern_Kernel/AttnCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Vary_Matern_Kernel/AttnCNP/run_0 | best epoch: 46 | train loss: -52.3738 | valid loss: -87.8298 | test log likelihood: 54.0413
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading All_Kernels/AttnCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>All_Kernels/AttnCNP/run_0 | best epoch: 47 | train loss: 11.9058 | valid loss: -21.7759 | test log likelihood: -10.7318
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="inference">
+<h2>Inference<a class="headerlink" href="#inference" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gps-dataset">
+<h3>GPs Dataset<a class="headerlink" href="#gps-dataset" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="samples-from-a-single-gp">
+<h4>Samples from a single GP<a class="headerlink" href="#samples-from-a-single-gp" title="Permalink to this headline">¶</a></h4>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">plot_multi_posterior_samples_1d</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">multi_posterior_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>
+        <span class="c1"># sweep of context points for GIF</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>  <span class="c1"># fix for GIF</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">is_plot_real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># don&#39;t plot sampled function</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;legend.loc&quot;</span><span class="p">:</span> <span class="s2">&quot;upper right&quot;</span><span class="p">}</span>
+        <span class="p">),</span>  <span class="c1"># fix for GIF</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">filter_single_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;All&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;Vary&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gif</span><span class="p">(</span>
+    <span class="s2">&quot;AttnCNP_single_gp&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">trainers</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span>  <span class="c1"># will resample from it =&gt; not on train</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="attncnp-single-gp">
+<a class="reference internal image-reference" href="_images/AttnCNP_single_gp.gif"><img alt="_images/AttnCNP_single_gp.gif" src="_images/AttnCNP_single_gp.gif" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">[…] understand is how well NPFs can model a ground truth GP […].</span><a class="headerlink" href="#attncnp-single-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">AttnCNP_single_gp</span></code> we see that not too bad […],
+But the results are much less nice in the extrapolation regime, as neural networks do not extrapolate well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">multi_posterior_gif</span><span class="p">(</span>
+    <span class="s2">&quot;AttnCNP_single_gp_extrap&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">trainers</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span>
+    <span class="n">extrap_distance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># add 4 on the right for extrapolation</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="attncnp-single-gp-extrap">
+<a class="reference internal image-reference" href="_images/AttnCNP_single_gp_extrap.gif"><img alt="_images/AttnCNP_single_gp_extrap.gif" src="_images/AttnCNP_single_gp_extrap.gif" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">[…] understand is how well NPFs can model a ground truth GP […].</span><a class="headerlink" href="#attncnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">AttnCNP_single_gp_extrap</span></code> we see that it can clearly not extrapolate.</p>
+</div>
+<div class="section" id="samples-from-gps-with-varying-kernel-hyperparameters">
+<h4>Samples from GPs with varying kernel hyperparameters<a class="headerlink" href="#samples-from-gps-with-varying-kernel-hyperparameters" title="Permalink to this headline">¶</a></h4>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_hyp_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Vary&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gif</span><span class="p">(</span>
+    <span class="s2">&quot;AttnCNP_vary_gp&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">trainers</span><span class="p">),</span> <span class="n">datasets</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="stderr docutils container">
+<pre class="stderr literal-block">/private/home/yannd/.conda/envs/npf/lib/python3.8/site-packages/sklearn/gaussian_process/_gpr.py:504: ConvergenceWarning: lbfgs failed to converge (status=2):
+ABNORMAL_TERMINATION_IN_LNSRCH.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+  _check_optimize_result(&quot;lbfgs&quot;, opt_res)
+</pre>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="attncnp-vary-gp">
+<a class="reference internal image-reference" href="_images/AttnCNP_vary_gp.gif"><img alt="_images/AttnCNP_vary_gp.gif" src="_images/AttnCNP_vary_gp.gif" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">[…] understand is how well NPFs can model a ground truth GP […].</span><a class="headerlink" href="#attncnp-vary-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">AttnCNP_vary_gp</span></code> we see that […]</p>
+</div>
+<div class="section" id="samples-from-gps-with-varying-kernels">
+<h4>Samples from GPs with varying Kernels<a class="headerlink" href="#samples-from-gps-with-varying-kernels" title="Permalink to this headline">¶</a></h4>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># data with varying kernels simply merged single kernels</span>
+<span class="n">single_gp_datasets</span> <span class="o">=</span> <span class="n">filter_single_gp</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+
+<span class="c1"># use same trainer for all, but have to change their name to be the same as datasets</span>
+<span class="n">base_trainer_name</span> <span class="o">=</span> <span class="s2">&quot;All_Kernels/AttnCNP/run_0&quot;</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">trainers</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="p">]</span>
+<span class="n">replicated_trainers</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">single_gp_datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">replicated_trainers</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;All_Kernels&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">trainer</span>
+
+<span class="n">multi_posterior_gif</span><span class="p">(</span>
+    <span class="s2">&quot;AttnCNP_kernel_gp&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">replicated_trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">single_gp_datasets</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="attncnp-kernel-gp">
+<a class="reference internal image-reference" href="_images/AttnCNP_kernel_gp.gif"><img alt="_images/AttnCNP_kernel_gp.gif" src="_images/AttnCNP_kernel_gp.gif" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">[…] understand is how well NPFs can model a ground truth GP […].</span><a class="headerlink" href="#attncnp-kernel-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">AttnCNP_kernel_gp</span></code> we see that […]</p>
+</div>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Yann Dubois<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="_static/js/index.js"></script>
+    
+  </body>
+</html>

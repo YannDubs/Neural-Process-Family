@@ -1,0 +1,12 @@
+# Book settings
+title: Neural Process Family
+author: Yann Dubois
+logo: logo.png
+exclude_patterns: ["*AttnCNP.ipynb","*AttnLNP.ipynb","**/LNP.ipynb"]  # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
+
+latex:
+  latex_documents:
+    targetname: book.tex
+
+html:
+  extra_navbar: ""  # Will be displayed underneath the left navbar.

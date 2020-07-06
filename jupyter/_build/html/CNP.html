@@ -1,0 +1,767 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Conditional Neural Process (CNP) &#8212; Neural Process Family</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/sphinx-book-theme.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/mystnb.js"></script>
+    <script src="_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Latent NPFs" href="LNPFs.html" />
+    <link rel="prev" title="Conditional NPFs" href="CNPFs.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  <img src="_static/logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Neural Process Family</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  
+  <ul class="nav sidenav_l1">
+  <li class="active">
+    <a href="CNPFs.html">Conditional NPFs</a>
+  <ul class="nav sidenav_l2">
+    <li class="active">
+      <a href="">Conditional Neural Process (CNP)</a>
+    </li>
+  </ul>
+  </li>
+  <li class="">
+    <a href="LNPFs.html">Latent NPFs</a>
+  </li>
+  <li class="">
+    <a href="Additional.html">Additional</a>
+  </li>
+  <li class="">
+    <a href="zbibliography.html">Bibliography</a>
+  </li>
+</ul>
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+
+            
+            <div class="dropdown-buttons">
+                <!-- ipynb file if we had a myst markdown file -->
+                
+                <!-- Download raw file -->
+                <a class="dropdown-buttons" href="_sources/CNP.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.ipynb</button></a>
+                <!-- Download PDF via print -->
+                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+            </div>
+            
+        </div>
+
+        <!-- Source interaction buttons -->
+        
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+        
+    </div>
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#properties" class="nav-link">Properties</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#d-experiments" class="nav-link">1D Experiments</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#initialization" class="nav-link">Initialization</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#training" class="nav-link">Training</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#inference" class="nav-link">Inference</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h4">
+            <a href="#gps-dataset" class="nav-link">GPs Dataset</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h5">
+            <a href="#samples-from-a-single-gp" class="nav-link">Samples from a single GP</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h5">
+            <a href="#samples-from-gps-with-varying-kernel-hyperparameters" class="nav-link">Samples from GPs with varying kernel hyperparameters</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h5">
+            <a href="#samples-from-gps-with-varying-kernels" class="nav-link">Samples from GPs with varying Kernels</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+            </ul>
+        </li>
+    
+            </ul>
+        </li>
+    
+    </ul>
+</nav>
+
+
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="conditional-neural-process-cnp">
+<h1>Conditional Neural Process (CNP)<a class="headerlink" href="#conditional-neural-process-cnp" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default" id="computational-graph-cnp">
+<a class="reference internal image-reference" href="_images/computational_graph_CNP.svg"><img alt="_images/computational_graph_CNP.svg" height="250px" src="_images/computational_graph_CNP.svg" /></a>
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Computational graph for Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-cnp" title="Permalink to this image">¶</a></p>
+</div>
+<p>CNPs differ from other CNPFs in that they use a mean operator for the aggregator.
+The computational graph is thus very simple (<a class="reference internal" href="#computational-graph-cnp"><span class="std std-numref">Fig. 2</span></a>).</p>
+<div class="section" id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<p>CNPs have the following desirable properties compared to other CNPFs:</p>
+<ul class="simple">
+<li><p><strong><span class="math notranslate nohighlight">\(\mathbf{\mathcal{O}(T+C)}\)</span> Inference</strong>. Predicting using the posterior predictive is <span class="math notranslate nohighlight">\(\mathcal{O}(T+C)\)</span>. I.e. <span class="math notranslate nohighlight">\(\mathcal{O}(C)\)</span> to compute <span class="math notranslate nohighlight">\(R\)</span> (summarize context) and then <span class="math notranslate nohighlight">\(\mathcal{O}(T)\)</span> to predict at each target (conditional independence).</p></li>
+</ul>
+<p>But it suffers from the following issues:</p>
+<ul class="simple">
+<li><p><strong>Underfitting</strong>. The global representation <span class="math notranslate nohighlight">\(R\)</span> is a single vector which does not depend on the target features. E.g. predicting very close to context examples will not decrease uncertainty.</p></li>
+<li><p><strong>Cannot extrapolate</strong>. The predictions outside of the training range are terrible because neural networks that are very non linear and known to bad at extrapolating <a class="bibtex reference internal" href="zbibliography.html#dubois2019location" id="id1">[DDHB19]</a>.</p></li>
+</ul>
+</div>
+<div class="section" id="d-experiments">
+<h2>1D Experiments<a class="headerlink" href="#d-experiments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="initialization">
+<h3>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h3>
+<p>Let’s load the <a class="reference internal" href="Datasets.html"><span class="doc">data</span></a> and define the context target splitter.
+Here, we select uniformly between 0.0 and 0.5 context points and use all points as target.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf.utils.datasplit</span> <span class="kn">import</span> <span class="n">CntxtTrgtGetter</span><span class="p">,</span> <span class="n">GetRandomIndcs</span><span class="p">,</span> <span class="n">get_all_indcs</span>
+<span class="kn">from</span> <span class="nn">utils.data.dataloader</span> <span class="kn">import</span> <span class="n">cntxt_trgt_collate</span>
+<span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">get_all_gp_datasets</span>
+
+<span class="c1"># merges get_datasets_single_gp, get_datasets_varying_hyp_gp, get_datasets_varying_kernel_gp</span>
+<span class="n">datasets</span><span class="p">,</span> <span class="n">test_datasets</span><span class="p">,</span> <span class="n">valid_datasets</span> <span class="o">=</span> <span class="n">get_all_gp_datasets</span><span class="p">()</span>
+
+<span class="n">get_cntxt_trgt</span> <span class="o">=</span> <span class="n">CntxtTrgtGetter</span><span class="p">(</span>
+    <span class="n">contexts_getter</span><span class="o">=</span><span class="n">GetRandomIndcs</span><span class="p">(</span><span class="n">min_n_indcs</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_n_indcs</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+    <span class="n">targets_getter</span><span class="o">=</span><span class="n">get_all_indcs</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">cntxt_trgt_collate</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span><span class="n">get_cntxt_trgt</span><span class="p">)</span>  <span class="c1"># make a loader out of it</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s now define the model. We will be using the following:</p>
+<ul class="simple">
+<li><p><strong>Encoder</strong> <span class="math notranslate nohighlight">\(h_{\boldsymbol{\theta}}\)</span> : a 1-hidden layer MLP that encodes the features (<span class="math notranslate nohighlight">\(\{x^{(i)}\} \mapsto \{x_{transformed}^{(i)}\}\)</span>), followed by a 2 hidden layer MLP that encodes each feature-value pair (<span class="math notranslate nohighlight">\(\{x_{transformed}^{(i)}, y^{(i)}\} \mapsto \{R^{(i)}\}\)</span>).</p></li>
+<li><p><strong>Decoder</strong> <span class="math notranslate nohighlight">\(g_{\boldsymbol{\theta}}\)</span>: a 4 hidden layer MLP that predicts the distribution of the target value given the global representation and target context (<span class="math notranslate nohighlight">\(\{R, x^{(t)}\} \mapsto \{\mu^{(t)}, \sigma^{2(t)}\}\)</span>).</p></li>
+</ul>
+<p>All hidden representations will be of 128 dimensions besides the encoder which is has width 256 (to have similar number of parameters than other NPFs).</p>
+<p>For more details about all the possible parameters, refer to the docstrings of <code class="docutils literal notranslate"><span class="pre">CNP</span></code> and the base class <code class="docutils literal notranslate"><span class="pre">NeuralProcessFamily</span></code>.</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># CNP Docstring</span>
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">CNP</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">CNP</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+    Conditional Neural Process from [1].
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimension of features.
+
+    y_dim : int
+        Dimension of y values.
+
+    XYEncoder : nn.Module, optional
+        Encoder module which maps {x_transf_i, y_i} -&gt; {r_i}. It should be constructable
+        via `XYEncoder(x_transf_dim, y_dim, n_out)`. If you have an encoder that maps
+        [x;y] -&gt; r you can convert it via `merge_flat_input(Encoder)`. `None` uses
+        MLP. In the computational model this corresponds to `h` (with XEncoder). 
+        Example:
+            - `merge_flat_input(MLP, is_sum_merge=False)` : learn representation
+            with MLP. `merge_flat_input` concatenates (or sums) X and Y inputs.
+            - `merge_flat_input(SelfAttention, is_sum_merge=True)` : self attention mechanisms as 
+            [4]. For more parameters (attention type, number of layers ...) refer to its docstrings.
+            - `discard_ith_arg(MLP, 0)` if want the encoding to only depend on Y.
+
+    kwargs : 
+        Additional arguments to `NeuralProcessFamily`
+
+    References
+    ----------
+    [1] Garnelo, Marta, et al. &quot;Conditional neural processes.&quot; arXiv preprint
+        arXiv:1807.01613 (2018).
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># NeuralProcessFamily Docstring</span>
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">NeuralProcessFamily</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">NeuralProcessFamily</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+    Base class for members of the neural process family.
+
+    Notes
+    -----
+    - when writing size of vectors something like `size=[batch_size,*n_cntxt,y_dim]` means that the
+    first dimension is the batch, the last is the target values and everything in the middle are context 
+    points. We use `*n_cntxt` as it can  be a single flattened dimension or many (for example on the grid).
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimension of features.
+
+    y_dim : int
+        Dimension of y values.
+
+    encoded_path : {&quot;latent&quot;, &quot;both&quot;, &quot;deterministic&quot;}
+        Which path(s) to use:
+        - `&quot;deterministic&quot;` no latents : the decoder gets a deterministic representation s input.
+        - `&quot;latent&quot;` uses latent : the decoder gets a sample latent representation as input.
+        - `&quot;both&quot;` concatenates both the deterministic and sampled latents as input to the decoder.
+
+    r_dim : int, optional
+        Dimension of representations.
+
+    x_transf_dim : int, optional
+        Dimension of the encoded X. If `-1` uses `r_dim`. if `None` uses `x_dim`.
+
+    is_heteroskedastic : bool, optional
+        Whether the posterior predictive std can depend on the target features. If using in conjuction 
+        to `NllLNPF`, it might revert to a *CNP model (collapse of latents). If the flag is False, it
+        pools all the scale parameters of the posterior distribution. This trick is only exactly 
+        recovers heteroskedasticity when the set target features are always the same (e.g. 
+        predicting values on a predefined grid) but is a good approximation even when not. 
+
+    XEncoder : nn.Module, optional
+        Spatial encoder module which maps {x^i}_i -&gt; {x_trnsf^i}_i. It should be
+        constructable via `XEncoder(x_dim, x_transf_dim)`. `None` uses MLP. Example:
+            - `MLP` : will learn positional embeddings with MLP
+            - `SinusoidalEncodings` : use sinusoidal positional encodings.
+
+    Decoder : nn.Module, optional
+        Decoder module which maps {(x^t, r^t)}_t -&gt; {p_y_suffstat^t}_t. It should be constructable
+        via `decoder(x_dim, r_dim, n_out)`. If you have an decoder that maps
+        [r;x] -&gt; y you can convert it via `merge_flat_input(Decoder)`. `None` uses MLP. In the 
+        computational model this corresponds to `g`. 
+        Example:
+            - `merge_flat_input(MLP)` : predict with MLP.
+            - `merge_flat_input(SelfAttention, is_sum_merge=True)` : predict
+            with self attention mechanisms (using `X_transf + Y` as input) to have
+            coherent predictions (not use in attentive neural process [1] but in
+            image transformer [2]).
+            - `discard_ith_arg(MLP, 0)` if want the decoding to only depend on r.
+
+    PredictiveDistribution : torch.distributions.Distribution, optional
+        Predictive distribution. The input to the constructor are currently two values of the same 
+        shape : `loc` and `scale`, that are preprocessed by `p_y_loc_transformer` and 
+        `pred_scale_transformer`.
+
+    p_y_loc_transformer : callable, optional
+        Transformation to apply to the predicted location (e.g. mean for Gaussian)
+        of Y_trgt.
+
+    p_y_scale_transformer : callable, optional
+        Transformation to apply to the predicted scale (e.g. std for Gaussian) of
+        Y_trgt. The default follows [3] by using a minimum of 0.01.
+
+    References
+    ----------
+    [1] Kim, Hyunjik, et al. &quot;Attentive neural processes.&quot; arXiv preprint
+        arXiv:1901.05761 (2019).
+    [2] Parmar, Niki, et al. &quot;Image transformer.&quot; arXiv preprint arXiv:1802.05751
+        (2018).
+    [3] Le, Tuan Anh, et al. &quot;Empirical Evaluation of Neural Process Objectives.&quot;
+        NeurIPS workshop on Bayesian Deep Learning. 2018.
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">npf.architectures</span> <span class="kn">import</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">merge_flat_input</span>
+<span class="kn">from</span> <span class="nn">utils.helpers</span> <span class="kn">import</span> <span class="n">count_parameters</span>
+
+<span class="n">R_DIM</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">X_DIM</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Y_DIM</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">CNP</span><span class="p">,</span>
+    <span class="n">X_DIM</span><span class="p">,</span>
+    <span class="n">Y_DIM</span><span class="p">,</span>
+    <span class="n">XEncoder</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">MLP</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">),</span>
+    <span class="n">XYEncoder</span><span class="o">=</span><span class="n">merge_flat_input</span><span class="p">(</span>  <span class="c1"># MLP takes single input but we give x and y so merge them</span>
+        <span class="n">partial</span><span class="p">(</span><span class="n">MLP</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">R_DIM</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">is_sum_merge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">Decoder</span><span class="o">=</span><span class="n">merge_flat_input</span><span class="p">(</span>  <span class="c1"># MLP takes single input but we give x and R so merge them</span>
+        <span class="n">partial</span><span class="p">(</span><span class="n">MLP</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">),</span> <span class="n">is_sum_merge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">n_params</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number Parameters: </span><span class="si">{</span><span class="n">n_params</span><span class="si">:</span><span class="s2">,d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Number Parameters: 252,098
+</pre></div>
+</div>
+<div class="stderr docutils container">
+<pre class="stderr literal-block">/private/home/yannd/projects/NPF/npf/architectures/mlp.py:77: UserWarning: hidden_size=32 smaller than output=128 and input=128. Setting it to 128.
+  warnings.warn(
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="training">
+<h3>Training<a class="headerlink" href="#training" title="Permalink to this headline">¶</a></h3>
+<p>The main function for training is <code class="docutils literal notranslate"><span class="pre">train_models</span></code> which trains a dictionary of models on a dictionary of datasets and returns all the trained models.
+See its docstring for possible parameters.</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># train_models Docstring</span>
+<span class="kn">from</span> <span class="nn">utils.train</span> <span class="kn">import</span> <span class="n">train_models</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">train_models</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+    Train or loads the models.
+
+    Parameters
+    ----------
+    datasets : dict
+        The datasets on which to train the models. 
+
+    models : dict
+        The models to train (initialized or not). Each model will be trained on
+        all datasets. If the initialzed models are passed, it will continue
+        training from there.  Can also give a dictionary of dictionaries, if the
+        models to train depend on the dataset.
+
+    criterion : nn.Module
+        The uninitialized criterion (loss).
+
+    test_datasets : dict, optional
+        The test datasets. If given, the corresponding models will be evaluated
+        on those, the log likelihood for each datapoint will be saved in the
+        in the checkpoint directory as `eval.csv`.
+
+    valid_datasets : dict, optional
+        The validation datasets. 
+
+    chckpnt_dirname : str, optional
+        Directory where checkpoints will be saved. The best as last model will be saved.
+
+    is_continue_train : bool, optional
+        Whether to continue training from the last checkpoint of the previous run. 
+
+    is_retrain : bool, optional
+        Whether to retrain the model. If not, `chckpnt_dirname` should be given
+        to load the pretrained model.
+
+    runs : int, optional
+        How many times to run the model. Each run will be saved in
+        `chckpnt_dirname/run_{}`. If a seed is give, it will be incremented at
+        each run.
+
+    starting_run : int, optional
+        Starting run. This is useful if a couple of runs have already been trained,
+        and you want to continue from there.
+
+    train_split : callable, optional
+        If None, there is no train/validation split. Else, train_split
+        should be a function or callable that is called with X and y
+        data and should return the tuple ``dataset_train, dataset_valid``.
+        The validation data may be None. Use `skorch.dataset.CVSplit` to randomly
+        split the data into train and validation. Only used for datasets that are not in 
+        `valid_datasets.`.
+
+    device : str, optional
+        The compute device to be used (input to torch.device). If `None` uses
+        &quot;cuda&quot; if available else &quot;cpu&quot;.
+
+    max_epochs : int, optional
+        Maximum number of epochs.
+
+    batch_size : int, optional
+        Training batch size.
+
+    lr : float, optional
+        Learning rate.
+
+    optimizer : torch.optim.Optimizer, optional
+        Optimizer.
+
+    callbacks : list, optional
+        Callbacks to use.
+
+    patience : int, optional
+        Patience for early stopping. If not `None` has to be given a validation
+        set.
+
+    decay_lr : float, optional
+        Factor by which to decay the learning rate during training. For example if 100 then it
+        will decrease the learning rate with exponential decrease such that at the end of training 
+        the learning rate decreased by a factot 100.
+
+    is_reeval : bool, optional
+        Whether to reevaluate the model even if already evaluated and `is_retrain` is False.
+    
+    seed : int, optional
+        Pseudo random seed to force deterministic results (on CUDA might still
+        differ a little).
+
+    datasets_kwargs : dict, optional
+        Dictionary of datasets specific kwargs.
+
+    models_kwargs : dict, optional
+        Dictionary of model specific kwargs.
+
+    kwargs :
+        Additional arguments to `NeuralNet`.
+
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">CNPFLoss</span>
+
+<span class="n">IS_RETRAIN</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether to load precomputed model or retrain</span>
+
+<span class="n">trainers</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+    <span class="n">datasets</span><span class="p">,</span>
+    <span class="p">{</span><span class="s2">&quot;CNP&quot;</span><span class="p">:</span> <span class="n">model</span><span class="p">},</span>
+    <span class="n">CNPFLoss</span><span class="p">,</span>  <span class="c1"># Standard loss for conditional NPFs</span>
+    <span class="n">test_datasets</span><span class="o">=</span><span class="n">test_datasets</span><span class="p">,</span>
+    <span class="n">valid_datasets</span><span class="o">=</span><span class="n">valid_datasets</span><span class="p">,</span>
+    <span class="n">chckpnt_dirname</span><span class="o">=</span><span class="s2">&quot;results/npfs/1D/&quot;</span><span class="p">,</span>
+    <span class="n">is_retrain</span><span class="o">=</span><span class="n">IS_RETRAIN</span><span class="p">,</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">cntxt_trgt_collate</span><span class="p">,</span>
+    <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">cntxt_trgt_collate</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># use GPU if available</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">decay_lr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># decrease learning rate by 10 during training</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading RBF_Kernel/CNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>RBF_Kernel/CNP/run_0 | best epoch: 47 | train loss: 92.3193 | valid loss: 76.9638 | test log likelihood: -96.413
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Periodic_Kernel/CNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Periodic_Kernel/CNP/run_0 | best epoch: 47 | train loss: 129.903 | valid loss: 127.6881 | test log likelihood: -133.7285
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Matern_Kernel/CNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Matern_Kernel/CNP/run_0 | best epoch: 47 | train loss: 112.5177 | valid loss: 99.8604 | test log likelihood: -115.908
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Noisy_Matern_Kernel/CNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Noisy_Matern_Kernel/CNP/run_0 | best epoch: 47 | train loss: 135.3113 | valid loss: 125.8959 | test log likelihood: -137.7554
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Vary_Matern_Kernel/CNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Vary_Matern_Kernel/CNP/run_0 | best epoch: 46 | train loss: 67.9108 | valid loss: 56.1176 | test log likelihood: -69.9541
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading All_Kernels/CNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>All_Kernels/CNP/run_0 | best epoch: 47 | train loss: 79.3488 | valid loss: 65.7098 | test log likelihood: -80.44
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="inference">
+<h3>Inference<a class="headerlink" href="#inference" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="gps-dataset">
+<h4>GPs Dataset<a class="headerlink" href="#gps-dataset" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="samples-from-a-single-gp">
+<h5>Samples from a single GP<a class="headerlink" href="#samples-from-a-single-gp" title="Permalink to this headline">¶</a></h5>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">plot_multi_posterior_samples_1d</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">multi_posterior_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>
+        <span class="c1"># sweep of context points for GIF</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>  <span class="c1"># fix for GIF</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">is_plot_real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># don&#39;t plot sampled function</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;legend.loc&quot;</span><span class="p">:</span> <span class="s2">&quot;upper right&quot;</span><span class="p">}</span>
+        <span class="p">),</span>  <span class="c1"># fix for GIF</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">filter_single_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;All&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;Vary&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gif</span><span class="p">(</span>
+    <span class="s2">&quot;CNP_single_gp&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">trainers</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span>  <span class="c1"># will resample from it =&gt; not on train</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="cnp-single-gp">
+<a class="reference internal image-reference" href="_images/CNP_single_gp.gif"><img alt="_images/CNP_single_gp.gif" src="_images/CNP_single_gp.gif" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 3 </span><span class="caption-text">[…] understand is how well NPFs can model a ground truth GP […].</span><a class="headerlink" href="#cnp-single-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <a class="reference internal" href="#cnp-single-gp"><span class="std std-numref">Fig. 3</span></a> we see that […]</p>
+</div>
+<div class="section" id="samples-from-gps-with-varying-kernel-hyperparameters">
+<h5>Samples from GPs with varying kernel hyperparameters<a class="headerlink" href="#samples-from-gps-with-varying-kernel-hyperparameters" title="Permalink to this headline">¶</a></h5>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_hyp_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Vary&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gif</span><span class="p">(</span>
+    <span class="s2">&quot;CNP_vary_gp&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">trainers</span><span class="p">),</span> <span class="n">datasets</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="stderr docutils container">
+<pre class="stderr literal-block">/private/home/yannd/.conda/envs/npf/lib/python3.8/site-packages/sklearn/gaussian_process/_gpr.py:504: ConvergenceWarning: lbfgs failed to converge (status=2):
+ABNORMAL_TERMINATION_IN_LNSRCH.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+  _check_optimize_result(&quot;lbfgs&quot;, opt_res)
+</pre>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="cnp-vary-gp">
+<a class="reference internal image-reference" href="_images/CNP_vary_gp.gif"><img alt="_images/CNP_vary_gp.gif" src="_images/CNP_vary_gp.gif" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">[…] understand is how well NPFs can model a ground truth GP […].</span><a class="headerlink" href="#cnp-vary-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <a class="reference internal" href="#cnp-vary-gp"><span class="std std-numref">Fig. 4</span></a> we see that […]</p>
+</div>
+<div class="section" id="samples-from-gps-with-varying-kernels">
+<h5>Samples from GPs with varying Kernels<a class="headerlink" href="#samples-from-gps-with-varying-kernels" title="Permalink to this headline">¶</a></h5>
+<p>As we have seen in <a class="reference internal" href="Datasets.html"><span class="doc">data</span></a>, the dataset with varying kernel simply merged all the datasets with a single kernel.
+We will now test each separately. To see how the CNP can recover the ground truth GP even though it was trained with samples from different kernels (including the correct one).</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># data with varying kernels simply merged single kernels</span>
+<span class="n">single_gp_datasets</span> <span class="o">=</span> <span class="n">filter_single_gp</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+
+<span class="c1"># use same trainer for all, but have to change their name to be the same as datasets</span>
+<span class="n">base_trainer_name</span> <span class="o">=</span> <span class="s2">&quot;All_Kernels/CNP/run_0&quot;</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">trainers</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="p">]</span>
+<span class="n">replicated_trainers</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">single_gp_datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">replicated_trainers</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;All_Kernels&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">trainer</span>
+
+<span class="n">multi_posterior_gif</span><span class="p">(</span>
+    <span class="s2">&quot;CNP_kernel_gp&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">replicated_trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">single_gp_datasets</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="cnp-kernel-gp">
+<a class="reference internal image-reference" href="_images/CNP_kernel_gp.gif"><img alt="_images/CNP_kernel_gp.gif" src="_images/CNP_kernel_gp.gif" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">[…] understand is how well NPFs can model a ground truth GP […].</span><a class="headerlink" href="#cnp-kernel-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <a class="reference internal" href="#cnp-kernel-gp"><span class="std std-numref">Fig. 5</span></a> we see that […]</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="CNPFs.html" title="previous page">Conditional NPFs</a>
+    <a class='right-next' id="next-link" href="LNPFs.html" title="next page">Latent NPFs</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Yann Dubois<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="_static/js/index.js"></script>
+    
+  </body>
+</html>
