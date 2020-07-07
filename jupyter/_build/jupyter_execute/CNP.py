@@ -332,9 +332,7 @@ def multi_posterior_imgs_gif(filename, trainers, datasets, **kwargs):
     )
 
 
-multi_posterior_imgs_gif(
-    "CNP_img", trainers=trainers_2d, datasets=img_test_datasets,
-)
+multi_posterior_imgs_gif("CNP_img", trainers=trainers_2d, datasets=img_test_datasets)
 
 ```{figure} gifs/CNP_img.gif
 ---

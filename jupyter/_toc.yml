@@ -12,6 +12,4 @@
 - file: Additional
   sections:
     - file: Datasets
-    - file: ConvCNPImg
-    - file: ConvLNPImg
 - file: zbibliography # need to add z because has to be processed last

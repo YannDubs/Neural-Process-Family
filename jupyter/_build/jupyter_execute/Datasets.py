@@ -149,12 +149,12 @@ We will be using the following datasets
 We will follow {cite}`foong2020convnp` for ZSMM. Namely, train on translated MNIST and test on a larger canvas with multiple digits (ZSMM).
 ```
 
-from utils.data import get_train_test_dataset
+from utils.data import get_train_test_img_dataset
 
 datasets = dict()
-_, datasets["CelebA32"] = get_train_test_dataset("celeba32")
-_, datasets["MNIST"] = get_train_test_dataset("mnist")
-_, datasets["ZSMM"] = get_train_test_dataset("zsmms")
+_, datasets["CelebA32"] = get_train_test_img_dataset("celeba32")
+_, datasets["MNIST"] = get_train_test_img_dataset("mnist")
+_, datasets["ZSMM"] = get_train_test_img_dataset("zsmms")
 
 from utils.visualize import plot_dataset_samples_imgs
 

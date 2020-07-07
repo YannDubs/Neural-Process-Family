@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Overview &#8212; Neural Process Family</title>
+    <title>Intro &#8212; Neural Process Family</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="_static/css/index.css" rel="stylesheet">
     <link rel="stylesheet" href="_static/sphinx-book-theme.css" type="text/css" />
@@ -166,8 +166,8 @@
         
               <div>
                 
-  <div class="section" id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="intro">
+<h1>Intro<a class="headerlink" href="#intro" title="Permalink to this headline">¶</a></h1>
 <p>The aim of this section is to :</p>
 <ul class="simple">
 <li><p>Overview of Neural Process Family</p></li>
@@ -197,6 +197,14 @@ To define a proper stochastic process using <span class="math notranslate nohigh
 Unfortunately stochastic processes are usually computationally inefficient.
 For example predicting values of a target set using GPs takes time which is cubic in the context set <span class="math notranslate nohighlight">\(\mathcal{O}(|\mathcal{C}|^3)\)</span>.
 In contrast, the core idea of NPFs is to model directly the posterior predictive using neural networks <span class="math notranslate nohighlight">\(p( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) \approx q_{\boldsymbol \theta}(\mathbf{y}_{\mathcal{T}}  | \mathbf{x}_{\mathcal{T}}, \mathcal{C})\)</span> in the following way (sacrificing nice mathematical properties of stochastic processes for computational gains):</p>
+<div class="figure align-default" id="npfs">
+<a class="reference internal image-reference" href="images/NPFs.gif"><img alt="images/NPFs.gif" src="images/NPFs.gif" style="height: 250px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Schematic representation of NPF computations from <a class="reference external" href="https://www.martagarnelo.com/conditional-neural-processes">Marta Garnelo</a>.</span><a class="headerlink" href="#npfs" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="computational-graph-npfs">
+<a class="reference internal image-reference" href="_images/computational_graph_NPFs.svg"><img alt="_images/computational_graph_NPFs.svg" height="250px" src="_images/computational_graph_NPFs.svg" /></a>
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">High level computational graph of the Neural Process Family.</span><a class="headerlink" href="#computational-graph-npfs" title="Permalink to this image">¶</a></p>
+</div>
 <div class="math notranslate nohighlight" id="equation-formal">
 <span class="eqno">(1)<a class="headerlink" href="#equation-formal" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{align}
 p(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{c}) 
@@ -211,16 +219,16 @@ p(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{c})
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{align}
-R_c 
-&amp;:= h_{\boldsymbol\theta}(x^{(c)}, y^{(c)}) &amp; \text{Encoding} \\
+R^{(c)} 
+&amp;:= e_{\boldsymbol\theta}(x^{(c)}, y^{(c)}) &amp; \text{Encoding} \\
 R 
 &amp;:= \mathrm{Agg}\left(\{R^{(c)}\}_{c=1}^{C} \right) &amp; \text{Aggregation} \\ 
 (\mu^{(t)},\sigma^{2(t)}) 
-&amp;:= g_{\boldsymbol\theta}(x^{(t)},R^{(t)}) &amp; \text{Decoding}  
+&amp;:= d_{\boldsymbol\theta}(x^{(t)},R) &amp; \text{Decoding}  
 \end{align}
 \end{split}\]</div>
-<p>The aggregator is the major difference across the NPFs. Intuitively it takes in the representation of each context points separately and it aggregates those in a representation for the entire context set. Given this representation, all the target values become independent (factorization assumption).
-Importantly, the aggregator <span class="math notranslate nohighlight">\(\mathrm{Agg}\)</span> is invariant to all permutations <span class="math notranslate nohighlight">\(\pi\)</span> on <span class="math notranslate nohighlight">\(1, ..., C\)</span>:</p>
+<p>The aggregator is the major difference across the NPFs. Intuitively it takes in the representation of each context points separately and it aggregates those in a representation for the entire context set, but this aggregation can be arbitrarily complex and can be deterministic or stochastic. Given this representation, all the target values become independent (factorization assumption).
+Importantly, the aggregator <span class="math notranslate nohighlight">\(\mathrm{Agg}\)</span> is always invariant to all permutations <span class="math notranslate nohighlight">\(\pi\)</span> on <span class="math notranslate nohighlight">\(1, ..., C\)</span>:</p>
 <div class="math notranslate nohighlight" id="equation-permut-inv">
 <span class="eqno">(2)<a class="headerlink" href="#equation-permut-inv" title="Permalink to this equation">¶</a></span>\[\begin{align}
 \mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)=\mathrm{Agg}\left(\pi\left(\{R^{(c)}\}_{c=1}^{C} \right)\right) 
@@ -307,7 +315,7 @@ Inside of each sub-family the main differences concerns the choice of aggregator
 <ul>
 <li><p><a class="reference internal" href="LNP.html"><span class="doc">Latent Neural Process</span></a>(LNP) <a class="bibtex reference internal" href="zbibliography.html#garnelo2018neural" id="id8">[GSR+18]</a>.</p></li>
 <li><p><a class="reference internal" href="AttnLNP.html"><span class="doc">Attentive LNP</span></a>(AttnLNP) <a class="bibtex reference internal" href="zbibliography.html#kim2019attentive" id="id9">[KMS+19]</a>.</p></li>
-<li><p><a class="reference internal" href="ConvLNP.html"><span class="doc">Convolutional LNP</span></a>(ConvLNP) <a class="bibtex reference internal" href="zbibliography.html#foong2020convnp" id="id10">[FBG+20]</a>.</p></li>
+<li><p><span class="xref std std-doc">Convolutional LNP</span>(ConvLNP) <a class="bibtex reference internal" href="zbibliography.html#foong2020convnp" id="id10">[FBG+20]</a>.</p></li>
 </ul>
 </li>
 </ul>

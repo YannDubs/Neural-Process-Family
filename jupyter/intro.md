@@ -1,4 +1,4 @@
-# Overview 
+# Intro 
 
 The aim of this section is to :
 * Overview of Neural Process Family

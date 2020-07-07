@@ -1,4 +1,4 @@
-# Overview 
+# Intro 
 
 The aim of this section is to :
 * Overview of Neural Process Family
@@ -32,6 +32,21 @@ Unfortunately stochastic processes are usually computationally inefficient.
 For example predicting values of a target set using GPs takes time which is cubic in the context set $\mathcal{O}(|\mathcal{C}|^3)$.
 In contrast, the core idea of NPFs is to model directly the posterior predictive using neural networks $p( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) \approx q_{\boldsymbol \theta}(\mathbf{y}_{\mathcal{T}}  | \mathbf{x}_{\mathcal{T}}, \mathcal{C})$ in the following way (sacrificing nice mathematical properties of stochastic processes for computational gains):
 
+```{figure} images/NPFs.gif
+---
+height: 250px
+name: NPFs
+---
+Schematic representation of NPF computations from [Marta Garnelo](https://www.martagarnelo.com/conditional-neural-processes).
+```
+```{figure} images/computational_graph_NPFs.svg
+---
+height: 250px
+name: computational_graph_NPFs
+---
+High level computational graph of the Neural Process Family.
+```
+
 ```{math}
 :label: formal
 \begin{align}
@@ -49,17 +64,17 @@ Where:
 
 $$
 \begin{align}
-R_c 
-&:= h_{\boldsymbol\theta}(x^{(c)}, y^{(c)}) & \text{Encoding} \\
+R^{(c)} 
+&:= e_{\boldsymbol\theta}(x^{(c)}, y^{(c)}) & \text{Encoding} \\
 R 
 &:= \mathrm{Agg}\left(\{R^{(c)}\}_{c=1}^{C} \right) & \text{Aggregation} \\ 
 (\mu^{(t)},\sigma^{2(t)}) 
-&:= g_{\boldsymbol\theta}(x^{(t)},R^{(t)}) & \text{Decoding}  
+&:= d_{\boldsymbol\theta}(x^{(t)},R) & \text{Decoding}  
 \end{align}
 $$
 
-The aggregator is the major difference across the NPFs. Intuitively it takes in the representation of each context points separately and it aggregates those in a representation for the entire context set. Given this representation, all the target values become independent (factorization assumption).
-Importantly, the aggregator $\mathrm{Agg}$ is invariant to all permutations $\pi$ on $1, ..., C$: 
+The aggregator is the major difference across the NPFs. Intuitively it takes in the representation of each context points separately and it aggregates those in a representation for the entire context set, but this aggregation can be arbitrarily complex and can be deterministic or stochastic. Given this representation, all the target values become independent (factorization assumption).
+Importantly, the aggregator $\mathrm{Agg}$ is always invariant to all permutations $\pi$ on $1, ..., C$: 
 
 ```{math}
 :label: permut_inv

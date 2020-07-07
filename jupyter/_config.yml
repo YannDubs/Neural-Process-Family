@@ -2,7 +2,7 @@
 title: Neural Process Family
 author: Yann Dubois
 logo: logo.png
-exclude_patterns: ["*AttnCNP.ipynb","*AttnLNP.ipynb","**/LNP.ipynb"]  # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
+exclude_patterns: ["*ConvCNP.ipynb","*ConvLNP.ipynb"]  # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
 
 latex:
   latex_documents:
