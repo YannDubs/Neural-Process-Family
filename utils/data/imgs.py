@@ -34,6 +34,7 @@ DATASETS_DICT = {
     "zsmms": "ZeroShotMultiMNISTscale",
     "zs-mnist": "ZeroShotMNIST",
     "celeba": "CelebA",
+    "celeba128": "CelebA128",
 }
 DATASETS = list(DATASETS_DICT.keys())
 
@@ -65,6 +66,15 @@ def get_dataset(dataset):
 def get_img_size(dataset):
     """Return the correct image size."""
     return get_dataset(dataset).shape
+
+
+def get_test_upscale_factor(dataset):
+    """Return the correct image size."""
+    dataset = get_dataset(dataset)
+    try:
+        return dataset.shape_test[-1] / dataset.shape[-1]
+    except AttributeError:
+        return 1
 
 
 # TORCHVISION DATASETS
@@ -369,12 +379,13 @@ class ZeroShotMultiMNISTtrnslt(ZeroShotMultiMNIST):
 class ZeroShotMultiMNISTscale(ZeroShotMultiMNIST):
     name = "ZeroShotMultiMNISTscale"
     shape = (1, 32, 32)
+    shape_test = (1, 56, 56)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, translation=5, **kwargs)
 
         if self.split == "test":
-            self.shape = (1, 56, 56)
+            self.shape = self.shape_test
 
     def make_multi_mnist_train(self, train_dataset):
         """Train set of multi mnist by taking mnist and adding borders to be the correct scale."""
@@ -568,9 +579,14 @@ class CelebA32(CelebA64):
     name = "celeba32"
 
 
+class CelebA128(CelebA64):
+    shape = (3, 128, 128)
+    name = "celeba128"
+
+
 class CelebA(CelebA64):
     shape = (3, 218, 178)
-    name = "celeba128"
+    name = "celeba"
 
     # use the default ones
     def preprocess(self):

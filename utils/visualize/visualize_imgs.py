@@ -15,14 +15,13 @@ from torchvision.utils import make_grid
 from npf import GridConvCNP
 from npf.utils.datasplit import GridCntxtTrgtGetter
 from npf.utils.helpers import MultivariateNormalDiag, channels_to_2nd_dim, prod
-from npf.utils.predict import SamplePredictor, VanillaPredictor
+from npf.utils.predict import SamplePredictor
 from utils.data import cntxt_trgt_collate
 from utils.helpers import set_seed, tuple_cont_to_cont_tuple
 from utils.train import EVAL_FILENAME
 
 __all__ = [
     "plot_dataset_samples_imgs",
-    "plot_posterior_img",
     "plot_qualitative_with_kde",
     "get_posterior_samples",
     "plot_posterior_samples",
@@ -30,18 +29,6 @@ __all__ = [
 ]
 
 DFLT_FIGSIZE = (17, 9)
-
-
-def remove_axis(ax, is_rm_ticks=True, is_rm_spines=True):
-    """Remove all axis but not the labels."""
-    if is_rm_spines:
-        ax.spines["right"].set_visible(False)
-        ax.spines["top"].set_visible(False)
-        ax.spines["bottom"].set_visible(False)
-        ax.spines["left"].set_visible(False)
-
-    if is_rm_ticks:
-        ax.tick_params(bottom="off", left="off")
 
 
 def plot_dataset_samples_imgs(
@@ -65,176 +52,6 @@ def plot_dataset_samples_imgs(
         ax.set_title(title)
 
 
-def get_downscale_factor(get_cntxt_trgt):
-    downscale_factor = 1
-    try:
-        downscale_factor = get_cntxt_trgt.test_upscale_factor
-    except AttributeError:
-        pass
-    return downscale_factor
-
-
-def plot_posterior_img(
-    data,
-    get_cntxt_trgt,
-    model,
-    MeanPredictor=VanillaPredictor,
-    is_uniform_grid=True,
-    img_indcs=None,
-    n_plots=4,
-    figsize=(18, 4),
-    ax=None,
-    seed=123,
-    is_return=False,
-    is_hrztl_cat=False,
-):  # TO DOC
-    """
-    Plot the mean of the estimated posterior for images.
-
-    Parameters
-    ----------
-    data : Dataset
-        Dataset from which to sample the images.
-
-    get_cntxt_trgt : callable or dict
-        Function that takes as input the features and tagrets `X`, `y` and return
-        the corresponding `X_cntxt, Y_cntxt, X_trgt, Y_trgt`. If dict should contain the correct 
-        `X_cntxt, Y_cntxt, X_trgt, Y_trgt`.
-
-    model : nn.Module
-        Model used to initialize `MeanPredictor`.
-
-    MeanPredictor : untitialized callable, optional
-        Callable which is initalized with `MeanPredictor(model)` and then takes as
-        input `X_cntxt, Y_cntxt, X_trgt` (`mask_cntxt, X, mask_trgt` if
-        `is_uniform_grid`) and returns the mean the posterior. E.g. `VanillaPredictor`
-        or `AutoregressivePredictor`.
-
-    is_uniform_grid : bool, optional
-        Whether the input are the image and corresponding masks rather than
-        the slected pixels. Typically used for `GridConvCNP`.
-
-    img_indcs : list of int, optional
-        Indices of the images to plot. If `None` will randomly sample `n_plots`
-        of them.
-
-    n_plots : int, optional
-        Number of images to samples. They will be plotted in different columns.
-        Only used if `img_indcs` is `None`.
-
-    figsize : tuple, optional
-
-    ax : plt.axes.Axes, optional
-
-    seed : int, optional
-    """
-    set_seed(seed)
-
-    model.eval()
-
-    dim_grid = 2 if is_uniform_grid else 1
-    if isinstance(get_cntxt_trgt, dict):
-        device = next(model.parameters()).device
-        mask_cntxt = get_cntxt_trgt["X_cntxt"].to(device)
-        X = get_cntxt_trgt["Y_cntxt"].to(device)
-        mask_trgt = get_cntxt_trgt["X_trgt"].to(device)
-        n_plots = mask_cntxt.size(0)
-
-    else:
-        if img_indcs is None:
-            img_indcs = [random.randint(0, len(data)) for _ in range(n_plots)]
-        n_plots = len(img_indcs)
-        imgs = [data[i] for i in img_indcs]
-
-        cntxt_trgt = cntxt_trgt_collate(
-            get_cntxt_trgt, is_return_masks=is_uniform_grid
-        )(imgs)[0]
-        mask_cntxt, X, mask_trgt, _ = (
-            cntxt_trgt["X_cntxt"],
-            cntxt_trgt["Y_cntxt"],
-            cntxt_trgt["X_trgt"],
-            cntxt_trgt["Y_trgt"],
-        )
-
-    mean_y = MeanPredictor(model)(mask_cntxt, X, mask_trgt)
-
-    if is_uniform_grid:
-        mean_y = mean_y.view(*X.shape)
-
-    if X.shape[-1] == 1:
-        X = X.expand(-1, *[-1] * dim_grid, 3)
-        mean_y = mean_y.expand(-1, *[-1] * dim_grid, 3)
-
-    if is_uniform_grid:
-        background = (
-            data.missing_px_color.view(1, *[1] * dim_grid, 3)
-            .expand(*mean_y.shape)
-            .clone()
-        )
-        out_cntxt = torch.where(mask_cntxt, X, background)
-
-        background[mask_trgt.squeeze(-1)] = mean_y.view(-1, 3)
-        out_pred = background.clone()
-
-    else:
-
-        out_cntxt, _ = points_to_grid(
-            mask_cntxt,
-            X,
-            data.shape[1:],
-            background=data.missing_px_color,
-            downscale_factor=get_downscale_factor(get_cntxt_trgt),
-        )
-
-        out_pred, _ = points_to_grid(
-            mask_trgt,
-            mean_y,
-            data.shape[1:],
-            background=data.missing_px_color,
-            downscale_factor=get_downscale_factor(get_cntxt_trgt),
-        )
-
-    outs = [out_cntxt, out_pred]
-
-    grid = make_grid(
-        channels_to_2nd_dim(torch.cat(outs, dim=0)),
-        nrow=n_plots * 2 if is_hrztl_cat else n_plots,
-        pad_value=1.0,
-    )
-
-    if is_return:
-        return grid
-
-    if ax is None:
-        fig, ax = plt.subplots(figsize=figsize)
-
-    ax.imshow(grid.permute(1, 2, 0).numpy())
-    ax.axis("off")
-
-
-def select_most_different_samples(samples, n_samples, p=2):
-    """Select the `n_samples` most different sampels usingle Lp distance."""
-    assert n_samples <= samples.size(0)
-
-    selected_imgs = [samples[0]]
-    pool_imgs = list(torch.unbind(samples[1:]))
-
-    for i in range(n_samples - 1):
-        mean_distances = [
-            np.mean(
-                [
-                    torch.dist(img_in_selected, img_in_pool, p=p)
-                    for img_in_selected in selected_imgs
-                ]
-            )
-            for idx_in_pool, img_in_pool in enumerate(pool_imgs)
-        ]
-        idx_to_select = np.argmax(mean_distances)
-        selected_imgs.append(pool_imgs.pop(idx_to_select))
-
-    return torch.stack(selected_imgs)
-
-
 def get_posterior_samples(
     data,
     get_cntxt_trgt,
@@ -243,8 +60,7 @@ def get_posterior_samples(
     img_indcs=None,
     n_plots=4,
     seed=123,
-    n_samples=3,
-    is_return_dist=False,
+    n_samples=3,  # if None selects all
     is_select_different=False,
 ):
 
@@ -277,39 +93,21 @@ def get_posterior_samples(
             cntxt_trgt["Y_trgt"],
         )
 
-    y_pred = SamplePredictor(model, is_dist=is_return_dist)(
-        mask_cntxt, Y_cntxt, mask_trgt
-    )
+    y_pred = SamplePredictor(model, is_dist=True)(mask_cntxt, Y_cntxt, mask_trgt)
 
-    # actually returns all samples when return dist
-    if not is_return_dist:
-        if is_select_different:
-            # select the most different in average pixel L2 distance
-            y_pred = select_most_different_samples(y_pred, n_samples)
-        else:
-            # select first n_samples
-            y_pred = y_pred[:n_samples, ...]
+    if is_select_different:
+        # select the most different in average pixel L2 distance
+        keep_most_different_samples_(y_pred, n_samples)
+    elif isinstance(n_samples, int):
+        # select first n_samples
+        y_pred.base_dist.loc = y_pred.base_dist.loc[:n_samples, ...]
+        y_pred.base_dist.scale = y_pred.base_dist.scale[:n_samples, ...]
+    elif n_samples is None:
+        pass  # select all
+    else:
+        ValueError(f"Unkown n_samples={n_samples}.")
 
     return y_pred, mask_cntxt, Y_cntxt, mask_trgt
-
-
-def marginal_log_like(predictive, samples):
-    # compute log likelihood for evaluation
-    # size = [n_z_samples, batch_size, *]
-    log_p = predictive.log_prob(samples)
-
-    # mean overlay samples in log space
-    ll = torch.logsumexp(log_p, 0) - math.log(predictive.batch_shape[0])
-
-    return ll.exp()
-
-
-def sarle(out, axis=0):
-    k = scipy.stats.kurtosis(out, axis=axis, fisher=True)
-    g = scipy.stats.skew(out, axis=axis)
-    n = out.shape[1]
-    denom = k + 3 * (n - 1) ** 2 / ((n - 2) * (n - 2))
-    return (g ** 2 + 1) / denom
 
 
 def plot_img_marginal_pred(
@@ -323,7 +121,7 @@ def plot_img_marginal_pred(
     n_plots_loop=30,
     wspace=0.3,
     n_marginals=5,
-    **kwargs
+    **kwargs,
 ):
     f, (ax0, ax1) = plt.subplots(
         1, 2, gridspec_kw={"width_ratios": [1, 1], "wspace": wspace}, figsize=figsize,
@@ -336,7 +134,7 @@ def plot_img_marginal_pred(
         n_plots=n_plots_loop,
         is_uniform_grid=is_uniform_grid,
         seed=seed,
-        is_return_dist=True,
+        n_samples=None,
     )
 
     best = float("inf")
@@ -388,11 +186,10 @@ def plot_img_marginal_pred(
         n_samples=n_samples,
         ax=ax0,
         outs=[best_mean_ys, best_mask_cntxt, best_X, best_mask_trgt],
-        **kwargs
+        **kwargs,
     )
 
 
-# should be merged with plot_posterior_imgs
 def plot_posterior_samples(
     data,
     get_cntxt_trgt,
@@ -403,11 +200,13 @@ def plot_posterior_samples(
     figsize=(18, 4),
     ax=None,
     seed=123,
-    is_return=False,  # DOC
-    is_hrztl_cat=False,  # DOC
-    n_samples=3,  # DOC
-    outs=None,  # TO DOC
+    is_return=False,
+    is_hrztl_cat=False,
+    n_samples=1,
+    outs=None,
     is_select_different=False,
+    is_plot_std=True,
+    is_add_annot=True,
 ):
     """
     Plot the mean of the estimated posterior for images.
@@ -423,13 +222,7 @@ def plot_posterior_samples(
         `X_cntxt, Y_cntxt, X_trgt, Y_trgt`.
 
     model : nn.Module
-        Model used to initialize `MeanPredictor`.
-
-    MeanPredictor : untitialized callable, optional
-        Callable which is initalized with `MeanPredictor(model)` and then takes as
-        input `X_cntxt, Y_cntxt, X_trgt` (`mask_cntxt, X, mask_trgt` if
-        `is_uniform_grid`) and returns the mean the posterior. E.g. `VanillaPredictor`
-        or `AutoregressivePredictor`.
+        Model used for plotting.
 
     is_uniform_grid : bool, optional
         Whether the input are the image and corresponding masks rather than
@@ -449,11 +242,31 @@ def plot_posterior_samples(
 
     seed : int, optional
 
+    is_return : bool, optional  
+        Whether to return the grid instead of plotting it.
+
+    is_hrztl_cat : bool, optional
+        Whether to concatenate the plots horizontally instead of vertically. Only works well for 
+        n_plots=1.
+
+    n_samples : int, optional   
+        Number of samples to plot.
+
+    outs : tuple of tensors, optional
+        Samples `(y_pred, mask_cntxt, Y_cntxt, mask_trgt)` to plot instead of using `get_posterior_samples`. 
+
     is_select_different : bool, optional
         Whether to select the `n_samples` most different samples (in average L2 dist) instead of random.
+
+    is_plot_std : bool, optional
+        Whether to plot the standard deviation of the posterior predictive instead of only the mean.
+        Note that the std is the average std across channels and is only shown for the last sample.
+
+    is_add_annot : bool, optional   
+        Whether to add annotations *context, mean, ...).
     """
     if outs is None:
-        mean_ys, mask_cntxt, X, mask_trgt = get_posterior_samples(
+        y_pred, mask_cntxt, X, mask_trgt = get_posterior_samples(
             data,
             get_cntxt_trgt,
             model,
@@ -465,7 +278,15 @@ def plot_posterior_samples(
             is_select_different=is_select_different,
         )
     else:
-        mean_ys, mask_cntxt, X, mask_trgt = outs
+        y_pred, mask_cntxt, X, mask_trgt = outs
+
+    mean_ys = y_pred.base_dist.loc
+    mean_y = mean_ys[0]
+
+    if n_samples > mean_ys.size(0):
+        raise ValueError(
+            f"Trying to plot more samples {n_samples} than the number of latent samples {mean_ys.size(0)}."
+        )
 
     if isinstance(get_cntxt_trgt, dict):
         n_plots = get_cntxt_trgt["X_cntxt"].size(0)
@@ -478,56 +299,49 @@ def plot_posterior_samples(
         X = X.expand(-1, *[-1] * dim_grid, 3)
         mean_ys = mean_ys.expand(n_samples, -1, *[-1] * dim_grid, 3)
 
-    mean_y = mean_ys[0]
+    # make sure uses 3 channels
+    std_ys = y_pred.base_dist.scale.expand(*mean_ys.shape)
 
-    if is_uniform_grid:
-        background = (
-            data.missing_px_color.view(1, *[1] * dim_grid, 3)
-            .expand(*mean_y.shape)
-            .clone()
-        )
-        out_cntxt = torch.where(mask_cntxt, X, background)
-
-        background[mask_trgt.squeeze(-1)] = mean_y.view(-1, 3)
-        out_pred = background.clone()
-
-    else:
-        out_cntxt, _ = points_to_grid(
-            mask_cntxt,
-            X,
-            data.shape[1:],
-            background=data.missing_px_color,
-            downscale_factor=get_downscale_factor(get_cntxt_trgt),
-        )
+    out_cntxt = plot_single_img(
+        data,
+        X,
+        mask_cntxt,
+        is_uniform_grid,
+        downscale_factor=get_downscale_factor(get_cntxt_trgt),
+    )
 
     outs = [out_cntxt]
 
     for i in range(n_samples):
-        if is_uniform_grid:
-            background = (
-                data.missing_px_color.view(1, *[1] * dim_grid, 3)
-                .expand(*mean_y.shape)
-                .clone()
-            )
-
-            background[mask_trgt.squeeze(-1)] = mean_ys[i].view(-1, 3)
-            out_pred = background.clone()
-
-        else:
-
-            out_pred, _ = points_to_grid(
-                mask_trgt,
-                mean_ys[i],
-                data.shape[1:],
-                background=data.missing_px_color,
-                downscale_factor=get_downscale_factor(get_cntxt_trgt),
-            )
-
+        out_pred = plot_single_img(
+            data,
+            mean_ys[i],
+            mask_trgt,
+            is_uniform_grid,
+            downscale_factor=get_downscale_factor(get_cntxt_trgt),
+        )
         outs.append(out_pred)
 
+    if is_plot_std:
+        out_std = plot_single_img(
+            data,
+            std_ys[n_samples - 1],  # only plot last std
+            mask_trgt,
+            is_uniform_grid,
+            downscale_factor=get_downscale_factor(get_cntxt_trgt),
+        )
+        outs.append(out_std)
+
+    outs = channels_to_2nd_dim(torch.cat(outs, dim=0)).detach()
+    if is_hrztl_cat:
+        tmp = []
+        for i in range(n_plots):
+            tmp.extend(outs[i::n_plots])
+        outs = tmp
+
     grid = make_grid(
-        channels_to_2nd_dim(torch.cat(outs, dim=0)),
-        nrow=n_plots * 2 if is_hrztl_cat else n_plots,
+        outs,
+        nrow=(n_samples + 1 + int(is_plot_std)) if is_hrztl_cat else n_plots,
         pad_value=1.0,
     )
 
@@ -538,16 +352,45 @@ def plot_posterior_samples(
         fig, ax = plt.subplots(figsize=figsize)
 
     ax.imshow(grid.permute(1, 2, 0).numpy())
-    ax.axis("off")
 
+    if is_add_annot:
+        middle_img = data.shape[1] // 2 + 1  # half height
+        y_ticks = [middle_img]
+        y_ticks_labels = ["Context"]
 
-class CntxtTrgtDict(dict):
-    def __init__(self, *arg, test_upscale_factor=1, **kw):
-        self.test_upscale_factor = test_upscale_factor
-        super().__init__(*arg, **kw)
+        for i in range(1, n_samples + 1):
+            y_ticks += [middle_img * (2 * i + 1)]
+            if n_samples > 1:
+                y_ticks_labels += [f"Mean {i}"]
+            else:
+                y_ticks_labels += [f"Pred. Mean"]
+
+        if is_plot_std:
+            y_ticks += [middle_img * (2 * (n_samples + 1) + 1)]
+            if n_samples > 1:
+                y_ticks_labels += [f"Std {n_samples}"]
+            else:
+                y_ticks_labels += [f"Pred. Std"]
+
+        if is_hrztl_cat:
+            # to test
+            ax.xaxis.set_major_locator(ticker.FixedLocator(y_ticks))
+            ax.set_xticklabels(y_ticks_labels, rotation=20, ha="right")
+            ax.set_yticks([])
+
+        else:
+            ax.yaxis.set_major_locator(ticker.FixedLocator(y_ticks))
+            ax.set_yticklabels(y_ticks_labels, rotation="vertical", va="center")
+            ax.set_xticks([])
+
+        remove_axis(ax)
+    else:
+        ax.axis("off")
 
 
 # TO CLEAN
+
+
 def plot_qualitative_with_kde(
     named_trainer,
     dataset,
@@ -563,12 +406,12 @@ def plot_qualitative_with_kde(
     x_lim={},
     is_smallest_xrange=False,
     kdeplot_kwargs={},
-    n_samples=None,
+    n_samples=1,
     test_upscale_factor=1,
-    **kwargs
+    **kwargs,
 ):
     """
-    Plot qualitative samples using `plot_posterior_img` but select the samples and mask to plot
+    Plot qualitative samples using `plot_posterior_samples` but select the samples and mask to plot
     given the score at test time.
 
     Parameters
@@ -617,11 +460,10 @@ def plot_qualitative_with_kde(
 
     !VERY DIRTY
     """
-    if n_samples is None:
-        plot_posterior = plot_posterior_img
-        n_samples = 1
-    else:
-        plot_posterior = partial(plot_posterior_samples, n_samples=n_samples)
+
+    kwargs["n_samples"] = n_samples
+    kwargs["is_plot_std"] = False
+    kwargs["is_add_annot"] = False
 
     if percentiles is not None:
         n_images = len(percentiles)
@@ -629,6 +471,12 @@ def plot_qualitative_with_kde(
     plt.rcParams.update({"font.size": font_size})
     fig, axes = plt.subplots(
         2, 1, figsize=figsize, gridspec_kw={"height_ratios": height_ratios}
+    )
+
+    # a dictionary that has "test_upscale_factor" which is needed for downscaling when plotting
+    # only is not grided
+    CntxtTrgtDictUpscale = partial(
+        CntxtTrgtDict, test_upscale_factor=test_upscale_factor
     )
 
     def _plot_kde_loglike(name, trainer):
@@ -653,13 +501,8 @@ def plot_qualitative_with_kde(
                 X, None, selected_data["X_trgt"][i]
             )
 
-            # a dictionary that has "test_upscale_factor" which is needed for downscaling when plotting
-            yield CntxtTrgtDict(
-                X_cntxt=X_cntxt,
-                Y_cntxt=Y_cntxt,
-                X_trgt=X_trgt,
-                Y_trgt=Y_trgt,
-                test_upscale_factor=test_upscale_factor,
+            yield CntxtTrgtDictUpscale(
+                X_cntxt=X_cntxt, Y_cntxt=Y_cntxt, X_trgt=X_trgt, Y_trgt=Y_trgt
             )
 
     def _plot_posterior_img_selected(name, trainer, selected_data, is_grided_trainer):
@@ -673,16 +516,21 @@ def plot_qualitative_with_kde(
 
             if is_grided_trainer:
                 grids = [
-                    plot_posterior(dataset, data, trainer.module_.cpu(), **kwargs)
+                    plot_posterior_samples(
+                        dataset, data, trainer.module_.cpu(), **kwargs
+                    )
                     for i, data in enumerate(_grid_to_points(selected_data))
                 ]
             else:
+
                 grids = [
-                    plot_posterior(
+                    plot_posterior_samples(
                         dataset,
-                        {k: v[i] for k, v in selected_data.items()},
+                        CntxtTrgtDictUpscale(
+                            **{k: v[i] for k, v in selected_data.items()}
+                        ),
                         trainer.module_.cpu(),
-                        **kwargs
+                        **kwargs,
                     )
                     for i in range(n_images)
                 ]
@@ -711,7 +559,7 @@ def plot_qualitative_with_kde(
                     )
 
                     grids.append(
-                        plot_posterior(
+                        plot_posterior_samples(
                             dataset,
                             dict(
                                 X_cntxt=X_cntxt,
@@ -720,7 +568,7 @@ def plot_qualitative_with_kde(
                                 Y_trgt=Y_trgt,
                             ),
                             trainer.module_.cpu(),
-                            **kwargs
+                            **kwargs,
                         )
                     )
 
@@ -728,11 +576,11 @@ def plot_qualitative_with_kde(
 
                 return torch.cat(grids, axis=-1)
             else:
-                return plot_posterior(
+                return plot_posterior_samples(
                     dataset,
                     {k: torch.cat(v, dim=0) for k, v in selected_data.items()},
                     trainer.module_.cpu(),
-                    **kwargs
+                    **kwargs,
                 )
 
     name, trainer = named_trainer
@@ -847,7 +695,104 @@ def plot_qualitative_with_kde(
         axes[1].set_xticks([])
 
     fig.tight_layout(h_pad=h_pad)
-    # ----------------------------------------
+
+
+# HELPERS
+def plot_single_img(data, to_plot, mask, is_uniform_grid, downscale_factor=1):
+    dim_grid = 2 if is_uniform_grid else 1
+
+    if is_uniform_grid:
+        background = (
+            data.missing_px_color.view(1, *[1] * dim_grid, 3)
+            .expand(*to_plot.shape)
+            .clone()
+        )
+        if mask.size(-1) == 1:
+            out = torch.where(mask, to_plot, background)
+        else:
+            background[mask.squeeze(-1)] = to_plot.reshape(-1, 3)
+            out = background.clone()
+
+    else:
+        out, _ = points_to_grid(
+            mask,
+            to_plot,
+            data.shape[1:],
+            background=data.missing_px_color,
+            downscale_factor=downscale_factor,
+        )
+    return out
+
+
+def keep_most_different_samples_(samples, n_samples, p=2):
+    """Keep the `n_samples` most different samples (of the posterior predictive) using Lp distance of mean."""
+    n_possible_samples = samples.batch_shape[0]
+    assert n_samples <= n_possible_samples
+
+    loc = samples.base_dist.loc
+    scale = samples.base_dist.scale
+
+    selected_idcs = [0]
+    pool_idcs = set(range(1, len(n_possible_samples)))
+
+    for i in range(n_samples - 1):
+        mean_distances = {
+            i: np.mean(
+                [
+                    torch.dist(loc[selected_idx], loc[i], p=p)
+                    for selected_idx in selected_idcs
+                ]
+            )
+            for i in pool_idcs
+        }
+        idx_to_select = max(mean_distances, key=mean_distances.get)
+        selected_idcs.append(pool_idcs.pop(idx_to_select))
+
+    samples.base_dist.loc = loc[selected_idcs]
+    samples.base_dist.scale = loc[selected_idcs]
+
+
+def marginal_log_like(predictive, samples):
+    """compute log likelihood for evaluation"""
+    # size = [n_z_samples, batch_size, *]
+    log_p = predictive.log_prob(samples)
+
+    # mean overlay samples in log space
+    ll = torch.logsumexp(log_p, 0) - math.log(predictive.batch_shape[0])
+
+    return ll.exp()
+
+
+def sarle(out, axis=0):
+    """Return sarle multi modal coefficient"""
+    k = scipy.stats.kurtosis(out, axis=axis, fisher=True)
+    g = scipy.stats.skew(out, axis=axis)
+    n = out.shape[1]
+    denom = k + 3 * (n - 1) ** 2 / ((n - 2) * (n - 2))
+    return (g ** 2 + 1) / denom
+
+
+def get_downscale_factor(get_cntxt_trgt):
+    """Return the scaling factor for the test set (used when extrapolation.)"""
+    downscale_factor = 1
+    try:
+        downscale_factor = get_cntxt_trgt.test_upscale_factor
+    except AttributeError:
+        pass
+    return downscale_factor
+
+
+def remove_axis(ax, is_rm_ticks=True, is_rm_spines=True):
+    """Remove all axis but not the labels."""
+    if is_rm_spines:
+        ax.spines["right"].set_visible(False)
+        ax.spines["top"].set_visible(False)
+        ax.spines["bottom"].set_visible(False)
+        ax.spines["left"].set_visible(False)
+        ax.set_frame_on(False)
+
+    if is_rm_ticks:
+        ax.tick_params(bottom="off", left="off")
 
 
 def idcs_grid_to_idcs_flatten(idcs, grid_shape):
@@ -887,3 +832,11 @@ def points_to_grid(
     background = background.view(batch_size, *grid_shape, y_dim)
 
     return background, mask.view(batch_size, *grid_shape, 1)
+
+
+class CntxtTrgtDict(dict):
+    """Dictionary that has `test_upscale_factor` argument."""
+
+    def __init__(self, *arg, test_upscale_factor=1, **kw):
+        self.test_upscale_factor = test_upscale_factor
+        super().__init__(*arg, **kw)

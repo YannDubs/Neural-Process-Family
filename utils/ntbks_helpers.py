@@ -27,9 +27,10 @@ from npf.utils.datasplit import (
 )
 from utils.data import DIR_DATA, GPDataset, get_train_test_img_dataset
 from utils.data.helpers import DatasetMerger
+from utils.data.imgs import get_test_upscale_factor
 from utils.visualize import (
     plot_config,
-    plot_posterior_img,
+    plot_posterior_samples,
     plot_posterior_samples_1d,
     plot_prior_samples_1d,
 )
@@ -216,9 +217,9 @@ PRETTY_RENAMER = StrFormatter(
         "Vhalf": "Vert. Half",
         "hhalf": "Horiz. Half",
         "Attncnp": "AttnCNP",
-        "Convcnp": "AttnCNP",
+        "Convcnp": "ConvCNP",
         "Attnlnp": "AttnLNP",
-        "Convlnp": "AttnLNP",
+        "Convlnp": "ConvLNP",
         "Selfattn": "Attn",
         "npf Cnpf": "CNP",
         "npf Nlllnpf": "LNP",
@@ -244,7 +245,7 @@ def add_y_dim(models, datasets):
     }
 
 
-def get_n_cntxt(n_cntxt, is_1d=True):
+def get_n_cntxt(n_cntxt, is_1d=True, test_upscale_factor=1):
     """Return a context target splitter with a fixed number of context points."""
     if is_1d:
         return CntxtTrgtGetter(
@@ -257,6 +258,7 @@ def get_n_cntxt(n_cntxt, is_1d=True):
             context_masker=RandomMasker(min_nnz=n_cntxt, max_nnz=n_cntxt),
             target_masker=no_masker,
             is_add_cntxts_to_trgts=False,
+            test_upscale_factor=test_upscale_factor,
         )
 
 
@@ -295,16 +297,20 @@ def plot_multi_posterior_samples_imgs(
                 data_name=pretty_renamer[data_name],
             )
 
+            test_upscale_factor = get_test_upscale_factor(data_name)
             if n_cntxt in ["vhalf", "hhalf"]:
                 cntxt_trgt_getter = GridCntxtTrgtGetter(
                     context_masker=partial(
                         half_masker, dim=0 if n_cntxt == "hhalf" else 1
-                    )
+                    ),
+                    test_upscale_factor=test_upscale_factor,
                 )
             else:
-                cntxt_trgt_getter = get_n_cntxt(n_cntxt, is_1d=False)
+                cntxt_trgt_getter = get_n_cntxt(
+                    n_cntxt, is_1d=False, test_upscale_factor=test_upscale_factor
+                )
 
-            plot_posterior_img(
+            plot_posterior_samples(
                 dataset,
                 cntxt_trgt_getter,
                 trainer.module_.cpu(),
