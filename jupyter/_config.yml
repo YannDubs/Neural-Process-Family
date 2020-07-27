@@ -1,8 +1,14 @@
 # Book settings
 title: Neural Process Family
-author: Yann Dubois
-logo: logo.png
-exclude_patterns: ["*ConvCNP.ipynb","*ConvLNP.ipynb"]  # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
+author: Yann Dubois and Jonathan Gordon
+logo: logo.gif
+exclude_patterns: ["* Hope*","**/* Old*","**/*_old*","*-Copy*"]  # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
+
+execute:
+  execute_notebooks: cache
+
+repository:
+  url: https://github.com/YannDubs/Neural-Process-Family
 
 latex:
   latex_documents:
@@ -10,3 +16,10 @@ latex:
 
 html:
   extra_navbar: ""  # Will be displayed underneath the left navbar.
+  use_repository_button: true
+  favicon: "favicon.ico"
+  home_page_in_navbar: true
+
+sphinx:
+  extra_extensions:
+   - sphinxcontrib.proof

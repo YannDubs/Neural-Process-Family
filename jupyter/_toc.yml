@@ -1,15 +1,31 @@
-- file: intro
-- file: CNPFs
-  sections:
-    - file: CNP
-    - file: AttnCNP
-    - file: ConvCNP
-- file: LNPFs
-  sections:
-    - file: LNP
-    - file: AttnLNP
-    - file: ConvLNP
-- file: Additional
-  sections:
-    - file: Datasets
+- file: text/Intro
+  title: NPFs
+- file: text/CNPFs
+- file: text/LNPFs
+
+- header: Advanced
+- file: text/Theory
+- file: text/Training
+
+- header: Reproducibility
+- file: reproducibility/Datasets
+- file: reproducibility/CNP
+  title: CNP
+- file: reproducibility/AttnCNP
+  title: AttnCNP
+- file: reproducibility/ConvCNP
+  title: ConvCNP
+- file: reproducibility/LNP
+  title: LNP
+- file: reproducibility/AttnLNP
+  title: AttnLNP
+- file: reproducibility/ConvLNP
+  title: ConvLNP
+
+- header: Reference
+- file: text/Related
+  title: Related
 - file: zbibliography # need to add z because has to be processed last
+- url: https://github.com/YannDubs/Neural-Process-Family
+  title: GitHub Repo
+
