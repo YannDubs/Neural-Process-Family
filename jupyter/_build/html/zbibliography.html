@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/sphinx-book-theme.js"></script>
@@ -24,14 +25,16 @@
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
     <script src="_static/mystnb.js"></script>
+    <script src="_static/proof.js"></script>
     <script src="_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Datasets" href="Datasets.html" />
+    <link rel="prev" title="Related Work" href="text/Related.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="docsearch:language" content="en">
@@ -50,7 +53,7 @@
         <div class="navbar-brand-box">
 <a class="navbar-brand text-wrap" href="index.html">
   
-  <img src="_static/logo.png" class="logo" alt="logo">
+  <img src="_static/logo.gif" class="logo" alt="logo">
   
   
   <h1 class="site-logo" id="site-title">Neural Process Family</h1>
@@ -67,16 +70,58 @@
   
   <ul class="nav sidenav_l1">
   <li class="">
-    <a href="CNPFs.html">Conditional NPFs</a>
+    <a href="text/Intro.html">Neural Process Family</a>
   </li>
   <li class="">
-    <a href="LNPFs.html">Latent NPFs</a>
+    <a href="text/CNPFs.html">Conditional NPFs</a>
   </li>
   <li class="">
-    <a href="Additional.html">Additional</a>
+    <a href="text/LNPFs.html">Latent NPFs</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Advanced</p>
+</li>
+  <li class="">
+    <a href="text/Theory.html">Theory</a>
+  </li>
+  <li class="">
+    <a href="text/Training.html">Training</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Reproducibility</p>
+</li>
+  <li class="">
+    <a href="reproducibility/Datasets.html">Datasets</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/CNP.html">CNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/AttnCNP.html">AttnCNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/ConvCNP.html">ConvCNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/LNP.html">LNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/AttnLNP.html">AttnLNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/ConvLNP.html">ConvLNP</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Reference</p>
+</li>
+  <li class="">
+    <a href="text/Related.html">Related</a>
   </li>
   <li class="active">
     <a href="">Bibliography</a>
+  </li>
+  <li class="">
+    <a href="https://github.com/YannDubs/Neural-Process-Family">GitHub Repo<i class="fas fa-external-link-alt"></i></a>
   </li>
 </ul>
 </nav>
@@ -120,6 +165,15 @@
 
         <!-- Source interaction buttons -->
         
+        <div class="dropdown-buttons-trigger">
+            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+            <div class="dropdown-buttons sourcebuttons">
+                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
+                
+                
+            </div>
+        </div>
+        
 
         <!-- Full screen (wrap in <a> to have style consistency -->
         <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
@@ -152,8 +206,11 @@
 <dt class="bibtex label" id="dubois2019location"><span class="brackets">DDHB19</span></dt>
 <dd><p>Yann Dubois, Gautier Dagan, Dieuwke Hupkes, and Elia Bruni. Location attention for extrapolation to longer sequences. <em>arXiv preprint arXiv:1911.03872</em>, 2019.</p>
 </dd>
+<dt class="bibtex label" id="ellison1987effect"><span class="brackets">Ell87</span></dt>
+<dd><p>Aaron M Ellison. Effect of seed dimorphism on the density-dependent dynamics of experimental populations of atriplex triangularis (chenopodiaceae). <em>American Journal of Botany</em>, 74(8):1280–1288, 1987.</p>
+</dd>
 <dt class="bibtex label" id="foong2020convnp"><span class="brackets">FBG+20</span></dt>
-<dd><p>Andrew YK Foong, Wessel P Bruinsma, Jonathan Gordon, Yann Dubois, James Requeima, and Richard E Turner. Meta-learning stationary stochastic process prediction with convolutional neural processes. To Appear, 2020.</p>
+<dd><p>Andrew YK Foong, Wessel P Bruinsma, Jonathan Gordon, Yann Dubois, James Requeima, and Richard E Turner. Meta-learning stationary stochastic process prediction with convolutional neural processes. <em>arXiv preprint arXiv:2007.01332</em>, 2020.</p>
 </dd>
 <dt class="bibtex label" id="garnelo2018conditional"><span class="brackets">GRM+18</span></dt>
 <dd><p>Marta Garnelo, Dan Rosenbaum, Chris J Maddison, Tiago Ramalho, David Saxton, Murray Shanahan, Yee Whye Teh, Danilo J Rezende, and SM Eslami. Conditional neural processes. <em>arXiv preprint arXiv:1807.01613</em>, 2018.</p>
@@ -186,14 +243,14 @@
     
     <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="Datasets.html" title="previous page">Datasets</a>
+    <a class='left-prev' id="prev-link" href="text/Related.html" title="previous page">Related Work</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">
     <div class="container">
       <p>
         
-          By Yann Dubois<br/>
+          By Yann Dubois and Jonathan Gordon<br/>
         
             &copy; Copyright 2020.<br/>
       </p>

@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/sphinx-book-theme.js"></script>
@@ -25,11 +26,13 @@
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
     <script src="_static/mystnb.js"></script>
+    <script src="_static/proof.js"></script>
     <script src="_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
 
@@ -50,7 +53,7 @@
         <div class="navbar-brand-box">
 <a class="navbar-brand text-wrap" href="index.html">
   
-  <img src="_static/logo.png" class="logo" alt="logo">
+  <img src="_static/logo.gif" class="logo" alt="logo">
   
   
   <h1 class="site-logo" id="site-title">Neural Process Family</h1>
@@ -67,16 +70,58 @@
   
   <ul class="nav sidenav_l1">
   <li class="">
-    <a href="CNPFs.html">Conditional NPFs</a>
+    <a href="text/Intro.html">Neural Process Family</a>
   </li>
   <li class="">
-    <a href="LNPFs.html">Latent NPFs</a>
+    <a href="text/CNPFs.html">Conditional NPFs</a>
   </li>
   <li class="">
-    <a href="Additional.html">Additional</a>
+    <a href="text/LNPFs.html">Latent NPFs</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Advanced</p>
+</li>
+  <li class="">
+    <a href="text/Theory.html">Theory</a>
+  </li>
+  <li class="">
+    <a href="text/Training.html">Training</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Reproducibility</p>
+</li>
+  <li class="">
+    <a href="reproducibility/Datasets.html">Datasets</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/CNP.html">CNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/AttnCNP.html">AttnCNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/ConvCNP.html">ConvCNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/LNP.html">LNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/AttnLNP.html">AttnLNP</a>
+  </li>
+  <li class="">
+    <a href="reproducibility/ConvLNP.html">ConvLNP</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Reference</p>
+</li>
+  <li class="">
+    <a href="text/Related.html">Related</a>
   </li>
   <li class="">
     <a href="zbibliography.html">Bibliography</a>
+  </li>
+  <li class="">
+    <a href="https://github.com/YannDubs/Neural-Process-Family">GitHub Repo<i class="fas fa-external-link-alt"></i></a>
   </li>
 </ul>
 </nav>
@@ -110,6 +155,15 @@
         </div>
 
         <!-- Source interaction buttons -->
+        
+        <div class="dropdown-buttons-trigger">
+            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+            <div class="dropdown-buttons sourcebuttons">
+                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
+                
+                
+            </div>
+        </div>
         
 
         <!-- Full screen (wrap in <a> to have style consistency -->
@@ -156,7 +210,7 @@
     <div class="container">
       <p>
         
-          By Yann Dubois<br/>
+          By Yann Dubois and Jonathan Gordon<br/>
         
             &copy; Copyright 2020.<br/>
       </p>

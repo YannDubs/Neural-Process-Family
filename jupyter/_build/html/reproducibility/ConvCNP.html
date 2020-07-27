@@ -1,0 +1,1179 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Convolutional Conditional Neural Process (ConvCNP) &#8212; Neural Process Family</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/mystnb.js"></script>
+    <script src="../_static/proof.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Latent Neural Process (LNP)" href="LNP.html" />
+    <link rel="prev" title="Attentive Conditional Neural Process (AttnCNP)" href="AttnCNP.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/logo.gif" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Neural Process Family</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  
+  <ul class="nav sidenav_l1">
+  <li class="">
+    <a href="../text/Intro.html">Neural Process Family</a>
+  </li>
+  <li class="">
+    <a href="../text/CNPFs.html">Conditional NPFs</a>
+  </li>
+  <li class="">
+    <a href="../text/LNPFs.html">Latent NPFs</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Advanced</p>
+</li>
+  <li class="">
+    <a href="../text/Theory.html">Theory</a>
+  </li>
+  <li class="">
+    <a href="../text/Training.html">Training</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Reproducibility</p>
+</li>
+  <li class="">
+    <a href="Datasets.html">Datasets</a>
+  </li>
+  <li class="">
+    <a href="CNP.html">CNP</a>
+  </li>
+  <li class="">
+    <a href="AttnCNP.html">AttnCNP</a>
+  </li>
+  <li class="active">
+    <a href="">ConvCNP</a>
+  </li>
+  <li class="">
+    <a href="LNP.html">LNP</a>
+  </li>
+  <li class="">
+    <a href="AttnLNP.html">AttnLNP</a>
+  </li>
+  <li class="">
+    <a href="ConvLNP.html">ConvLNP</a>
+  </li>
+<li class="navbar-special">
+<p class="margin-caption">Reference</p>
+</li>
+  <li class="">
+    <a href="../text/Related.html">Related</a>
+  </li>
+  <li class="">
+    <a href="../zbibliography.html">Bibliography</a>
+  </li>
+  <li class="">
+    <a href="https://github.com/YannDubs/Neural-Process-Family">GitHub Repo<i class="fas fa-external-link-alt"></i></a>
+  </li>
+</ul>
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+
+            
+            <div class="dropdown-buttons">
+                <!-- ipynb file if we had a myst markdown file -->
+                
+                <!-- Download raw file -->
+                <a class="dropdown-buttons" href="../_sources/reproducibility/ConvCNP.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.ipynb</button></a>
+                <!-- Download PDF via print -->
+                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+            </div>
+            
+        </div>
+
+        <!-- Source interaction buttons -->
+        
+        <div class="dropdown-buttons-trigger">
+            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+            <div class="dropdown-buttons sourcebuttons">
+                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
+                
+                
+            </div>
+        </div>
+        
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+        
+    </div>
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#initialization" class="nav-link">Initialization</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#training" class="nav-link">Training</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#plots" class="nav-link">Plots</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h4">
+            <a href="#gps-dataset" class="nav-link">GPs Dataset</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h5">
+            <a href="#samples-from-a-single-gp" class="nav-link">Samples from a single GP</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h4">
+            <a href="#image-dataset" class="nav-link">Image Dataset</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h5">
+            <a href="#conditional-posterior-predictive" class="nav-link">Conditional Posterior Predictive</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h5">
+            <a href="#increasing-resolution" class="nav-link">Increasing Resolution</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h5">
+            <a href="#issues-with-cnpfs" class="nav-link">Issues With CNPFs</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+            </ul>
+        </li>
+    
+            </ul>
+        </li>
+    
+    </ul>
+</nav>
+
+
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="convolutional-conditional-neural-process-convcnp">
+<h1>Convolutional Conditional Neural Process (ConvCNP)<a class="headerlink" href="#convolutional-conditional-neural-process-convcnp" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default" id="computational-graph-convcnps">
+<a class="reference internal image-reference" href="../_images/computational_graph_ConvCNPs.svg"><img alt="Computational graph ConvCNP" src="../_images/computational_graph_ConvCNPs.svg" width="300em" /></a>
+<p class="caption"><span class="caption-number">Fig. 42 </span><span class="caption-text">Computational graph for Convolutional Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-convcnps" title="Permalink to this image">¶</a></p>
+</div>
+<p>In this notebook we will show how to train a ConvCNP on samples from GPs and images using our framework, as well as how to make nice visualizations.
+ConvCNPs are CNPFs that use use convolutions for the aggregator (computational graph in <a class="reference internal" href="#computational-graph-convcnps"><span class="std std-numref">Fig. 42</span></a>).
+We will follow quite closely the previous <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a>, but will also run a larger model (on CelebA128) to test super resolution.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="o">%</span><span class="n">config</span> <span class="n">InlineBackend</span><span class="o">.</span><span class="n">figure_format</span> <span class="o">=</span> <span class="s1">&#39;retina&#39;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="n">N_THREADS</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">IS_FORCE_CPU</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Nota Bene : notebooks don&#39;t deallocate GPU memory</span>
+
+<span class="k">if</span> <span class="n">IS_FORCE_CPU</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUDA_VISIBLE_DEVICES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">N_THREADS</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>Let’s load all the data. For more details about the data and some samples, see the <a class="reference internal" href="Datasets.html"><span class="doc">data</span></a> notebook.
+In addition, we’ll use Celeba128 dataset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">get_all_gp_datasets</span><span class="p">,</span> <span class="n">get_img_datasets</span>
+
+<span class="c1"># DATASETS</span>
+<span class="c1"># gp</span>
+<span class="n">gp_datasets</span><span class="p">,</span> <span class="n">gp_test_datasets</span><span class="p">,</span> <span class="n">gp_valid_datasets</span> <span class="o">=</span> <span class="n">get_all_gp_datasets</span><span class="p">()</span>
+<span class="c1"># image</span>
+<span class="n">img_datasets</span><span class="p">,</span> <span class="n">img_test_datasets</span> <span class="o">=</span> <span class="n">get_img_datasets</span><span class="p">([</span><span class="s2">&quot;celeba32&quot;</span><span class="p">,</span> <span class="s2">&quot;mnist&quot;</span><span class="p">,</span> <span class="s2">&quot;zsmms&quot;</span><span class="p">])</span>
+
+<span class="n">imgXL_datasets</span><span class="p">,</span> <span class="n">imgXL_test_datasets</span> <span class="o">=</span> <span class="n">get_img_datasets</span><span class="p">([</span><span class="s2">&quot;celeba128&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s define the context target splitters, which given a data point will return the context set and target set by selecting randomly selecting some points and preprocessing them so that the features are in <span class="math notranslate nohighlight">\([-1,1]\)</span>.
+We use the same as in <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a>, namely all target points and uniformly sampling in <span class="math notranslate nohighlight">\([0,50]\)</span> and <span class="math notranslate nohighlight">\([0,n\_pixels * 0.3]\)</span> for 1D and 2D respectively.</p>
+<p>The only difference with the previous notebooks is that for the “on the grid” case (images) we will return the mask (instead of preprocessing the context sets) which makes facilitates the implementation by running a standard CNN. As we do not preprocess the pixels to <span class="math notranslate nohighlight">\([-1,1]\)</span>, we do not have to deal with ZSMM differently despite the fact that the size of training and testing images is different.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf.utils.datasplit</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CntxtTrgtGetter</span><span class="p">,</span>
+    <span class="n">GetRandomIndcs</span><span class="p">,</span>
+    <span class="n">GridCntxtTrgtGetter</span><span class="p">,</span>
+    <span class="n">RandomMasker</span><span class="p">,</span>
+    <span class="n">get_all_indcs</span><span class="p">,</span>
+    <span class="n">no_masker</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">utils.data</span> <span class="kn">import</span> <span class="n">cntxt_trgt_collate</span><span class="p">,</span> <span class="n">get_test_upscale_factor</span>
+
+<span class="c1"># CONTEXT TARGET SPLIT</span>
+<span class="n">get_cntxt_trgt_1d</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span>
+    <span class="n">CntxtTrgtGetter</span><span class="p">(</span>
+        <span class="n">contexts_getter</span><span class="o">=</span><span class="n">GetRandomIndcs</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span> <span class="n">targets_getter</span><span class="o">=</span><span class="n">get_all_indcs</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">get_cntxt_trgt_2d</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span>
+    <span class="n">GridCntxtTrgtGetter</span><span class="p">(</span>
+        <span class="n">context_masker</span><span class="o">=</span><span class="n">RandomMasker</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">0.3</span><span class="p">),</span> <span class="n">target_masker</span><span class="o">=</span><span class="n">no_masker</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">is_return_masks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># will be using grid conv CNP =&gt; can work directly with mask</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s now define the models. For all the models we: (i) do not encode context points independently of each other; (ii) use 4 hidden layer MLP that predicts the distribution of the target value given the context representation at target position;  <a class="footnote-reference brackets" href="#decoder" id="id1">1</a> (iii) always use hidden representations of size (or number of channels) 128 dimensions.
+The implementation to get a target dependent representation of the context set differs slightly depending on the dataset:</p>
+<ul class="simple">
+<li><p>off the grid (GP datasets):</p>
+<ol class="simple">
+<li><p>Set convolution with normalized Gaussian RBF kernel to get a functional representation of the context set, and concatenate the density channel.</p></li>
+<li><p>Uniformly discretize (64 points per unit) the output function to enable the use of standard CNNs.</p></li>
+<li><p>10 layer ResNet to process the functional representation.</p></li>
+<li><p>Set Convolution with normalized Gaussian RBF kernel and query at each target feature.</p></li>
+</ol>
+</li>
+<li><p>on the grid  (MNIST, CelebA32):</p>
+<ol class="simple">
+<li><p>Apply the mask, a convolutional layer with positive weights, concatenate the mask.</p></li>
+<li><p>10 layer ResNet to process the functional representation.</p></li>
+</ol>
+</li>
+<li><p>large model (CelebA128): Same as “on the grid” but with a 24 layer ResNet.</p></li>
+<li><p>full translation equivariance (ZSMM): Same as “on the grid” but with circular padding to ensure translation equivariance of the CNN (see appendix D.6 <a class="bibtex reference internal" href="../zbibliography.html#gordon2019convolutional" id="id2">[GBF+19]</a>)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">ConvCNP</span><span class="p">,</span> <span class="n">GridConvCNP</span>
+<span class="kn">from</span> <span class="nn">npf.architectures</span> <span class="kn">import</span> <span class="n">CNN</span><span class="p">,</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">ResConvBlock</span><span class="p">,</span> <span class="n">SetConv</span><span class="p">,</span> <span class="n">discard_ith_arg</span>
+<span class="kn">from</span> <span class="nn">npf.utils.helpers</span> <span class="kn">import</span> <span class="n">CircularPad2d</span><span class="p">,</span> <span class="n">make_abs_conv</span><span class="p">,</span> <span class="n">make_padded_conv</span>
+<span class="kn">from</span> <span class="nn">utils.helpers</span> <span class="kn">import</span> <span class="n">count_parameters</span>
+
+<span class="n">R_DIM</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
+    <span class="n">Decoder</span><span class="o">=</span><span class="n">discard_ith_arg</span><span class="p">(</span>  <span class="c1"># disregards the target features to be translation equivariant</span>
+        <span class="n">partial</span><span class="p">(</span><span class="n">MLP</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">),</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+
+<span class="n">CNN_KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">ConvBlock</span><span class="o">=</span><span class="n">ResConvBlock</span><span class="p">,</span>
+    <span class="n">is_chan_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># all computations are done with channel last in our code</span>
+    <span class="n">n_conv_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># layers per block</span>
+<span class="p">)</span>
+
+
+<span class="c1"># off the grid</span>
+<span class="n">model_1d</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">ConvCNP</span><span class="p">,</span>
+    <span class="n">x_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">y_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">Interpolator</span><span class="o">=</span><span class="n">SetConv</span><span class="p">,</span>
+    <span class="n">CNN</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">CNN</span><span class="p">,</span>
+        <span class="n">Conv</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">,</span>
+        <span class="n">Normalization</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">,</span>
+        <span class="n">n_blocks</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">density_induced</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>  <span class="c1"># density of discretization</span>
+    <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># on the grid</span>
+<span class="n">model_2d</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">GridConvCNP</span><span class="p">,</span>
+    <span class="n">x_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># for gridded conv it&#39;s the mask shape</span>
+    <span class="n">CNN</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">CNN</span><span class="p">,</span>
+        <span class="n">Conv</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span>
+        <span class="n">Normalization</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">,</span>
+        <span class="n">n_blocks</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># full translation equivariance</span>
+
+<span class="n">Padder</span> <span class="o">=</span> <span class="n">CircularPad2d</span>
+
+<span class="n">model_2d_extrap</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">GridConvCNP</span><span class="p">,</span>
+    <span class="n">x_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># for gridded conv it&#39;s the mask shape</span>
+    <span class="n">CNN</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">CNN</span><span class="p">,</span>
+        <span class="n">Normalization</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">),</span>  <span class="c1"># was getting NaN</span>
+        <span class="n">Conv</span><span class="o">=</span><span class="n">make_padded_conv</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span> <span class="n">Padder</span><span class="p">),</span>
+        <span class="n">n_blocks</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># make first layer also padded (all arguments are defaults besides `make_padded_conv` given `Padder`)</span>
+    <span class="n">Conv</span><span class="o">=</span><span class="k">lambda</span> <span class="n">y_dim</span><span class="p">:</span> <span class="n">make_padded_conv</span><span class="p">(</span><span class="n">make_abs_conv</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">),</span> <span class="n">Padder</span><span class="p">)(</span>
+        <span class="n">y_dim</span><span class="p">,</span> <span class="n">y_dim</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">y_dim</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">11</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># large model</span>
+<span class="n">model_2d_XL</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">GridConvCNP</span><span class="p">,</span>
+    <span class="n">x_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># for gridded conv it&#39;s the mask shape</span>
+    <span class="n">CNN</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">CNN</span><span class="p">,</span>
+        <span class="n">Conv</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span>
+        <span class="n">Normalization</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">,</span>
+        <span class="n">n_blocks</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">n_params_1d</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">model_1d</span><span class="p">())</span>
+<span class="n">n_params_2d</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">model_2d</span><span class="p">(</span><span class="n">y_dim</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">n_params_2d_XL</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">model_2d_XL</span><span class="p">(</span><span class="n">y_dim</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number Parameters (1D): </span><span class="si">{</span><span class="n">n_params_1d</span><span class="si">:</span><span class="s2">,d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number Parameters (2D): </span><span class="si">{</span><span class="n">n_params_2d</span><span class="si">:</span><span class="s2">,d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number Parameters (2D XL): </span><span class="si">{</span><span class="n">n_params_2d_XL</span><span class="si">:</span><span class="s2">,d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Number Parameters (1D): 276,612
+Number Parameters (2D): 340,721
+Number Parameters (2D XL): 722,417
+</pre></div>
+</div>
+</div>
+</div>
+<p>For more details about all the possible parameters, refer to the docstrings of <code class="docutils literal notranslate"><span class="pre">ConvCNP</span></code> and <code class="docutils literal notranslate"><span class="pre">GridConvCNP</span></code> and the base class <code class="docutils literal notranslate"><span class="pre">NeuralProcessFamily</span></code>.</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ConvCNP Docstring</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ConvCNP</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+    Convolutional conditional neural process [1].
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimension of features.
+
+    y_dim : int
+        Dimension of y values.
+
+    density_induced : int, optional
+        Density of induced-inputs to use. The induced-inputs will be regularly sampled.
+
+    Interpolator : callable or str, optional
+        Callable to use to compute cntxt / trgt to and from the induced points.  {(x^k, y^k)}, {x^q} -&gt; {y^q}. 
+        It should be constructed via `Interpolator(x_dim, in_dim, out_dim)`. Example:
+            - `SetConv` : uses a set convolution as in the paper.
+            - `&quot;TransformerAttender&quot;` : uses a cross attention layer.
+
+    CNN : nn.Module, optional
+        Convolutional model to use between induced points. It should be constructed via 
+        `CNN(r_dim)`. Important : the channel needs to be last dimension of input. Example:
+            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small 
+            ResNet.
+            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a 
+            UNet.
+
+    kwargs :
+        Additional arguments to `NeuralProcessFamily`.
+
+    References
+    ----------
+    [1] Gordon, Jonathan, et al. &quot;Convolutional conditional neural processes.&quot; arXiv preprint 
+    arXiv:1910.13556 (2019).
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># GridConvCNP Docstring</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">GridConvCNP</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+    Spacial case of Convolutional Conditional Neural Process [1] when the context, targets and
+    induced points points are on a grid of the same size.
+
+    Notes
+    -----
+    - Assumes that input, output and induced points are on the same grid. I.e. This cannot be used 
+    for sub-pixel interpolation / super resolution. I.e. in the code *n_rep = *n_cntxt = *n_trgt =* grid_shape.
+    The real number of ontext and target will be determined by the masks.
+    - Assumes that Y_cntxt is the grid values (y_dim / channels on last dim),
+    while X_cntxt and X_trgt are confidence masks of the shape of the grid rather
+    than set of features.
+    - As X_cntxt and X_trgt is a grid, each batch example could have a different number of
+    contexts  and targets (i.e. different number of non zeros).
+    - As we do not use a set convolution, the receptive field is easy to specify,
+    making the model much more computationally efficient.
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimension of features. As the features are now masks, this has to be either 1 or y_dim
+        as they will be multiplied to Y (with possible broadcasting). If 1 then selectign all channels
+        or none.
+
+    y_dim : int
+        Dimension of y values.
+
+    Conv : nn.Module, optional
+        Convolution layer to use to map from context to induced points {(x^k, y^k)}, {x^q} -&gt; {y^q}.
+
+    CNN : nn.Module, optional
+        Convolutional model to use between induced points. It should be constructed via 
+        `CNN(r_dim)`. Important : the channel needs to be last dimension of input. Example:
+            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small 
+            ResNet.
+            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a 
+            UNet.
+
+    kwargs :
+        Additional arguments to `ConvCNP`.
+
+    References
+    ----------
+    [1] Gordon, Jonathan, et al. &quot;Convolutional conditional neural processes.&quot; arXiv preprint 
+    arXiv:1910.13556 (2019).
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="training">
+<h3>Training<a class="headerlink" href="#training" title="Permalink to this headline">¶</a></h3>
+<p>The main function for training is <code class="docutils literal notranslate"><span class="pre">train_models</span></code> which trains a dictionary of models on a dictionary of datasets and returns all the trained models.
+See its docstring for possible parameters.</p>
+<p>Computational Notes :</p>
+<ul class="simple">
+<li><p>The following will either train all the models (<code class="docutils literal notranslate"><span class="pre">is_retrain=True</span></code>) or load the pretrained models (<code class="docutils literal notranslate"><span class="pre">is_retrain=False</span></code>)</p></li>
+<li><p>it will use a (single) GPU if available</p></li>
+<li><p>decrease the batch size if you don’t have enough memory</p></li>
+<li><p>30 epochs should give you descent results for the GP datasets (instead of 100)</p></li>
+<li><p>if training celeba128 this takes a couple of days on a single GPU. You should get descent results using only 10 epochs instead of 50. If you don’t want to train it, just comment out that block of code  when <code class="docutils literal notranslate"><span class="pre">is_retrain=True</span></code>.</p></li>
+</ul>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">skorch</span>
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">CNPFLoss</span>
+<span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">add_y_dim</span>
+<span class="kn">from</span> <span class="nn">utils.train</span> <span class="kn">import</span> <span class="n">train_models</span>
+
+<span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">is_retrain</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to load precomputed model or retrain</span>
+    <span class="n">criterion</span><span class="o">=</span><span class="n">CNPFLoss</span><span class="p">,</span>
+    <span class="n">chckpnt_dirname</span><span class="o">=</span><span class="s2">&quot;results/pretrained/&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">decay_lr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># replace the zsmm model</span>
+<span class="n">models_2d</span> <span class="o">=</span> <span class="n">add_y_dim</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;ConvCNP&quot;</span><span class="p">:</span> <span class="n">model_2d</span><span class="p">},</span> <span class="n">img_datasets</span>
+<span class="p">)</span>  <span class="c1"># y_dim (channels) depend on data</span>
+<span class="n">models_extrap</span> <span class="o">=</span> <span class="n">add_y_dim</span><span class="p">({</span><span class="s2">&quot;ConvCNP&quot;</span><span class="p">:</span> <span class="n">model_2d_extrap</span><span class="p">},</span> <span class="n">img_datasets</span><span class="p">)</span>
+<span class="n">models_2d</span><span class="p">[</span><span class="s2">&quot;zsmms&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">models_extrap</span><span class="p">[</span><span class="s2">&quot;zsmms&quot;</span><span class="p">]</span>
+
+<span class="c1"># 1D</span>
+<span class="n">trainers_1d</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+    <span class="n">gp_datasets</span><span class="p">,</span>
+    <span class="p">{</span><span class="s2">&quot;ConvCNP&quot;</span><span class="p">:</span> <span class="n">model_1d</span><span class="p">},</span>
+    <span class="n">test_datasets</span><span class="o">=</span><span class="n">gp_test_datasets</span><span class="p">,</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_1d</span><span class="p">,</span>
+    <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_1d</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">KWARGS</span>
+<span class="p">)</span>
+
+
+<span class="c1"># 2D</span>
+<span class="n">trainers_2d</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+    <span class="n">img_datasets</span><span class="p">,</span>
+    <span class="n">models_2d</span><span class="p">,</span>
+    <span class="n">test_datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span>
+    <span class="n">train_split</span><span class="o">=</span><span class="n">skorch</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">CVSplit</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span>  <span class="c1"># use 10% of training for valdiation</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
+    <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">KWARGS</span>
+<span class="p">)</span>
+
+
+<span class="c1"># 2D XL</span>
+<span class="n">trainers_2dXL</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+    <span class="n">imgXL_datasets</span><span class="p">,</span>
+    <span class="n">add_y_dim</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;ConvCNPXL&quot;</span><span class="p">:</span> <span class="n">model_2d_XL</span><span class="p">},</span> <span class="n">imgXL_datasets</span>
+    <span class="p">),</span>  <span class="c1"># y_dim (channels) depend on data</span>
+    <span class="c1"># test_datasets=imgXL_test_datasets, # DEV</span>
+    <span class="n">train_split</span><span class="o">=</span><span class="n">skorch</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">CVSplit</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span>  <span class="c1"># use 10% of training for valdiation</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
+    <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">KWARGS</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading RBF_Kernel/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>RBF_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -226.017 | valid loss: None | test log likelihood: 175.1153
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Periodic_Kernel/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Periodic_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -265.034 | valid loss: None | test log likelihood: 192.9748
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Noisy_Matern_Kernel/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Noisy_Matern_Kernel/ConvCNP/run_0 | best epoch: None | train loss: 63.0761 | valid loss: None | test log likelihood: -83.737
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading Variable_Matern_Kernel/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Variable_Matern_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -258.4556 | valid loss: None | test log likelihood: -2737.2886
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading All_Kernels/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>All_Kernels/ConvCNP/run_0 | best epoch: None | train loss: -92.6999 | valid loss: None | test log likelihood: 81.3551
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading celeba32/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>celeba32/ConvCNP/run_0 | best epoch: 17 | train loss: -4850.5891 | valid loss: -4957.254 | test log likelihood: 4767.8543
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading mnist/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>mnist/ConvCNP/run_0 | best epoch: 39 | train loss: -2853.58 | valid loss: -2908.0484 | test log likelihood: 2628.1879
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading zsmms/ConvCNP/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>zsmms/ConvCNP/run_0 | best epoch: 48 | train loss: -2593.7651 | valid loss: -2721.6174 | test log likelihood: 1253.1864
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+--- Loading celeba128/ConvCNPXL/run_0 ---
+
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>celeba128/ConvCNPXL/run_0 | best epoch: 29 | train loss: -82314.3706 | valid loss: -78628.2975 | test log likelihood: None
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="plots">
+<h3>Plots<a class="headerlink" href="#plots" title="Permalink to this headline">¶</a></h3>
+<p>Let’s visualize how well the model performs in different settings.</p>
+<div class="section" id="gps-dataset">
+<h4>GPs Dataset<a class="headerlink" href="#gps-dataset" title="Permalink to this headline">¶</a></h4>
+<p>Let’s define a plotting function that we will use in this section. We’ll reuse the same function defined in <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">PRETTY_RENAMER</span><span class="p">,</span> <span class="n">plot_multi_posterior_samples_1d</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="c1"># PLOTTING KWARGS</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">is_plot_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot underlying GP</span>
+        <span class="n">is_plot_real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># don&#39;t plot sampled / underlying function</span>
+        <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot the predictive std</span>
+        <span class="n">is_fill_generator_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># do not fill predictive of GP</span>
+        <span class="n">pretty_renamer</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">,</span>  <span class="c1"># pretiffy names of modulte + data</span>
+        <span class="c1"># Fix formatting for coherent GIF</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;legend.loc&quot;</span><span class="p">:</span> <span class="s2">&quot;upper right&quot;</span><span class="p">}</span>
+        <span class="p">),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="samples-from-a-single-gp">
+<h5>Samples from a single GP<a class="headerlink" href="#samples-from-a-single-gp" title="Permalink to this headline">¶</a></h5>
+<p>First, let us visualize the ConvCNP when it is trained on samples from a single GP.
+We will directly evaluate in the “harder” extrapolation regime.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_single_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;All&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;Variable&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvCNP_single_gp_extrap&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">left_extrap</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># shift signal 2 to the right for extrapolation</span>
+    <span class="n">right_extrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># shift signal 2 to the right for extrapolation</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convcnp-single-gp-extrap">
+<a class="reference internal image-reference" href="../_images/ConvCNP_single_gp_extrap.gif"><img alt="../_images/ConvCNP_single_gp_extrap.gif" src="../_images/ConvCNP_single_gp_extrap.gif" style="width: 40em;" /></a>
+<p class="caption"><span class="caption-number">Fig. 43 </span><span class="caption-text">Posterior predictive of ConvCNPs (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and ConvCNP trained on samples for the corresponding GP. The interpolation and extrapolation regime is delimited delimited by red dashes.</span><a class="headerlink" href="#convcnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
+</div>
+<p><a class="reference internal" href="#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 43</span></a> shows that ConvCNP performs very well. Like AttnCNP (<a class="reference internal" href="AttnCNP.html#attncnp-single-gp"><span class="std std-numref">Fig. 39</span></a>) it does not suffer from underfitting, but it has the following advantages compared to AttnCNP:</p>
+<ol class="simple">
+<li><p>It can extrapolate outside of the training range due to its translation equivariance. Note that there is no free lunch, this only happens because the underlying stochastic process is stationary.</p></li>
+<li><p>It is quite smooth and does not have any “kinks”.</p></li>
+<li><p>It perform quite well on the periodic kernel. Note that it does not recover the underlying GP, for example it has a bounded receptive field and as a result can only model local periodicity.</p></li>
+</ol>
+<p>To better showcase the latter issue, let’s consider a much larger target interval (<span class="math notranslate nohighlight">\([-2,14]\)</span> instead of <span class="math notranslate nohighlight">\([0,4]\)</span>) for the periodic kernel.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_periodic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Periodic&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvCNP_periodic_large_extrap&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_periodic</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_periodic</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">right_extrap</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>  <span class="c1"># makes the target interval 4x larger</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convcnp-periodic-large-extrap">
+<a class="reference internal image-reference" href="../_images/ConvCNP_periodic_large_extrap.gif"><img alt="ConvCNP on single images" src="../_images/ConvCNP_periodic_large_extrap.gif" style="width: 40em;" /></a>
+<p class="caption"><span class="caption-number">Fig. 44 </span><span class="caption-text">Same as the 2nd row (Periodic Kernel) of <a class="reference internal" href="#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 43</span></a> but with a much larger target interval (<span class="math notranslate nohighlight">\([-2,14]\)</span> instead of <span class="math notranslate nohighlight">\([0,4]\)</span>).</span><a class="headerlink" href="#convcnp-periodic-large-extrap" title="Permalink to this image">¶</a></p>
+</div>
+<p><a class="reference internal" href="#convcnp-periodic-large-extrap"><span class="std std-numref">Fig. 44</span></a> shows that ConvCNP can only model local periodicity, which depends on the receptive field of the CNN.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 1D PLOTS ######</span>
+
+<span class="c1">### Interp ###</span>
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvCNP_single_gp&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1">### Varying hyperparam ###</span>
+<span class="k">def</span> <span class="nf">filter_hyp_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Variable&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvCNP_vary_gp&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">model_labels</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">main</span><span class="o">=</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="s2">&quot;Fitted GP&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1">### All kernels ###</span>
+<span class="c1"># data with varying kernels simply merged single kernels</span>
+<span class="n">single_gp_datasets</span> <span class="o">=</span> <span class="n">filter_single_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">)</span>
+
+<span class="c1"># use same trainer for all, but have to change their name to be the same as datasets</span>
+<span class="n">base_trainer_name</span> <span class="o">=</span> <span class="s2">&quot;All_Kernels/ConvCNP/run_0&quot;</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">trainers_1d</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="p">]</span>
+<span class="n">replicated_trainers</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">single_gp_datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">replicated_trainers</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;All_Kernels&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">trainer</span>
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvCNP_kernel_gp&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">replicated_trainers</span><span class="p">,</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">single_gp_datasets</span>
+<span class="p">)</span>
+
+<span class="c1">### Sampling ###</span>
+<span class="k">def</span> <span class="nf">filter_rbf</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;RBF&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_multi_posterior_samples_1d</span><span class="p">(</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_rbf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_rbf</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">n_cntxt</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">left_extrap</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">right_extrap</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvCNP_rbf_samples.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvCNP_20_0.png" src="../_images/ConvCNP_20_0.png" />
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="image-dataset">
+<h4>Image Dataset<a class="headerlink" href="#image-dataset" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="conditional-posterior-predictive">
+<h5>Conditional Posterior Predictive<a class="headerlink" href="#conditional-posterior-predictive" title="Permalink to this headline">¶</a></h5>
+<p>Let us now look at images. We again will use the same plotting function defined in <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">plot_multi_posterior_samples_imgs</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">multi_posterior_imgs_gif</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">n_plots</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_imgs</span><span class="p">,</span>  <span class="c1"># core plotting</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>  
+            <span class="mf">0.005</span><span class="p">,</span>
+            <span class="mf">0.01</span><span class="p">,</span>
+            <span class="mf">0.02</span><span class="p">,</span>
+            <span class="mf">0.05</span><span class="p">,</span>
+            <span class="mf">0.1</span><span class="p">,</span>
+            <span class="mf">0.15</span><span class="p">,</span>
+            <span class="mf">0.2</span><span class="p">,</span>
+            <span class="mf">0.3</span><span class="p">,</span>
+            <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s2">&quot;hhalf&quot;</span><span class="p">,</span>  <span class="c1"># horizontal half of the image</span>
+            <span class="s2">&quot;vhalf&quot;</span><span class="p">,</span>  <span class="c1"># vertival half of the image</span>
+        <span class="p">],</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="c1"># PLOTTING KWARGS</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">n_plots</span><span class="o">=</span><span class="n">n_plots</span><span class="p">,</span>  <span class="c1"># images per datasets</span>
+        <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot the predictive std</span>
+        <span class="n">pretty_renamer</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">,</span>  <span class="c1"># pretiffy names of modulte + data</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;font_scale&quot;</span><span class="p">:</span><span class="mf">0.7</span><span class="p">},</span>
+        <span class="c1"># Fix formatting for coherent GIF</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us visualize the CNP when it is trained on samples from different image datasets</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">multi_posterior_imgs_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvCNP_img&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2d</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convcnp-img">
+<a class="reference internal image-reference" href="../_images/ConvCNP_img.gif"><img alt="ConvCNP on CelebA, MNIST, ZSMM" src="../_images/ConvCNP_img.gif" style="width: 40em;" /></a>
+<p class="caption"><span class="caption-number">Fig. 45 </span><span class="caption-text">Mean and std of the posterior predictive of an ConvCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#convcnp-img" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <a class="reference internal" href="#convcnp-img"><span class="std std-numref">Fig. 45</span></a> we see that ConvCNP performs quite well on all datasets when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM).
+However, it does not perform great when the context set is very small or when it is structured, e.g., half images. Note that seems more of an issue for ConvCNP compared to AttnCNP (<a class="reference internal" href="AttnCNP.html#attncnp-img"><span class="std std-numref">Fig. 41</span></a>). We hypothesize that this happens because the effective receptive field of the former is too small (even though the theoretic size is larger than the image, it does not need such a large receptive field during training so effectively reduces it). For AttnCNP it is harder for the model to change the receptive field during training. This issue can be alleviated by reducing the size of the context set seen during training (to force the model to have a large receptive field).</p>
+<p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">PRETTY_RENAMER</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_qualitative_with_kde</span>
+
+<span class="n">n_trainers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainers_2d</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">trainer</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trainers_2d</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">data_name</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">img_test_datasets</span><span class="p">[</span><span class="n">data_name</span><span class="p">]</span>
+
+    <span class="n">plot_qualitative_with_kde</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">PRETTY_RENAMER</span><span class="p">[</span><span class="n">model_name</span><span class="p">],</span> <span class="n">trainer</span><span class="p">],</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+        <span class="n">percentiles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+        <span class="n">is_smallest_xrange</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">h_pad</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">[</span><span class="n">data_name</span><span class="p">],</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvCNP_26_0.png" src="../_images/ConvCNP_26_0.png" />
+<img alt="../_images/ConvCNP_26_1.png" src="../_images/ConvCNP_26_1.png" />
+<img alt="../_images/ConvCNP_26_2.png" src="../_images/ConvCNP_26_2.png" />
+</div>
+</div>
+<p>Although the zero shot generalization when performing on ZSMM are encouraging, it still is a simple artificial dataset.
+Let us consider a more complex zero shot generalization, namely we will evaluate the large model trained on CelebA128 on a image with multiple faces of different scale and orientation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+
+<span class="kn">from</span> <span class="nn">utils.data.imgs</span> <span class="kn">import</span> <span class="n">SingleImage</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;jupyter/images/ellen_selfie_oscars.jpeg&quot;</span><span class="p">)</span>
+
+<span class="n">oscar_datasets</span> <span class="o">=</span> <span class="n">SingleImage</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="p">(</span><span class="mi">288</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="s2">&quot;celeba128/ConvCNPXL/run_0&quot;</span>
+<span class="c1"># multi_posterior_imgs_gif(</span>
+<span class="c1">#     &quot;ConvCNP_img_zeroshot&quot;,</span>
+<span class="c1">#     {k: trainers_2dXL[k], k.replace(&quot;celeba128&quot;, &quot;oscars&quot;): trainers_2dXL[k]},</span>
+<span class="c1">#     {&quot;oscars&quot;: oscar_datasets, **imgXL_test_datasets},</span>
+<span class="c1">#     n_plots=2,</span>
+<span class="c1"># )</span>
+
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_multi_posterior_samples_imgs</span><span class="p">(</span>
+    <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">trainers_2dXL</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;celeba128&quot;</span><span class="p">,</span> <span class="s2">&quot;oscars&quot;</span><span class="p">):</span> <span class="n">trainers_2dXL</span><span class="p">[</span><span class="n">k</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;oscars&quot;</span><span class="p">:</span> <span class="n">oscar_datasets</span><span class="p">,</span> <span class="o">**</span><span class="n">imgXL_test_datasets</span><span class="p">},</span>
+    <span class="mf">0.05</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvCNP_img_zeroshot.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvCNP_28_0.png" src="../_images/ConvCNP_28_0.png" />
+</div>
+</div>
+<p>We see that the model is able to reasonably well generalize to real world data in a zero shot fashion.</p>
+</div>
+<div class="section" id="increasing-resolution">
+<h5>Increasing Resolution<a class="headerlink" href="#increasing-resolution" title="Permalink to this headline">¶</a></h5>
+<p>Although the previous results look nice the usecases are not obvious as it is not very common to have missing pixels.
+One possible application, is increasing the resolution of an image.
+For the “off the grid” implementation this can be done by setting the target set features between context pixels (<a class="bibtex reference internal" href="../zbibliography.html#kim2019attentive" id="id3">[KMS+19]</a>).
+For the current “on the grid” implementation, this can also be achieved by uniformly spacing out the context pixels on the desired grid size. [^supperres]</p>
+<p>Let us define the plotting function for increasing the resolution of an image.</p>
+<p>[^supperres] The downside of the “on the grid” method is that it will work best if the desired object size are approximately the same size as those it was trained on.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">plot_multi_posterior_samples_imgs</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">superres_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">n_plots</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_imgs</span><span class="p">,</span>  <span class="c1"># core plotting is same as before</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>  <span class="c1"># size of the input image</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="c1"># PLOTTING KWARGS</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">n_plots</span><span class="o">=</span><span class="n">n_plots</span><span class="p">,</span>  <span class="c1"># images per datasets</span>
+        <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># don&#39;t predictive std</span>
+        <span class="n">pretty_renamer</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">,</span>  <span class="c1"># pretiffy names of modulte + data</span>
+        <span class="n">is_superresolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># decrease resolution of context image</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;font_scale&quot;</span><span class="p">:</span><span class="mf">0.7</span><span class="p">},</span>
+        <span class="c1"># Fix formatting for coherent GIF</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">superres_gif</span><span class="p">(</span><span class="s2">&quot;ConvCNP_superes&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2dXL</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">imgXL_test_datasets</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convcnp-superes">
+<a class="reference internal image-reference" href="../_images/ConvCNP_superes.gif"><img alt="ConvCNP increasing resolution of images" src="../_images/ConvCNP_superes.gif" style="width: 35em;" /></a>
+<p class="caption"><span class="caption-number">Fig. 46 </span><span class="caption-text">Increasing the resolution of CelebA to <span class="math notranslate nohighlight">\(128 \times 128\)</span> pixels by querying a ConvCNP a target positions between given pixels.</span><a class="headerlink" href="#convcnp-superes" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <a class="reference internal" href="#convcnp-superes"><span class="std std-numref">Fig. 46</span></a> we see that NPFs can indeed be used to increase the resolution of an image, even though it was not trained to do so! Results can probably be improved by training NPFs in such setting.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 2D PLOTS ######</span>
+
+<span class="c1">### Superres png ###</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_multi_posterior_samples_imgs</span><span class="p">(</span>
+    <span class="n">trainers_2dXL</span><span class="p">,</span>
+    <span class="n">imgXL_test_datasets</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">/</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">is_superresolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvCNP_superes.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="issues-with-cnpfs">
+<h5>Issues With CNPFs<a class="headerlink" href="#issues-with-cnpfs" title="Permalink to this headline">¶</a></h5>
+<p>Although ConvCNPFs (and CNPFs) in general perform well, there are definitely some downside compared to other way of modeling stochastic processes.</p>
+<p>First, CNPFs cannot be used to sample coherent functions, i.e. although the posterior predictive models well the underlying stochastic process it cannot be used for sampling. Indeed, the posterior predictive factorizes over the target set so there are no dependencies when sampling from the posterior predictive. The samples then look like the mean of the posterior predictive with with some Gaussian noise:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plot_multi_posterior_samples_imgs</span><span class="p">(</span>
+    <span class="n">trainers_2d</span><span class="p">,</span> <span class="n">img_test_datasets</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;font_scale&quot;</span><span class="p">:</span><span class="mf">0.7</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvCNP_img_sampling.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvCNP_35_0.png" src="../_images/ConvCNP_35_0.png" />
+</div>
+</div>
+<p>An other issue with CNPFs is that the posterior predictive is always Gaussian.
+For example, let us plot the posterior predictive of a few pixels in MNIST.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">select_labels</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_config</span><span class="p">,</span> <span class="n">plot_img_marginal_pred</span>
+
+<span class="k">with</span> <span class="n">plot_config</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lines.linewidth&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}):</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_img_marginal_pred</span><span class="p">(</span>
+        <span class="n">trainers_2d</span><span class="p">[</span><span class="s2">&quot;mnist/ConvCNP/run_0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">module_</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span>
+        <span class="n">select_labels</span><span class="p">(</span><span class="n">img_test_datasets</span><span class="p">[</span><span class="s2">&quot;mnist&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># Selecting a 3</span>
+        <span class="n">GridCntxtTrgtGetter</span><span class="p">(</span>
+            <span class="n">RandomMasker</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">0.05</span><span class="p">),</span> <span class="n">target_masker</span><span class="o">=</span><span class="n">no_masker</span>
+        <span class="p">),</span>  <span class="c1"># 5% context</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">is_uniform_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># on the grid model</span>
+        <span class="n">n_marginals</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>  <span class="c1"># number of pixels posterior predictive</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="c1"># number of samples from the posterior pred</span>
+        <span class="n">n_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># number of columns for the sampled</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvCNP_marginal.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvCNP_37_0.png" src="../_images/ConvCNP_37_0.png" />
+</div>
+</div>
+<p>Note that it should be easy to replace the Gaussian with some other simple distribution such as a Laplace one, but it is not easily possible to make the posterior predictive highly complex and multi modal. A possible solution to solve these issues is to introduce latent variables, which we ill investigate in LNPFs notebooks.</p>
+<hr class="docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="decoder"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Note that the MLP does not take as input the absolute value of the target feature to be translation equivariant.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="AttnCNP.html" title="previous page">Attentive Conditional Neural Process (AttnCNP)</a>
+    <a class='right-next' id="next-link" href="LNP.html" title="next page">Latent Neural Process (LNP)</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Yann Dubois and Jonathan Gordon<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../_static/js/index.js"></script>
+    
+  </body>
+</html>

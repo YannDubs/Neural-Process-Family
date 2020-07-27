@@ -8,22 +8,9 @@ name: computational_graph_AttnCNPs
 Computational graph for Attentive Conditional Neural Processes.
 ```
 
-AttnCNPs differ from other CNPFs in that they use attention {cite}`bahdanau2014neural`  for the aggregator and and usually apply a self-attention layer on the context set.
-
-
-## Properties
-
-CNPs have the following desirable properties compared to other CNPFs:
-
-* &#10003; **Less Underfitting**. The main advantage compared to {doc}`CNPs <CNP>` is that the representation of the context set is now target specific $R^{(t)}$ (as seen in {numref}`computational_graph_AttnCNPs` compared to {numref}`computational_graph_CNPs`). This enables the model to greatly decrease underfitting. Intuitively, if a target point $t$ is very close to a context point $t$ then the representation used in the posterior predictive of $t$.
-
-But it suffers from the following issues:
-
-* &#10007; **$\mathbf{\mathcal{O}(C(T+C))}$ Inference**. First, a self-attention layer is applied to the context set $\mathcal{O}(C^2)$. For each target point a representation $R^{(t)}$ is then computed using cross-attention $\mathcal{O}(C*T)$. Inference is thus $\mathcal{O}(C(T+C))$ (compared to $\mathcal{O}(T+C)$ for {doc}`CNPs <CNP>`). In practive, the model is not much slower as attention can be parallelized on a GPU.
-
-* &#10007; **Cannot extrapolate**. The predictions outside of the training range are terrible because neural networks that are very non linear and known to bad at extrapolating {cite}`dubois2019location`.
-
-
+In this notebook we will show how to train a AttnCNP on samples from GPs and images using our framework, as well as how to make nice visualizations.
+AttnCNPs are CNPFs that use use attention {cite}`bahdanau2014neural`for the aggregator (computational graph in {numref}`computational_graph_AttnCNPs`).
+We will follow quite closely the previous {doc}`CNP notebook <CNP>`, which thus contains a little more details than this notebook.
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -51,16 +38,9 @@ torch.set_num_threads(N_THREADS)
 
 ## Initialization
 
-Let's load the {doc}`data <Datasets>` and define the context target splitter.
-Here, we select uniformly between 0.0 and 0.5 context points and use all points as target. 
+Let's load all the data. For more details about the data and some samples, see the {doc}`data <Datasets>` notebook.
 
-from npf.utils.datasplit import (
-    CntxtTrgtGetter,
-    GetRandomIndcs,
-    GridCntxtTrgtGetter,
-    RandomMasker,
-)
-from utils.data import cntxt_trgt_collate, get_test_upscale_factor
+
 from utils.ntbks_helpers import get_all_gp_datasets, get_img_datasets
 
 # DATASETS
@@ -69,45 +49,67 @@ gp_datasets, gp_test_datasets, gp_valid_datasets = get_all_gp_datasets()
 # image
 img_datasets, img_test_datasets = get_img_datasets(["celeba32", "mnist", "zsmms"])
 
+Now let's define the context target splitters, which given a data point will return the context set and target set by selecting randomly selecting some points and preprocessing them so that the features are in $[-1,1]$. 
+We use the same as in {doc}`CNP notebook <CNP>`, namely all target points and uniformly sampling in $[0,50]$ and $[0,n\_pixels * 0.3]$ for 1D and 2D respectively.
+
+from npf.utils.datasplit import (
+    CntxtTrgtGetter,
+    GetRandomIndcs,
+    GridCntxtTrgtGetter,
+    RandomMasker,
+    get_all_indcs,
+    no_masker,
+)
+from utils.data import cntxt_trgt_collate, get_test_upscale_factor
+
 # CONTEXT TARGET SPLIT
 get_cntxt_trgt_1d = cntxt_trgt_collate(
-    CntxtTrgtGetter(contexts_getter=GetRandomIndcs(min_n_indcs=0.0, max_n_indcs=0.5))
+    CntxtTrgtGetter(
+        contexts_getter=GetRandomIndcs(a=0.0, b=50), targets_getter=get_all_indcs,
+    )
 )
 get_cntxt_trgt_2d = cntxt_trgt_collate(
-    GridCntxtTrgtGetter(context_masker=RandomMasker(min_nnz=0.0, max_nnz=0.5))
+    GridCntxtTrgtGetter(
+        context_masker=RandomMasker(a=0.0, b=0.3), target_masker=no_masker,
+    )
 )
 
-# for ZXMMS you need the pixels to not be in [-1,1] but [-1.75,1.75] (i.e 56 / 32) because you are extrapolating
+# for ZSMMS you need the pixels to not be in [-1,1] but [-1.75,1.75] (i.e 56 / 32) because you are extrapolating
 get_cntxt_trgt_2d_extrap = cntxt_trgt_collate(
     GridCntxtTrgtGetter(
-        context_masker=RandomMasker(min_nnz=0.0, max_nnz=0.5),
-        test_upscale_factor=get_test_upscale_factor("zsmms"),
+        context_masker=RandomMasker(a=0, b=0.5),
+        target_masker=no_masker,
+        upscale_factor=get_test_upscale_factor("zsmms"),
     )
 )
 
 Let's now define the models. For both the 1D and 2D case we will be using the following:
 * **Encoder** $\mathrm{e}_{\boldsymbol{\theta}}$ : a 1-hidden layer MLP that encodes the features, followed by
     * 1D : 2 hidden layer MLP that encodes each feature-value pair.
-    * 2D : two self attention layers[^selfattn] each implemented as 8-headed attention, a skip connection, and two layer normalizations (as in {cite}`kim2019attentive`).
+    * 2D : two self attention layers each implemented as 8-headed attention, a skip connection, and two layer normalizations (as in {cite}`kim2019attentive`).[^selfattn]
 * **Aggregator** $\mathrm{Agg}$: multi-head cross-attention layer.
 * **Decoder** $\mathrm{d}_{\boldsymbol{\theta}}$: a 4 hidden layer MLP that predicts the distribution of the target value given the global representation and target context.
 
 All hidden representations will be of 128 dimensions.
 
-For more details about all the possible parameters, refer to the docstrings of `AttnCNP` and the base class `NeuralProcessFamily`.
 
-# AttnCNP Docstring
-from npf import AttnCNP
-
-print(AttnCNP.__doc__)
+[^selfattn]: To be in line with {numref}`computational_graph_AttnCNPs`, the self attention layers should actually be in the aggregator instead of the encoder. Indeed, we apply the encoder to each context point separately.
 
 from functools import partial
 
+from npf import AttnCNP
 from npf.architectures import MLP, merge_flat_input
 from utils.helpers import count_parameters
 
 R_DIM = 128
-KWARGS = dict(r_dim=R_DIM, attention="transformer",)
+KWARGS = dict(
+    r_dim=R_DIM,
+    attention="transformer",  # multi headed attention with normalization and skip connections
+    XEncoder=partial(MLP, n_hidden_layers=1, hidden_size=R_DIM),
+    Decoder=merge_flat_input(  # MLP takes single input but we give x and R so merge them
+        partial(MLP, n_hidden_layers=4, hidden_size=R_DIM), is_sum_merge=True,
+    ),
+)
 
 # 1D case
 model_1d = partial(
@@ -123,18 +125,33 @@ model_1d = partial(
 
 # image (2D) case
 model_2d = partial(
-    AttnCNP, x_dim=2, is_self_attn=True, **KWARGS
-)  # don't add y_dim yet because depends on data
+    AttnCNP,
+    x_dim=2,
+    is_self_attn=True,  # no XYEncoder because using self attention
+    **KWARGS,
+)  # don't add y_dim yet because depends on data (colored or gray scale)
 
 n_params_1d = count_parameters(model_1d())
 n_params_2d = count_parameters(model_2d(y_dim=3))
 print(f"Number Parameters (1D): {n_params_1d:,d}")
 print(f"Number Parameters (2D): {n_params_2d:,d}")
 
+For more details about all the possible parameters, refer to the docstrings of `AttnCNP` and the base class `NeuralProcessFamily`.
+
+# AttnCNP Docstring
+
+print(AttnCNP.__doc__)
+
 ### Training
 
 The main function for training is `train_models` which trains a dictionary of models on a dictionary of datasets and returns all the trained models.
 See its docstring for possible parameters.
+
+Computational Notes :
+- The following will either train all the models (`is_retrain=True`) or load the pretrained models (`is_retrain=False`)
+- it will use a (single) GPU if available
+- decrease the batch size if you don't have enough memory
+- 30 epochs should give you descent results for the GP datasets (instead of 100)
 
 import skorch
 from npf import CNPFLoss
@@ -144,13 +161,12 @@ from utils.train import train_models
 KWARGS = dict(
     is_retrain=False,  # whether to load precomputed model or retrain
     criterion=CNPFLoss,
-    chckpnt_dirname="results/npfs/ntbks/",
+    chckpnt_dirname="results/pretrained/",
     device=None,
-    max_epochs=50,
     lr=1e-3,
     decay_lr=10,
+    batch_size=32,
     seed=123,
-    batch_size=16,
 )
 
 
@@ -159,9 +175,10 @@ trainers_1d = train_models(
     gp_datasets,
     {"AttnCNP": model_1d},
     test_datasets=gp_test_datasets,
-    valid_datasets=gp_valid_datasets,
+    train_split=None,  # No need for validation as the training data is generated on the fly
     iterator_train__collate_fn=get_cntxt_trgt_1d,
     iterator_valid__collate_fn=get_cntxt_trgt_1d,
+    max_epochs=100,
     **KWARGS
 )
 
@@ -175,50 +192,61 @@ trainers_2d = train_models(
     iterator_train__collate_fn=get_cntxt_trgt_2d,
     iterator_valid__collate_fn=get_cntxt_trgt_2d,
     datasets_kwargs=dict(
-        zsmms=dict(
-            iterator_train__collate_fn=get_cntxt_trgt_2d_extrap,
-            iterator_valid__collate_fn=get_cntxt_trgt_2d_extrap,
-        )
+        zsmms=dict(iterator_valid__collate_fn=get_cntxt_trgt_2d_extrap,)
     ),  # for zsmm use extrapolation
+    max_epochs=50,
     **KWARGS
 )
 
-### Inference
+### Plots
+
+Let's visualize how well the model performs in different settings.
 
 #### GPs Dataset
 
-##### Samples from a single GP
+Let's define a plotting function that we will use in this section. We'll reuse the same function defined in {doc}`CNP notebook <CNP>`.
 
-from utils.ntbks_helpers import plot_multi_posterior_samples_1d
+
+
+from utils.ntbks_helpers import PRETTY_RENAMER, plot_multi_posterior_samples_1d
 from utils.visualize import giffify
 
 
-def multi_posterior_gp_gif(filename, trainers, datasets, **kwargs):
+def multi_posterior_gp_gif(filename, trainers, datasets, seed=123, **kwargs):
     giffify(
-        f"jupyter/gifs/{filename}.gif",
-        gen_single_fig=plot_multi_posterior_samples_1d,
-        sweep_parameter="n_cntxt",
-        # sweep of context points for GIF
-        sweep_values=[1, 2, 3, 4, 5, 7, 9, 11, 13, 15, 20, 25, 30, 40, 50, 75, 100],
-        seed=123,  # fix for GIF
+        save_filename=f"jupyter/gifs/{filename}.gif",
+        gen_single_fig=plot_multi_posterior_samples_1d,  # core plotting
+        sweep_parameter="n_cntxt",  # param over which to sweep
+        sweep_values=[0, 1, 2, 3, 4, 5, 7, 9, 11, 13, 15, 20, 25, 30, 40, 50, 75, 100],
+        fps=1.5,  # gif speed
+        # PLOTTING KWARGS
         trainers=trainers,
         datasets=datasets,
-        is_plot_real=False,  # don't plot sampled function
+        is_plot_generator=True,  # plot underlying GP
+        is_plot_real=False,  # don't plot sampled / underlying function
+        is_plot_std=True,  # plot the predictive std
+        is_fill_generator_std=False,  # do not fill predictive of GP
+        pretty_renamer=PRETTY_RENAMER,  # pretiffy names of modulte + data
+        # Fix formatting for coherent GIF
         plot_config_kwargs=dict(
             set_kwargs=dict(ylim=[-3, 3]), rc={"legend.loc": "upper right"}
-        ),  # fix for GIF
+        ),
+        seed=seed,
         **kwargs,
     )
 
+##### Samples from a single GP
+
+First, let us visualize the AttnCNP when it is trained on samples from a single GP.
 
 def filter_single_gp(d):
-    return {k: v for k, v in d.items() if ("All" not in k) and ("Vary" not in k)}
+    return {k: v for k, v in d.items() if ("All" not in k) and ("Variable" not in k)}
 
 
 multi_posterior_gp_gif(
     "AttnCNP_single_gp",
     trainers=filter_single_gp(trainers_1d),
-    datasets=filter_single_gp(gp_datasets),  # will resample from it => not on train
+    datasets=filter_single_gp(gp_test_datasets),
 )
 
 ```{figure} gifs/AttnCNP_single_gp.gif
@@ -226,17 +254,21 @@ multi_posterior_gp_gif(
 width: 500px
 name: AttnCNP_single_gp
 ---
-[...] understand is how well NPFs can model a ground truth GP [...].
+
+Posterior predictive of AttnCNPs (Blue line with shaded area for $\mu \pm \sigma$) and the oracle GP (Green line with dashes for $\mu \pm \sigma$) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and AttnCNP trained on samples for the corresponding GP. 
 ```
 
-From {numref}`AttnCNP_single_gp` we see that not too bad [...], 
-But the results are much less nice in the extrapolation regime, as neural networks do not extrapolate well.
+Compared to CNPs ({numref}`CNP_single_gp`), {numref}`AttnCNP_single_gp` shows that the results are much better and that AttnCNP does not really suffer from underfitting.
+That being said, the results on the periodic kernel are still not great. Looking carefully at the Matern and RBF kernel, we also see that AttnCNP has a posterior predictive with "kinks", i.e., it is not very smooth. We believe that this happens because of the exponential in the attention. Namely the "kinks" appear when the AttnCNP the attention abruptly changes from one context point to the other. This hypothesis is supported by the fact that the kinks usually appear in the middle of 2 context points.
+
+Overall, AttnCNP performs quite well in this simple setting. Let us make the task slightly harder by conditioning on contexts points outside of the training regime.
 
 multi_posterior_gp_gif(
     "AttnCNP_single_gp_extrap",
     trainers=filter_single_gp(trainers_1d),
-    datasets=filter_single_gp(gp_datasets),
-    extrap_distance=4,  # add 4 on the right for extrapolation
+    datasets=filter_single_gp(gp_test_datasets),
+    left_extrap=-2,  # shift signal 2 to the right for extrapolation
+    right_extrap=2,  # shift signal 2 to the right for extrapolation
 )
 
 ```{figure} gifs/AttnCNP_single_gp_extrap.gif
@@ -244,38 +276,31 @@ multi_posterior_gp_gif(
 width: 500px
 name: AttnCNP_single_gp_extrap
 ---
-[...] understand is how well NPFs can model a ground truth GP [...].
+
+Same as {numref}`AttnCNP_single_gp` but with context points outside of the training regime (delimited by red dashes).
 ```
 
-From {numref}`AttnCNP_single_gp_extrap` we see that it can clearly not extrapolate.
+{numref}`AttnCNP_single_gp_extrap` shows that AttnCNP cannot perform well in this seemingly straightforward extension of {numref}`AttnCNP_single_gp`.
+The issue is two fold : (i) the network takes as input the *absolute* position of the features $\mathbf{x}$ even though the desired kernel is stationary and thus only depends on the relative position of features; (ii) the absolute positions are in the extrapolation regime, which usually breaks in neural networks {cite}`dubois2019location`.
 
-##### Samples from GPs with varying kernel hyperparameters
+###### ADDITIONAL 1D PLOTS ######
 
+
+### Varying hyperparam ###
 def filter_hyp_gp(d):
-    return {k: v for k, v in d.items() if ("Vary" in k)}
+    return {k: v for k, v in d.items() if ("Variable" in k)}
 
 
 multi_posterior_gp_gif(
     "AttnCNP_vary_gp",
     trainers=filter_hyp_gp(trainers_1d),
-    datasets=filter_hyp_gp(gp_datasets),
+    datasets=filter_hyp_gp(gp_test_datasets),
+    model_labels=dict(main="Model", generator="Fitted GP"),
 )
 
-```{figure} gifs/AttnCNP_vary_gp.gif
----
-width: 500px
-name: AttnCNP_vary_gp
----
-[...] understand is how well NPFs can model a ground truth GP [...].
-```
-
-From {numref}`AttnCNP_vary_gp` we see that [...]
-
-##### Samples from GPs with varying Kernels
-
-
+### All kernels ###
 # data with varying kernels simply merged single kernels
-single_gp_datasets = filter_single_gp(gp_datasets)
+single_gp_datasets = filter_single_gp(gp_test_datasets)
 
 # use same trainer for all, but have to change their name to be the same as datasets
 base_trainer_name = "All_Kernels/AttnCNP/run_0"
@@ -285,33 +310,27 @@ for name in single_gp_datasets.keys():
     replicated_trainers[base_trainer_name.replace("All_Kernels", name)] = trainer
 
 multi_posterior_gp_gif(
-    "AttnCNP_kernel_gp", trainers=replicated_trainers, datasets=single_gp_datasets
+    "AttnCNP_kernel_gp",
+    trainers=replicated_trainers,
+    datasets=single_gp_datasets,
+    model_labels=dict(main="Model", generator="Fitted GP"),
 )
 
-```{figure} gifs/AttnCNP_kernel_gp.gif
----
-width: 500px
-name: AttnCNP_kernel_gp
----
-[...] understand is how well NPFs can model a ground truth GP [...].
-```
-
-From {numref}`AttnCNP_kernel_gp` we see that [...]
-
 #### Image Dataset
+
+Let us now look at images. We again will use the same plotting function defined in {doc}`CNP notebook <CNP>`.
 
 from utils.ntbks_helpers import plot_multi_posterior_samples_imgs
 from utils.visualize import giffify
 
 
-def multi_posterior_imgs_gif(filename, trainers, datasets, **kwargs):
+def multi_posterior_imgs_gif(filename, trainers, datasets, seed=123, **kwargs):
     giffify(
-        f"jupyter/gifs/{filename}.gif",
-        gen_single_fig=plot_multi_posterior_samples_imgs,
-        sweep_parameter="n_cntxt",
-        # sweep of context points for GIF
+        save_filename=f"jupyter/gifs/{filename}.gif",
+        gen_single_fig=plot_multi_posterior_samples_imgs,  # core plotting
+        sweep_parameter="n_cntxt",  # param over which to sweep
         sweep_values=[
-            0,
+            0,  # prior
             0.001,
             0.003,
             0.005,
@@ -328,16 +347,22 @@ def multi_posterior_imgs_gif(filename, trainers, datasets, **kwargs):
             0.5,
             0.7,
             0.99,
-            "hhalf",
-            "vhalf",
+            "hhalf",  # horizontal half of the image
+            "vhalf",  # vertival half of the image
         ],
-        seed=123,  # fix for GIF
+        fps=1.5,  # gif speed
+        # PLOTTING KWARGS
         trainers=trainers,
         datasets=datasets,
-        n_plots=3,  # number of samples plots for each data
+        n_plots=3,  # images per datasets
+        is_plot_std=True,  # plot the predictive std
+        pretty_renamer=PRETTY_RENAMER,  # pretiffy names of modulte + data
+        # Fix formatting for coherent GIF
+        seed=seed,
         **kwargs,
     )
 
+Let us visualize the CNP when it is trained on samples from different image datasets
 
 multi_posterior_imgs_gif(
     "AttnCNP_img", trainers=trainers_2d, datasets=img_test_datasets,
@@ -348,12 +373,14 @@ multi_posterior_imgs_gif(
 width: 500px
 name: AttnCNP_img
 ---
-[...] dataset img[...].
+
+Mean and std of the posterior predictive of an AttnCNP for CelebA $32\times32$, MNIST, and ZSMM for different context sets.
 ```
 
-From {numref}`AttnCNP_img` we see that [...]
+Similarly to the case of GPs, {numref}`AttnCNP_img` shows that the AttnCNP performs quite well in when extrapolation is not needed (Celeba32 and MNIST) but fails otherwise (ZSMM).
 
-from utils.ntbks_helpers import PRETTY_RENAMER
+Here are more samples, corresponding to specific percentiles of the test log loss.
+
 from utils.visualize import plot_qualitative_with_kde
 
 n_trainers = len(trainers_2d)
@@ -366,15 +393,10 @@ for i, (k, trainer) in enumerate(trainers_2d.items()):
         [PRETTY_RENAMER[model_name], trainer],
         dataset,
         figsize=(9, 7),
-        percentiles=[1, 10, 20, 30, 50, 100],
-        height_ratios=[1, 5],
-        is_smallest_xrange=True,
-        h_pad=-4,
+        percentiles=[1, 10, 20, 30, 50, 100],  # desired test percentile
+        height_ratios=[1, 5],  # kde / image ratio
+        is_smallest_xrange=True,  # rescale X axis based on percentile
+        h_pad=-4,  # padding
         title=PRETTY_RENAMER[data_name],
-        test_upscale_factor=get_test_upscale_factor(data_name),
+        upscale_factor=get_test_upscale_factor(data_name),
     )
-
-    print(end="\r")
-    print(end="\r")
-
-[^selfattn]: To be in line with {numref}`computational_graph_AttnCNPs`, the self attention layers should actually be in the aggregator instead of the encoder. Indeed, we apply the encoder to each context point separately.
