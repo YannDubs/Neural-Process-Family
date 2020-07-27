@@ -1,0 +1,62 @@
+# directories
+data
+data/
+doc/
+*old*
+*backup*/
+*archive*
+*test*
+!utils/data
+src/
+logs/
+.vscode
+__MACOSX/
+*Hope*
+*XL*
+
+# Results
+results/
+!results/pretrained/
+
+# Byte-compiled / optimized / DLL files
+*.egg-info
+__pycache__/
+*.py[cod]
+*.egg*
+.DS_Store
+.python-version
+.mypy*
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+notebooks/
+!jupyter/reproducibility/*.ipynb
+jupyter/reproducibility/* Old.ipynb
+
+# Environments
+venv
+
+# Train
+train_*.py
+
+# Git
+!.keep
+
+# Extensions
+*.pyc
+*.log
+*.logs
+*.sh
+*.tar
+*.zip
+*.tar
+*.sublime*
+*.swp
+*.out
+*.old
+*.idea
+*.bak
+*.npy
+*.txt
+*.sh
