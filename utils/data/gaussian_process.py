@@ -116,7 +116,6 @@ class GPDataset(Dataset):
             # new functions
             self._idx_precompute += 1
             if self._idx_precompute == self.n_samples:
-                # self._idx_precompute = 0  # DEV
                 self.precompute_chunk_()
             return self.data[self._idx_precompute], self.targets[self._idx_precompute]
 
@@ -171,6 +170,13 @@ class GPDataset(Dataset):
             )
 
         return data, targets
+
+    def set_samples_(self, data, targets):
+        """Use the samples (output from `get_samples`) as the data."""
+        self.is_reuse_across_epochs = True
+        self.data = data
+        self.targets = targets
+        self.n_samples = self.data.size(0)
 
     def precompute_chunk_(self):
         """Load or precompute and save a chunk (data for an epoch.)"""

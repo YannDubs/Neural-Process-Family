@@ -1,3 +1,4 @@
+import logging
 import os
 import warnings
 from copy import deepcopy
@@ -25,6 +26,8 @@ __all__ = ["train_models"]
 
 EVAL_FILENAME = "eval.csv"
 MOD_SUMM_FILENAME = "model_summary.txt"
+
+logger = logging.getLogger(__name__)
 
 
 def train_models(
@@ -79,7 +82,8 @@ def train_models(
         The validation datasets. 
 
     chckpnt_dirname : str, optional
-        Directory where checkpoints will be saved. The best as last model will be saved.
+        Directory where checkpoints will be saved. The best (if validation or train_split given)
+        or last model will be saved.
 
     is_continue_train : bool, optional
         Whether to continue training from the last checkpoint of the previous run. 
@@ -198,9 +202,13 @@ def train_models(
                 if chckpnt_dirname is not None:
                     chckpnt_dirname = init_chckpnt_dirname + suffix
                     test_eval_file = os.path.join(chckpnt_dirname, EVAL_FILENAME)
-                    chckpt = Checkpoint(
-                        dirname=chckpnt_dirname, monitor="valid_loss_best"
-                    )
+                    if curr_train_split is None:
+                        # checkpoints only last
+                        chckpt = Checkpoint(dirname=chckpnt_dirname, monitor=None)
+                    else:
+                        chckpt = Checkpoint(
+                            dirname=chckpnt_dirname, monitor="valid_loss_best"
+                        )
                     callbacks.extend([chckpt])
 
                 if is_continue_train:

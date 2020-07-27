@@ -3,8 +3,16 @@ import random
 
 import numpy as np
 import torch
+import torch.nn.functional as F
+from scipy.stats import betabinom
 
-from .helpers import channels_to_last_dim, indep_shuffle_, prod, ratio_to_int
+from .helpers import (
+    channels_to_2nd_dim,
+    channels_to_last_dim,
+    indep_shuffle_,
+    prod,
+    ratio_to_int,
+)
 
 __all__ = [
     "get_all_indcs",
@@ -55,11 +63,11 @@ class GetRandomIndcs:
 
     Parameters
     ----------
-    min_n_indcs : float or int, optional
+    a : float or int, optional
         Minimum number of indices. If smaller than 1, represents a percentage of
         points.
 
-    max_n_indcs : float or int, optional
+    b : float or int, optional
         Maximum number of indices. If smaller than 1, represents a percentage of
         points.
 
@@ -68,34 +76,55 @@ class GetRandomIndcs:
 
     range_indcs : tuple, optional
         Range tuple (max, min) for the indices.
+        
+    is_beta_binomial : bool, optional
+        Whether to use beta binomial distribution instead of uniform. In this case a and b become
+        respectively alpha and beta in beta binomial distributions. For example to have a an 
+        exponentially decaying pdf with a median around 5% use alpha 1 and beta 14.
+
+    proba_uniform : float, optional
+        Probability [0,1] of randomly sampling any number of indices regardless of a and b. Useful to 
+        ensure that the support is all possible indices.
     """
 
     def __init__(
         self,
-        min_n_indcs=0.1,
-        max_n_indcs=0.5,
+        a=0.1,
+        b=0.5,
         is_batch_share=False,
         range_indcs=None,
         is_ensure_one=False,
+        is_beta_binomial=False,
+        proba_uniform=0,
     ):
-        self.min_n_indcs = min_n_indcs
-        self.max_n_indcs = max_n_indcs
+        self.a = a
+        self.b = b
         self.is_batch_share = is_batch_share
         self.range_indcs = range_indcs
         self.is_ensure_one = is_ensure_one
+        self.is_beta_binomial = is_beta_binomial
+        self.proba_uniform = proba_uniform
 
     def __call__(self, batch_size, n_possible_points):
         if self.range_indcs is not None:
             n_possible_points = self.range_indcs[1] - self.range_indcs[0]
 
-        min_n_indcs = ratio_to_int(self.min_n_indcs, n_possible_points)
-        max_n_indcs = ratio_to_int(self.max_n_indcs, n_possible_points)
+        if np.random.uniform(size=1) < self.proba_uniform:
+            # whether to sample from a uniform distribution instead of using a and b
+            n_indcs = random.randint(0, n_possible_points)
 
-        if self.is_ensure_one:
-            # make sure select at least 1
-            n_indcs = random.randint(min(1, min_n_indcs), min(1, max_n_indcs))
         else:
-            n_indcs = random.randint(min_n_indcs, max_n_indcs)
+            if self.is_beta_binomial:
+                rv = betabinom(n_possible_points, self.a, self.b)
+                n_indcs = rv.rvs()
+
+            else:
+                a = ratio_to_int(self.a, n_possible_points)
+                b = ratio_to_int(self.b, n_possible_points)
+                n_indcs = random.randint(a, b)
+
+        if self.is_ensure_one and n_indcs < 1:
+            n_indcs = 1
 
         if self.is_batch_share:
             indcs = torch.randperm(n_possible_points)[:n_indcs]
@@ -178,19 +207,26 @@ class CntxtTrgtGetter:
                 num_points, target_indcs, context_indcs
             )
 
+        # only used if X for context and target should be different (besides selecting indices!)
+        X_pre_cntxt = self.preprocess_context(X)
+
         if is_return_indcs:
             # instead of features return indices / masks, and `Y_cntxt` is replaced
             # with all values Y
             return (
                 context_indcs,
-                X,
+                X_pre_cntxt,
                 target_indcs,
                 X,
             )
 
-        X_cntxt, Y_cntxt = self.select(X, y, context_indcs)
+        X_cntxt, Y_cntxt = self.select(X_pre_cntxt, y, context_indcs)
         X_trgt, Y_trgt = self.select(X, y, target_indcs)
         return X_cntxt, Y_cntxt, X_trgt, Y_trgt
+
+    def preprocess_context(self, X):
+        """Preprocess the data for the context set."""
+        return X
 
     def add_cntxts_to_trgts(self, num_points, target_indcs, context_indcs):
         """
@@ -223,25 +259,7 @@ class CntxtTrgtGetter:
 class RandomMasker(GetRandomIndcs):
     """
     Return random subset mask.
-
-    Parameters
-    ----------
-    min_nnz : float or int, optional
-        Minimum number of non zero values. If smaller than 1, represents a
-        percentage of points.
-
-    max_nnz : float or int, optional
-        Maximum number of non zero values. If smaller than 1, represents a
-        percentage of points.
-
-    is_batch_share : bool, optional
-        Whether to use use the same indices for all elements in the batch.
     """
-
-    def __init__(self, min_nnz=0.1, max_nnz=0.5, is_batch_share=False):
-        super().__init__(
-            min_n_indcs=min_nnz, max_n_indcs=max_nnz, is_batch_share=is_batch_share
-        )
 
     def __call__(self, batch_size, mask_shape, **kwargs):
         n_possible_points = prod(mask_shape)
@@ -258,6 +276,26 @@ class RandomMasker(GetRandomIndcs):
         mask = mask.view(batch_size, *mask_shape, 1).contiguous()
 
         return mask
+
+
+class ResolutionMasker:
+    """
+    Return mask that corresponds to decreasing the resolution.
+
+    Parameters
+    ----------
+    factor : int, optional
+        Factor by which to decrease the resolution.
+    """
+
+    def __init__(self, factor):
+        self.factor = factor
+
+    def __call__(self, batch_size, mask_shape):
+        mask = torch.zeros(mask_shape).bool()
+        mask[self.factor // 2 :: self.factor, self.factor // 2 :: self.factor] = True
+        # share memory
+        return mask.unsqueeze(-1).expand(batch_size, *mask_shape, 1)
 
 
 def and_masks(*masks):
@@ -307,8 +345,8 @@ class GridCntxtTrgtGetter(CntxtTrgtGetter):
     target_masker : callable, optional
         Get the context masks if not given directly (useful for training).
 
-    test_upscale_factor : float, optional 
-        Factor by which to upscale the test image. If 1 then all the images are seen as the same 
+    upscale_factor : float, optional 
+        Factor by which to upscale the image. If 1 then all the images are seen as the same 
         ``size'' regardless of the number of pixels (because all set to be in -1 1)
     
     kwargs:
@@ -321,10 +359,10 @@ class GridCntxtTrgtGetter(CntxtTrgtGetter):
         self,
         context_masker=RandomMasker(),
         target_masker=no_masker,
-        test_upscale_factor=1,
+        upscale_factor=1,
         **kwargs
     ):
-        self.test_upscale_factor = test_upscale_factor
+        self.upscale_factor = upscale_factor
         super().__init__(
             contexts_getter=context_masker, targets_getter=target_masker, **kwargs
         )
@@ -406,9 +444,47 @@ class GridCntxtTrgtGetter(CntxtTrgtGetter):
         for i, size in enumerate(grid_shape):
             X_masked[:, :, i] *= 2 / (size - 1)  # in [0,2]
             X_masked[:, :, i] -= 1  # in [-1,1]
-        X_masked *= self.test_upscale_factor
+        X_masked *= self.upscale_factor
 
         mask = mask.expand(batch_size, *grid_shape, y_dim)
         Y_masked = X[mask].view(batch_size, n_cntxt, y_dim)
 
         return X_masked.contiguous(), Y_masked.contiguous()
+
+
+class SuperresolutionCntxtTrgtGetter(GridCntxtTrgtGetter):
+    """
+    Split grids of values (e.g. images) into context and target points for super resolution.
+
+    Parameters
+    ----------
+    resolution_factor : float, optional 
+        Factor by which to change the resolution of context set. 
+
+    downsample_mode : {"nearest","area","bilinear"}, optional
+        Way of downsampling the image.
+
+    **kwargs :
+        Additional arguments to `GridCntxtTrgtGetter`.
+    """
+
+    def __init__(self, resolution_factor=1 / 4, downsample_mode="area", **kwargs):
+        self.resolution_factor = resolution_factor
+        self.downsample_mode = downsample_mode
+        super().__init__(
+            context_masker=ResolutionMasker(factor=int(1 / self.resolution_factor)),
+            target_masker=no_masker,
+            **kwargs
+        )
+
+    def preprocess_context(self, X):
+        """Preprocess the data for the context set."""
+        X = channels_to_2nd_dim(X)
+        X_downscale = F.interpolate(
+            X, scale_factor=self.resolution_factor, mode=self.downsample_mode
+        )
+        # upscale but with "nearest neighbor" interpolation => keep low resolution
+        X_lowres = F.interpolate(
+            X_downscale, scale_factor=int(1 / self.resolution_factor), mode="nearest"
+        )
+        return channels_to_last_dim(X_lowres)

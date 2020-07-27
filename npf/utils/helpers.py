@@ -411,11 +411,7 @@ class CircularPad2d(nn.Module):
         self.padding = padding
 
     def forward(self, x):
-        x = torch.cat([x, x[:, :, 0 : self.padding, :]], dim=2)
-        x = torch.cat([x, x[..., 0 : self.padding]], dim=3)
-        x = torch.cat([x[:, :, -2 * self.padding : -self.padding, :], x], dim=2)
-        x = torch.cat([x[..., -2 * self.padding : -self.padding], x], dim=3)
-        return x
+        return F.pad(x, (self.padding,) * 4, mode="circular")
 
 
 class BackwardPDB(torch.autograd.Function):

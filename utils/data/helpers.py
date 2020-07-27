@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 import pathlib
 
@@ -11,6 +12,7 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 
 DIR_DATA = os.path.abspath(os.path.join(__file__, "../../../data/"))
+logger = logging.getLogger(__name__)
 
 
 class DatasetMerger(Dataset):

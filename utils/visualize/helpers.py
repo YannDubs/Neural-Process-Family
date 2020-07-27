@@ -1,19 +1,29 @@
 import contextlib
 import io
+import logging
 import warnings
 
 import imageio
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.cbook import MatplotlibDeprecationWarning
+from skimage import transform
+
+try:
+    from pygifsicle import optimize
+except ImportError:
+    pass
 
 __all__ = ["giffify", "plot_config"]
+logger = logging.getLogger(__name__)
 
 
-def fig2img(fig, dpi=200):
+def fig2img(fig, dpi=200, format="png", is_transparent=False):
     """Convert a Matplotlib figure to a imageio Image and return it"""
     buf = io.BytesIO()
-    fig.savefig(buf, dpi=dpi, bbox_inches="tight")
+    fig.savefig(
+        buf, dpi=dpi, bbox_inches="tight", format=format, transparent=is_transparent
+    )
     buf.seek(0)
     img = imageio.imread(buf)
     return img
@@ -23,7 +33,7 @@ def fig2img(fig, dpi=200):
 def plot_config(
     style="ticks",
     context="notebook",
-    palette="deep",
+    palette="colorblind",
     font_scale=1,
     font="sans-serif",
     rc=dict(),
@@ -90,8 +100,9 @@ def giffify(
     sweep_parameter,
     sweep_values,
     fps=2,
-    dpi=200,
-    **kwargs
+    quality=70,
+    is_transparent=False,
+    **kwargs,
 ):
     """Make a gif by calling `single_fig` with varying parameters.
     
@@ -111,18 +122,27 @@ def giffify(
         
     fps : int, optional
         Number of frame per second. I.e. speed of gif.
-        
-    dpi : int, optional
-        The resolution in dots per inch.
+
+    is_transparent: bool, optional  
+        Whether to use a transparent background.
         
     kwargs : 
         Arguments to `single_fig` that should not be swept over.
     """
     figs = []
-    for v in sweep_values:
+    for i, v in enumerate(sweep_values):
         fig = gen_single_fig(**{sweep_parameter: v}, **kwargs)
         plt.close()
-        img = fig2img(fig, dpi=dpi)
+        img = fig2img(fig, is_transparent=is_transparent)
+        if i > 0:
+            img = transform.resize(img, size)
+        else:
+            size = img.shape[:2]
         figs.append(img)
 
     imageio.mimsave(save_filename, figs, fps=fps)
+
+    try:
+        optimize(save_filename)
+    except Exception as e:
+        logger.info(f"Could not compress gif: {e}")

@@ -4,7 +4,7 @@ from npf.utils.helpers import prod
 def collapse_z_samples_batch(t):
     """Merge n_z_samples and batch_size in a single dimension."""
     n_z_samples, batch_size, *rest = t.shape
-    return t.view(n_z_samples * batch_size, *rest)
+    return t.contiguous().view(n_z_samples * batch_size, *rest)
 
 
 def extract_z_samples_batch(t, n_z_samples, batch_size):

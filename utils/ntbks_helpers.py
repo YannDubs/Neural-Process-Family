@@ -1,3 +1,4 @@
+import copy
 import os
 import sys
 from functools import partial
@@ -21,13 +22,14 @@ from npf.utils.datasplit import (
     GetRandomIndcs,
     GridCntxtTrgtGetter,
     RandomMasker,
+    SuperresolutionCntxtTrgtGetter,
     get_all_indcs,
     half_masker,
     no_masker,
 )
 from utils.data import DIR_DATA, GPDataset, get_train_test_img_dataset
 from utils.data.helpers import DatasetMerger
-from utils.data.imgs import get_test_upscale_factor
+from utils.data.imgs import SingleImage, get_test_upscale_factor
 from utils.visualize import (
     plot_config,
     plot_posterior_samples,
@@ -52,8 +54,25 @@ def get_all_gp_datasets():
 
     for f in [
         get_datasets_single_gp,
+        get_datasets_variable_hyp_gp,
+        get_datasets_variable_kernel_gp,
+    ]:
+        _datasets, _test_datasets, _valid_datasets = f()
+        datasets.update(_datasets)
+        test_datasets.update(_test_datasets)
+        valid_datasets.update(_valid_datasets)
+
+    return datasets, test_datasets, valid_datasets
+
+
+def get_all_gp_datasets_old():
+    """Return train / tets / valid sets for all GP experiments."""
+    datasets, test_datasets, valid_datasets = dict(), dict(), dict()
+
+    for f in [
+        get_datasets_single_gp,
         get_datasets_varying_hyp_gp,
-        get_datasets_varying_kernel_gp,
+        get_datasets_variable_kernel_gp,
     ]:
         _datasets, _test_datasets, _valid_datasets = f()
         datasets.update(_datasets)
@@ -69,9 +88,9 @@ def get_datasets_single_gp():
 
     kernels["RBF_Kernel"] = RBF(length_scale=(0.2))
 
-    kernels["Periodic_Kernel"] = ExpSineSquared(length_scale=1, periodicity=1.25)
+    kernels["Periodic_Kernel"] = ExpSineSquared(length_scale=0.5, periodicity=0.5)
 
-    kernels["Matern_Kernel"] = Matern(length_scale=0.2, nu=1.5)
+    # kernels["Matern_Kernel"] = Matern(length_scale=0.2, nu=1.5)
 
     kernels["Noisy_Matern_Kernel"] = WhiteKernel(noise_level=0.1) + Matern(
         length_scale=0.2, nu=1.5
@@ -80,28 +99,28 @@ def get_datasets_single_gp():
     return get_gp_datasets(
         kernels,
         is_vary_kernel_hyp=False,  # use a single hyperparameter per kernel
-        n_samples=10000,  # number of different context-target sets
+        n_samples=50000,  # number of different context-target sets
         n_points=128,  # size of target U context set for each sample
         is_reuse_across_epochs=False,  # never see the same example twice
     )
 
 
-def get_datasets_varying_hyp_gp():
+def get_datasets_variable_hyp_gp():
     """Return train / tets / valid sets for 'Samples from GPs with varying Kernel hyperparameters'."""
     kernels = dict()
 
-    kernels["Vary_Matern_Kernel"] = Matern(length_scale_bounds=(0.03, 0.5), nu=1.5)
+    kernels["Variable_Matern_Kernel"] = Matern(length_scale_bounds=(0.01, 0.3), nu=1.5)
 
     return get_gp_datasets(
         kernels,
-        is_vary_kernel_hyp=True,  # vary the hyperparameters
-        n_samples=100000,  # 10x larger than before (because fixed across epochs)
-        n_points=128,
-        is_reuse_across_epochs=True,  # make a fix dataset like in real ML
+        is_vary_kernel_hyp=True,  # use a different hyp for each samples
+        n_samples=50000,  # number of different context-target sets
+        n_points=128,  # size of target U context set for each sample
+        is_reuse_across_epochs=False,  # never see the same example twice
     )
 
 
-def get_datasets_varying_kernel_gp():
+def get_datasets_variable_kernel_gp():
     """Return train / tets / valid sets for 'Samples from GPs with varying Kernels'."""
 
     datasets, test_datasets, valid_datasets = get_datasets_single_gp()
@@ -110,6 +129,13 @@ def get_datasets_varying_kernel_gp():
         dict(All_Kernels=DatasetMerger(test_datasets.values())),
         dict(All_Kernels=DatasetMerger(valid_datasets.values())),
     )
+
+
+def sample_gp_dataset_like(dataset, **kwargs):
+    """Wrap the output of `get_samples` in a gp dataset."""
+    new_dataset = copy.deepcopy(dataset)
+    new_dataset.set_samples_(*dataset.get_samples(**kwargs))
+    return new_dataset
 
 
 def get_gp_datasets(
@@ -131,21 +157,18 @@ def get_gp_datasets(
         )
 
     datasets_test = {
-        k: skorch.dataset.Dataset(
-            *dataset.get_samples(
-                save_file=get_save_file(k), idx_chunk=-1, n_samples=10000
-            )
+        k: sample_gp_dataset_like(
+            dataset, save_file=get_save_file(k), idx_chunk=-1, n_samples=10000
         )
         for k, dataset in datasets.items()
     }
 
     datasets_valid = {
-        k: skorch.dataset.Dataset(
-            *dataset.get_samples(
-                save_file=get_save_file(k),
-                idx_chunk=-2,
-                n_samples=dataset.n_samples // 10,
-            )
+        k: sample_gp_dataset_like(
+            dataset,
+            save_file=get_save_file(k),
+            idx_chunk=-2,
+            n_samples=dataset.n_samples // 10,
         )
         for k, dataset in datasets.items()
     }
@@ -162,7 +185,7 @@ class StrFormatter:
     exact_match : dict, optional
         Dictionary of strings that will be replaced by exact match.
 
-    subtring_replace : dict, optional
+    substring_replace : dict, optional
         Dictionary of substring that will be replaced if no exact_match. Order matters.
         Everything is title case at this point. None gets mapped to "".
 
@@ -245,23 +268,24 @@ def add_y_dim(models, datasets):
     }
 
 
-def get_n_cntxt(n_cntxt, is_1d=True, test_upscale_factor=1):
+def get_n_cntxt(n_cntxt, is_1d=True, upscale_factor=1):
     """Return a context target splitter with a fixed number of context points."""
     if is_1d:
         return CntxtTrgtGetter(
-            contexts_getter=GetRandomIndcs(min_n_indcs=n_cntxt, max_n_indcs=n_cntxt),
+            contexts_getter=GetRandomIndcs(a=n_cntxt, b=n_cntxt),
             targets_getter=get_all_indcs,
             is_add_cntxts_to_trgts=False,
         )
     else:
         return GridCntxtTrgtGetter(
-            context_masker=RandomMasker(min_nnz=n_cntxt, max_nnz=n_cntxt),
+            context_masker=RandomMasker(a=n_cntxt, b=n_cntxt),
             target_masker=no_masker,
             is_add_cntxts_to_trgts=False,
-            test_upscale_factor=test_upscale_factor,
+            upscale_factor=upscale_factor,
         )
 
 
+# TO DO : docstrings
 def plot_multi_posterior_samples_imgs(
     trainers,
     datasets,
@@ -270,13 +294,18 @@ def plot_multi_posterior_samples_imgs(
     title="{model_name} | {data_name} | C={n_cntxt}",
     pretty_renamer=PRETTY_RENAMER,
     n_plots=4,
+    figsize=(3, 3),
+    is_superresolution=False,
     **kwargs,
 ):
     with plot_config(**plot_config_kwargs):
         n_trainers = len(trainers)
 
         fig, axes = plt.subplots(
-            1, n_trainers, figsize=(5 * n_plots, 5 * n_trainers), squeeze=False
+            1,
+            n_trainers,
+            figsize=(figsize[0] * n_plots, figsize[1] * n_trainers),
+            squeeze=False,
         )
 
         for i, (k, trainer) in enumerate(trainers.items()):
@@ -285,7 +314,10 @@ def plot_multi_posterior_samples_imgs(
             dataset = datasets[data_name]
 
             if isinstance(n_cntxt, float) and n_cntxt < 1:
-                n_cntxt_title = f"{100*n_cntxt:.1f}%"
+                if is_superresolution:
+                    n_cntxt_title = f"{int(dataset.shape[1]*n_cntxt)}x{int(dataset.shape[2]*n_cntxt)}"
+                else:
+                    n_cntxt_title = f"{100*n_cntxt:.1f}%"
             elif isinstance(n_cntxt, str):
                 n_cntxt_title = pretty_renamer[n_cntxt]
             else:
@@ -297,17 +329,21 @@ def plot_multi_posterior_samples_imgs(
                 data_name=pretty_renamer[data_name],
             )
 
-            test_upscale_factor = get_test_upscale_factor(data_name)
+            upscale_factor = get_test_upscale_factor(data_name)
             if n_cntxt in ["vhalf", "hhalf"]:
                 cntxt_trgt_getter = GridCntxtTrgtGetter(
                     context_masker=partial(
                         half_masker, dim=0 if n_cntxt == "hhalf" else 1
                     ),
-                    test_upscale_factor=test_upscale_factor,
+                    upscale_factor=upscale_factor,
+                )
+            elif is_superresolution:
+                cntxt_trgt_getter = SuperresolutionCntxtTrgtGetter(
+                    resolution_factor=n_cntxt, upscale_factor=upscale_factor,
                 )
             else:
                 cntxt_trgt_getter = get_n_cntxt(
-                    n_cntxt, is_1d=False, test_upscale_factor=test_upscale_factor
+                    n_cntxt, is_1d=False, upscale_factor=upscale_factor
                 )
 
             plot_posterior_samples(
@@ -316,7 +352,8 @@ def plot_multi_posterior_samples_imgs(
                 trainer.module_.cpu(),
                 is_uniform_grid=isinstance(trainer.module_, GridConvCNP),
                 ax=axes.flatten()[i],
-                n_plots=n_plots,
+                n_plots=n_plots if not isinstance(dataset, SingleImage) else 1,
+                is_mask_cntxt=not is_superresolution,
                 **kwargs,
             )
             axes.flatten()[i].set_title(curr_title)
@@ -324,14 +361,17 @@ def plot_multi_posterior_samples_imgs(
     return fig
 
 
+# TO DO : docstrings
 def plot_multi_posterior_samples_1d(
     trainers,
     datasets,
     n_cntxt,
     plot_config_kwargs={},
     title="Model : {model_name} | Data : {data_name} | Num. Context : {n_cntxt}",
-    extrap_distance=None,
+    left_extrap=0,
+    right_extrap=0,
     pretty_renamer=PRETTY_RENAMER,
+    is_plot_generator=True,
     **kwargs,
 ):
     """Plot posterior samples conditioned on `n_cntxt` context points for a set of trained trainers."""
@@ -340,7 +380,7 @@ def plot_multi_posterior_samples_1d(
         n_trainers = len(trainers)
 
         fig, axes = plt.subplots(
-            n_trainers, 1, figsize=(15, 5 * n_trainers), sharex=True, squeeze=False
+            n_trainers, 1, figsize=(8, 3 * n_trainers), sharex=True, squeeze=False
         )
 
         for i, (k, trainer) in enumerate(trainers.items()):
@@ -354,11 +394,12 @@ def plot_multi_posterior_samples_1d(
             )
 
             test_min_max = dataset.min_max
-            if extrap_distance is not None:
+            if (left_extrap != 0) or (right_extrap != 0):
                 test_min_max = (
-                    dataset.min_max[0],
-                    dataset.min_max[1] + extrap_distance,
+                    dataset.min_max[0] - left_extrap,
+                    dataset.min_max[1] + right_extrap,
                 )
+                trainer.module_.set_extrapolation(test_min_max)
 
             X, Y = dataset.get_samples(
                 n_samples=1, n_points=3 * dataset.n_points, test_min_max=test_min_max
@@ -369,13 +410,14 @@ def plot_multi_posterior_samples_1d(
                 Y,
                 get_n_cntxt(n_cntxt),
                 trainer.module_,
-                generator=dataset.generator,
+                generator=dataset.generator if is_plot_generator else None,
                 train_min_max=dataset.min_max,
-                is_plot_std=True,
                 title=curr_title,
                 ax=axes.flatten()[i],
                 **kwargs,
             )
+
+        plt.tight_layout()
 
     return fig
 
@@ -385,7 +427,7 @@ def plot_multi_prior_samples_1d(trainers, datasets, **kwargs):
     n_trainers = len(trainers)
 
     fig, axes = plt.subplots(
-        n_trainers, 1, figsize=(11, 5 * n_trainers), sharex=True, squeeze=False
+        n_trainers, 1, figsize=(8, 3 * n_trainers), sharex=True, squeeze=False
     )
 
     for i, (k, trainer) in enumerate(trainers.items()):
@@ -404,27 +446,15 @@ def plot_multi_prior_samples_1d(trainers, datasets, **kwargs):
             **kwargs,
         )
 
+    plt.tight_layout()
+
     return fig
 
 
-# MODEL
-get_cntxt_trgt = CntxtTrgtGetter(
-    contexts_getter=GetRandomIndcs(min_n_indcs=0.01, max_n_indcs=0.5),
-    targets_getter=get_all_indcs,
-    is_add_cntxts_to_trgts=False,
-)
-
-
-R_DIM = 128
-CNP_KWARGS = dict(
-    XEncoder=partial(MLP, n_hidden_layers=1, hidden_size=R_DIM),
-    XYEncoder=merge_flat_input(
-        partial(MLP, n_hidden_layers=2, hidden_size=R_DIM), is_sum_merge=True
-    ),
-    Decoder=merge_flat_input(
-        partial(MLP, n_hidden_layers=2, is_force_hid_smaller=True, hidden_size=R_DIM),
-        is_sum_merge=True,
-    ),
-    r_dim=128,
-    encoded_path="deterministic",
-)
+def select_labels(dataset, label):
+    """Return teh subset of the data with a specific label."""
+    dataset = copy.deepcopy(dataset)
+    filt = dataset.targets == label
+    dataset.data = dataset.data[filt]
+    dataset.targets = dataset.targets[filt]
+    return dataset

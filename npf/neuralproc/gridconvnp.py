@@ -171,7 +171,7 @@ class GridConvCNP(NeuralProcessFamily):
 
 class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
     """
-    Spacial case of Convolutional Latent Neural Process [?] when the context, targets and
+    Spacial case of Convolutional Latent Neural Process [1] when the context, targets and
     induced points points are on a grid of the same size. C.f. `GridConvCNP` for more details.
 
     Parameters
@@ -196,7 +196,8 @@ class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
 
     References
     ----------
-    [?] 
+    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint 
+    arXiv:1910.13556 (2019).
     """
 
     _valid_paths = ["latent", "both"]
@@ -208,15 +209,10 @@ class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
         CNNPostZ=None,
         encoded_path="latent",
         is_global=False,
-        is_heteroskedastic=False,
         **kwargs,
     ):
         super().__init__(
-            x_dim,
-            y_dim,
-            encoded_path=encoded_path,
-            is_heteroskedastic=is_heteroskedastic,
-            **kwargs,
+            x_dim, y_dim, encoded_path=encoded_path, **kwargs,
         )
 
         self.is_global = is_global

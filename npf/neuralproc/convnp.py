@@ -36,8 +36,8 @@ class ConvCNP(NeuralProcessFamily):
     y_dim : int
         Dimension of y values.
 
-    n_induced : int, optional
-        Number of induced-inputs to use. The induced-inputs will be regularly sampled.
+    density_induced : int, optional
+        Density of induced-inputs to use. The induced-inputs will be regularly sampled.
 
     Interpolator : callable or str, optional
         Callable to use to compute cntxt / trgt to and from the induced points.  {(x^k, y^k)}, {x^q} -> {y^q}. 
@@ -68,7 +68,7 @@ class ConvCNP(NeuralProcessFamily):
         self,
         x_dim,
         y_dim,
-        n_induced=256,
+        density_induced=128,
         Interpolator=SetConv,
         CNN=partial(
             CNN,
@@ -95,8 +95,10 @@ class ConvCNP(NeuralProcessFamily):
             x_dim, y_dim, x_transf_dim=None, XEncoder=nn.Identity, **kwargs,
         )
 
-        self._n_induced = n_induced
-        self.X_induced = torch.linspace(-1, 1, self._n_induced)
+        self.density_induced = density_induced
+        # input is between -1 and 1 but use at least 0.5 temporary values on each sides to not
+        # have strong boundary effects
+        self.X_induced = torch.linspace(-1.5, 1.5, int(self.density_induced * 3))
         self.CNN = CNN
 
         self.cntxt_to_induced = Interpolator(self.x_dim, self.y_dim, self.r_dim)
@@ -167,32 +169,13 @@ class ConvCNP(NeuralProcessFamily):
         Scale the induced inputs to be in a given range while keeping
         the same density than during training (used for extrapolation.).
         """
-        # reset induced points (in case already used extrapolation)
-        self.X_induced = torch.linspace(-1, 1, self._n_induced)
-        current_min = -1
-        current_max = 1
-
-        # compute number of induced points to add on the left and on the right
-        assert min_max[0] < current_min and min_max[1] > current_max
-        left_extend = abs(current_min - min_max[0])
-        right_extend = abs(current_max - min_max[1])
-        delta = self.X_induced[1] - self.X_induced[0]
-        n_induced_per_unit = self._n_induced / (current_max - current_min)
-        n_induced_add_left = math.ceil(left_extend * n_induced_per_unit)
-        n_induced_add_right = math.ceil(right_extend * n_induced_per_unit)
-
-        # add the induced points on the left and right
-        X_induced = []
-        if n_induced_add_left > 0:
-            X_induced.append(torch.arange(min_max[0], current_min, delta))
-
-        X_induced.append(self.X_induced)
-
-        if n_induced_add_right > 0:
-            # add delta to not have twice the previous max boundary
-            X_induced.append(torch.arange(current_max, min_max[1], delta) + delta)
-
-        self.X_induced = torch.cat(X_induced)
+        current_min = min_max[0] - 0.5
+        current_max = min_max[1] + 0.5
+        self.X_induced = torch.linspace(
+            current_min,
+            current_max,
+            int(self.density_induced * (current_max - current_min)),
+        )
 
 
 class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
@@ -221,7 +204,8 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
 
     References
     ----------
-    [1] TO CITE
+    [1] Foong, Andrew YK, et al. "Meta-Learning Stationary Stochastic Process Prediction with 
+    Convolutional Neural Processes." arXiv preprint arXiv:2007.01332 (2020).
     """
 
     _valid_paths = ["latent", "both"]
@@ -233,15 +217,10 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
         CNNPostZ=None,
         encoded_path="latent",
         is_global=False,
-        is_heteroskedastic=False,
         **kwargs,
     ):
         super().__init__(
-            x_dim,
-            y_dim,
-            encoded_path=encoded_path,
-            is_heteroskedastic=is_heteroskedastic,
-            **kwargs,
+            x_dim, y_dim, encoded_path=encoded_path, **kwargs,
         )
 
         self.is_global = is_global

@@ -4,7 +4,8 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from npf.utils.helpers import ProbabilityConverter, backward_pdb, mask_and_apply
+from npf.utils.helpers import (ProbabilityConverter, backward_pdb,
+                               mask_and_apply)
 from npf.utils.initialization import init_param_, weights_init
 
 from .mlp import MLP
@@ -116,7 +117,7 @@ class MlpRBF(nn.Module):
 
 class SetConv(nn.Module):
     """Applies a convolution over a set of inputs, i.e. generalizes `nn._ConvNd`
-    to non uniformly sampled samples [jonathan].
+    to non uniformly sampled samples [1].
 
     Parameters
     ----------
@@ -138,7 +139,8 @@ class SetConv(nn.Module):
 
     References
     ----------
-    [jonathan]
+    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint 
+    arXiv:1910.13556 (2019).
     """
 
     def __init__(

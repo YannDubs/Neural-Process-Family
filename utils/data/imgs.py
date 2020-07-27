@@ -38,6 +38,8 @@ DATASETS_DICT = {
 }
 DATASETS = list(DATASETS_DICT.keys())
 
+logger = logging.getLogger(__name__)
+
 
 # HELPERS
 def get_train_test_img_dataset(dataset):
@@ -45,7 +47,7 @@ def get_train_test_img_dataset(dataset):
     try:
         train_dataset = get_dataset(dataset)(split="train")
         test_dataset = get_dataset(dataset)(split="test")
-    except TypeError:
+    except TypeError as e:
         train_dataset, test_dataset = train_dev_split(
             get_dataset(dataset)(), dev_size=0.1, is_stratify=False
         )
@@ -70,10 +72,10 @@ def get_img_size(dataset):
 
 def get_test_upscale_factor(dataset):
     """Return the correct image size."""
-    dataset = get_dataset(dataset)
     try:
+        dataset = get_dataset(dataset)
         return dataset.shape_test[-1] / dataset.shape[-1]
-    except AttributeError:
+    except (AttributeError, ValueError):
         return 1
 
 
@@ -436,9 +438,7 @@ class ZeroShotMNIST(ZeroShotMultiMNIST):
         )
 
 
-# EXTERNAL DATASETS
-
-
+# EXTERNAL DATASETS (not torchvision)
 class ExternalDataset(Dataset, abc.ABC):
     """Base Class for external datasets.
 
@@ -480,6 +480,30 @@ class ExternalDataset(Dataset, abc.ABC):
     def download(self):
         """Download the dataset. """
         pass
+
+
+class SingleImage(Dataset):
+    def __init__(
+        self,
+        img,
+        resize=None,
+        transforms_list=[transforms.ToTensor()],
+        missing_px_color=COLOUR_BLACK,
+    ):
+
+        self.missing_px_color = missing_px_color
+        self.img = transforms.ToPILImage()(img)
+        if resize is not None:
+            self.img = transforms.Resize(resize)(self.img)
+
+        self.shape = transforms.ToTensor()(self.img).shape
+        self.transforms = transforms.Compose(transforms_list)
+
+    def __getitem__(self, i):
+        return self.transforms(self.img).float(), 0
+
+    def __len__(self):
+        return 1
 
 
 class CelebA64(ExternalDataset):

@@ -79,9 +79,6 @@ class ConvBlock(nn.Module):
     Normalization : nn.Module, optional
         Normalization layer (unitialized). E.g. `nn.BatchNorm1d`.
 
-    Padder : nn.Module, optional
-        Padding module. E.g. `torch.nn.ReflectionPad1d`.
-
     kwargs :
         Additional arguments to `Conv`.
 
@@ -105,19 +102,12 @@ class ConvBlock(nn.Module):
         dilation=1,
         activation=nn.ReLU(),
         Normalization=nn.Identity,
-        Padder=None,
         **kwargs
     ):
         super().__init__()
         self.activation = activation
 
         padding = kernel_size // 2
-
-        if Padder is not None:
-            self.padder = Padder(padding)
-            padding = 0
-        else:
-            self.padder = nn.Identity()
 
         Conv = make_depth_sep_conv(Conv)
 
@@ -130,7 +120,6 @@ class ConvBlock(nn.Module):
         weights_init(self)
 
     def forward(self, X):
-        X = self.padder(X)
         return self.conv(self.activation(self.norm(X)))
 
 
@@ -164,9 +153,6 @@ class ResConvBlock(nn.Module):
     is_bias : bool, optional
         Whether to use a bias.
 
-    Padder : nn.Module, optional
-        Padding module. E.g. `torch.nn.ReflectionPad1d`.
-
     References
     ----------
     [1] He, K., Zhang, X., Ren, S., & Sun, J. (2016, October). Identity mappings
@@ -187,7 +173,6 @@ class ResConvBlock(nn.Module):
         activation=nn.ReLU(),
         Normalization=nn.Identity,
         is_bias=True,
-        Padder=None,
         n_conv_layers=1,
     ):
         super().__init__()
@@ -199,12 +184,6 @@ class ResConvBlock(nn.Module):
             raise ValueError("`kernel_size={}`, but should be odd.".format(kernel_size))
 
         padding = kernel_size // 2
-
-        if Padder is not None:
-            self.padder = Padder(padding)
-            padding = 0
-        else:
-            self.padder = nn.Identity()
 
         if self.n_conv_layers == 2:
             self.norm1 = Normalization(in_chan)
@@ -223,15 +202,12 @@ class ResConvBlock(nn.Module):
         weights_init(self)
 
     def forward(self, X):
-        X = self.padder(X)
 
         if self.n_conv_layers == 2:
-            out = self.padder(X)
-            out = self.conv1(self.activation(self.norm1(out)))
+            out = self.conv1(self.activation(self.norm1(X)))
         else:
             out = X
 
-        out = self.padder(out)
         out = self.conv2_depthwise(self.activation(self.norm2(out)))
         # adds residual before point wise => output can change number of channels
         out = out + X
@@ -261,9 +237,6 @@ class ResNormalizedConvBlock(ResConvBlock):
 
     is_bias : bool, optional
         Whether to use a bias.
-
-    Padder : nn.Module, optional
-        Padding module. E.g. `torch.nn.ReflectionPad1d`.
 
     References
     ----------

@@ -200,7 +200,9 @@ def plot_posterior_samples_1d(
             X_cntxt_plot = rescale_range(X_cntxt, (-1, 1), train_min_max).numpy()[0]
             # clones so doesn't change real generator => can still sample prior
             generator = sklearn.base.clone(generator)
-            generator.fit(X_cntxt_plot, Y_cntxt.numpy()[0])
+            if X_cntxt.shape[1] > 0:
+                # predict using prior or posterior ?
+                generator.fit(X_cntxt_plot, Y_cntxt.numpy()[0])
             X_trgt_plot = rescale_range(X, (-1, 1), train_min_max).numpy()[0].flatten()
             mean_y, std_y = generator.predict(
                 X_trgt_plot[:, np.newaxis], return_std=True
@@ -281,25 +283,20 @@ def gen_p_y_pred(model, X_cntxt, Y_cntxt, X_trgt, n_samples):
         model.n_z_samples_test = old_n_z_samples_test
 
     else:
-        # can only use one sample in this case
+        # using CNPF
         p_yCc, *_ = model.forward(X_cntxt, Y_cntxt, X_trgt)
+
+        if n_samples > 1:
+            # using CNPF with many samples => sample from noise of posterior pred
+            sampled_y = p_yCc.sample_n(n_samples).detach().numpy()
+            for i in range(sampled_y.shape[0]):
+                yield sampled_y[i, 0, 0, :, 0].flatten(), None
 
     mean_ys = p_yCc.base_dist.loc.detach().numpy()
     std_ys = p_yCc.base_dist.scale.detach().numpy()
 
     for i in range(mean_ys.shape[0]):
         yield mean_ys[i, 0, :, 0].flatten(), std_ys[i, 0, :, 0].flatten()
-
-    """
-    else:
-        z_sample = torch.randn((1, model.r_dim))
-        r = z_sample.unsqueeze(1).expand(1, X_trgt.size(1), model.r_dim)
-        dec_input = model.make_dec_inp(r, z_sample, X_trgt)
-        p_y_pred = model.decode(dec_input, X_trgt)
-    
-    # don't return n_z_samples so that same 
-    return p_yCc[0]
-    """
 
 
 def _plot_posterior_predefined_cntxt(
@@ -367,7 +364,8 @@ def _plot_posterior_predefined_cntxt(
 
     mean_color, std_color = mean_std_colors
 
-    is_conditioned = X_cntxt is not None  # plot posterior instead prior
+    # plot posterior instead prior ?
+    is_conditioned = X_cntxt is not None and X_cntxt.shape[1] >= 1
 
     model.eval()
     model = model.cpu()
@@ -406,6 +404,11 @@ def _plot_posterior_predefined_cntxt(
             ax.plot(X_trgt_plot, mean_y, alpha=alpha, c=mean_color)
 
         if is_plot_std:
+            if std_y is None:
+                raise ValueError(
+                    f"Cannot plot std when sampling (n_samples={n_samples}) from a CNPF."
+                )
+
             ax.fill_between(
                 X_trgt_plot,
                 mean_y - std_y,

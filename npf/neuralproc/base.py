@@ -10,12 +10,8 @@ from torch.distributions import Normal
 from torch.distributions.independent import Independent
 
 from npf.architectures import MLP, merge_flat_input
-from npf.utils.helpers import (
-    MultivariateNormalDiag,
-    dist_to_device,
-    isin_range,
-    make_abs_conv,
-)
+from npf.utils.helpers import (MultivariateNormalDiag, dist_to_device,
+                               isin_range, make_abs_conv)
 from npf.utils.initialization import weights_init
 
 from .helpers import pool_and_replicate_middle, replicate_z_samples

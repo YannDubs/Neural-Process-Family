@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 import random
@@ -12,12 +13,12 @@ import torch
 from skorch.dataset import unpack_data
 from torchvision.utils import make_grid
 
-from npf import GridConvCNP
+from npf import GridConvCNP, LatentNeuralProcessFamily
 from npf.utils.datasplit import GridCntxtTrgtGetter
 from npf.utils.helpers import MultivariateNormalDiag, channels_to_2nd_dim, prod
 from npf.utils.predict import SamplePredictor
 from utils.data import cntxt_trgt_collate
-from utils.helpers import set_seed, tuple_cont_to_cont_tuple
+from utils.helpers import mean, set_seed, tuple_cont_to_cont_tuple
 from utils.train import EVAL_FILENAME
 
 __all__ = [
@@ -29,6 +30,7 @@ __all__ = [
 ]
 
 DFLT_FIGSIZE = (17, 9)
+logger = logging.getLogger(__name__)
 
 
 def plot_dataset_samples_imgs(
@@ -79,7 +81,7 @@ def get_posterior_samples(
 
     else:
         if img_indcs is None:
-            img_indcs = [random.randint(0, len(data)) for _ in range(n_plots)]
+            img_indcs = [random.randint(0, len(data) - 1) for _ in range(n_plots)]
         n_plots = len(img_indcs)
         imgs = [data[i] for i in img_indcs]
 
@@ -110,6 +112,7 @@ def get_posterior_samples(
     return y_pred, mask_cntxt, Y_cntxt, mask_trgt
 
 
+# TO DOC
 def plot_img_marginal_pred(
     model,
     data,
@@ -118,9 +121,10 @@ def plot_img_marginal_pred(
     n_samples=5,
     is_uniform_grid=True,
     seed=123,
-    n_plots_loop=30,
+    n_plots_loop=1,
     wspace=0.3,
     n_marginals=5,
+    n_columns=2,
     **kwargs,
 ):
     f, (ax0, ax1) = plt.subplots(
@@ -137,18 +141,23 @@ def plot_img_marginal_pred(
         n_samples=None,
     )
 
+    if predictive_all.base_dist.loc.shape[0] == 1:
+        logger.warning(
+            "There's only a single sample of the posterior predictive, we treat it as the marginal."
+        )
+
+    arange = torch.linspace(0, 1, 1000)
+    if is_uniform_grid:
+        arange_marg = arange.view(1, 1000, 1, 1, 1)
+    else:
+        arange_marg = arange.view(1, 1000, 1, 1)
+
     best = float("inf")
     for i in range(n_plots_loop):
         predictive = MultivariateNormalDiag(
             predictive_all.base_dist.loc[:, i : i + 1, ...],
             predictive_all.base_dist.scale[:, i : i + 1, ...],
         )
-
-        arange = torch.linspace(0, 1, 1000)
-        if is_uniform_grid:
-            arange_marg = arange.view(1, 1000, 1, 1, 1)
-        else:
-            arange_marg = arange.view(1, 1000, 1, 1)
 
         out = (
             marginal_log_like(predictive, arange_marg)
@@ -166,6 +175,9 @@ def plot_img_marginal_pred(
             best_X = X[i : i + 1, ...]
             best_mask_trgt = mask_trgt[i : i + 1, ...]
             best = np.median(best_sarles)
+            best_pred = predictive
+            best_pred.base_dist.loc = predictive.base_dist.loc[:n_samples, ...]
+            best_pred.base_dist.scale = predictive.base_dist.scale[:n_samples, ...]
 
     idx = np.argsort(best_sarles)[:n_marginals]
     ax1.plot(arange, best_out[:, idx], alpha=0.7)
@@ -185,9 +197,13 @@ def plot_img_marginal_pred(
         seed=seed,
         n_samples=n_samples,
         ax=ax0,
-        outs=[best_mean_ys, best_mask_cntxt, best_X, best_mask_trgt],
+        outs=[best_pred, best_mask_cntxt, best_X, best_mask_trgt],
+        is_add_annot=False,
+        n_plots=n_columns,
         **kwargs,
     )
+
+    return f
 
 
 def plot_posterior_samples(
@@ -205,8 +221,9 @@ def plot_posterior_samples(
     n_samples=1,
     outs=None,
     is_select_different=False,
-    is_plot_std=True,
+    is_plot_std=False,
     is_add_annot=True,
+    is_mask_cntxt=True,
 ):
     """
     Plot the mean of the estimated posterior for images.
@@ -264,6 +281,11 @@ def plot_posterior_samples(
 
     is_add_annot : bool, optional   
         Whether to add annotations *context, mean, ...).
+
+    is_mask_cntxt : bool, optional
+        Whether to mask the context. If false plors the entire image, this is especially usefull 
+        when doing superresolution as all the image corresponds to the downscaled image. In this
+        case, `get_cntxt_trgt` should be `SuperresolutionCntxtTrgtGetter`.
     """
     if outs is None:
         y_pred, mask_cntxt, X, mask_trgt = get_posterior_samples(
@@ -280,7 +302,14 @@ def plot_posterior_samples(
     else:
         y_pred, mask_cntxt, X, mask_trgt = outs
 
-    mean_ys = y_pred.base_dist.loc
+    if n_samples > 1 and not isinstance(model, LatentNeuralProcessFamily):
+        if is_plot_std:
+            raise ValueError("Cannot plot std when sampling from a CNPF.")
+        # sampling for CNPFS
+        mean_ys = y_pred.sample_n(n_samples)[:, 0, ...]
+    else:
+        mean_ys = y_pred.base_dist.loc
+
     mean_y = mean_ys[0]
 
     if n_samples > mean_ys.size(0):
@@ -305,7 +334,7 @@ def plot_posterior_samples(
     out_cntxt = plot_single_img(
         data,
         X,
-        mask_cntxt,
+        mask_cntxt if is_mask_cntxt else torch.ones_like(mask_cntxt).bool(),
         is_uniform_grid,
         downscale_factor=get_downscale_factor(get_cntxt_trgt),
     )
@@ -361,7 +390,7 @@ def plot_posterior_samples(
         for i in range(1, n_samples + 1):
             y_ticks += [middle_img * (2 * i + 1)]
             if n_samples > 1:
-                y_ticks_labels += [f"Mean {i}"]
+                y_ticks_labels += [f"Sample {i}"]
             else:
                 y_ticks_labels += [f"Pred. Mean"]
 
@@ -401,13 +430,13 @@ def plot_qualitative_with_kde(
     title=None,
     seed=123,
     height_ratios=[1, 3],
-    font_size=14,
+    font_size=12,
     h_pad=-3,
     x_lim={},
     is_smallest_xrange=False,
     kdeplot_kwargs={},
     n_samples=1,
-    test_upscale_factor=1,
+    upscale_factor=1,
     **kwargs,
 ):
     """
@@ -448,12 +477,13 @@ def plot_qualitative_with_kde(
     x_lim : dict, optional
         Dictionary containing one (or both) of "left", "right" correspomding to the x limit of kde plot.
     
-    is_smallest_xrange=False,
+    is_smallest_xrange : bool, optional
+        Whether to rescale the x axis based on the range of percentils.
     
     kdeplot_kwargs : dict, optional
         Additional arguments to `sns.kdeplot`
 
-    test_upscale_factor : float, optional
+    upscale_factor : float, optional
         Whether to upscale the image => extrapolation. Only if not uniform grid.
     
     kwargs
@@ -473,11 +503,9 @@ def plot_qualitative_with_kde(
         2, 1, figsize=figsize, gridspec_kw={"height_ratios": height_ratios}
     )
 
-    # a dictionary that has "test_upscale_factor" which is needed for downscaling when plotting
+    # a dictionary that has "upscale_factor" which is needed for downscaling when plotting
     # only is not grided
-    CntxtTrgtDictUpscale = partial(
-        CntxtTrgtDict, test_upscale_factor=test_upscale_factor
-    )
+    CntxtTrgtDictUpscale = partial(CntxtTrgtDict, upscale_factor=upscale_factor)
 
     def _plot_kde_loglike(name, trainer):
         chckpnt_dirname = dict(trainer.callbacks_)["Checkpoint"].dirname
@@ -490,7 +518,7 @@ def plot_qualitative_with_kde(
         return test_loglike
 
     def _grid_to_points(selected_data):
-        cntxt_trgt_getter = GridCntxtTrgtGetter(test_upscale_factor=test_upscale_factor)
+        cntxt_trgt_getter = GridCntxtTrgtGetter(upscale_factor=upscale_factor)
 
         for i in range(n_images):
             X = selected_data["Y_cntxt"][i]
@@ -732,12 +760,13 @@ def keep_most_different_samples_(samples, n_samples, p=2):
     loc = samples.base_dist.loc
     scale = samples.base_dist.scale
 
+    # select the first image to start with
     selected_idcs = [0]
-    pool_idcs = set(range(1, len(n_possible_samples)))
+    pool_idcs = set(range(1, n_possible_samples))
 
     for i in range(n_samples - 1):
         mean_distances = {
-            i: np.mean(
+            i: mean(
                 [
                     torch.dist(loc[selected_idx], loc[i], p=p)
                     for selected_idx in selected_idcs
@@ -746,10 +775,11 @@ def keep_most_different_samples_(samples, n_samples, p=2):
             for i in pool_idcs
         }
         idx_to_select = max(mean_distances, key=mean_distances.get)
-        selected_idcs.append(pool_idcs.pop(idx_to_select))
+        selected_idcs.append(idx_to_select)
+        pool_idcs.remove(idx_to_select)
 
     samples.base_dist.loc = loc[selected_idcs]
-    samples.base_dist.scale = loc[selected_idcs]
+    samples.base_dist.scale = scale[selected_idcs]
 
 
 def marginal_log_like(predictive, samples):
@@ -776,7 +806,7 @@ def get_downscale_factor(get_cntxt_trgt):
     """Return the scaling factor for the test set (used when extrapolation.)"""
     downscale_factor = 1
     try:
-        downscale_factor = get_cntxt_trgt.test_upscale_factor
+        downscale_factor = get_cntxt_trgt.upscale_factor
     except AttributeError:
         pass
     return downscale_factor
@@ -835,8 +865,8 @@ def points_to_grid(
 
 
 class CntxtTrgtDict(dict):
-    """Dictionary that has `test_upscale_factor` argument."""
+    """Dictionary that has `upscale_factor` argument."""
 
-    def __init__(self, *arg, test_upscale_factor=1, **kw):
-        self.test_upscale_factor = test_upscale_factor
+    def __init__(self, *arg, upscale_factor=1, **kw):
+        self.upscale_factor = upscale_factor
         super().__init__(*arg, **kw)
