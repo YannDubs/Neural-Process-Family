@@ -58,5 +58,4 @@ train_*.py
 *.idea
 *.bak
 *.npy
-*.txt
 *.sh
