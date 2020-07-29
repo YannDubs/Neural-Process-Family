@@ -11,7 +11,7 @@ We are using [jupyter book](https://jupyterbook.org/intro.html) for the website.
 **Publish and view**
 - `pip install -r requirements.txt` and  `pip install -r jupyter/requirements.txt`
 - run `jupyter-book build jupyter/`
-- view locally by opening `file://[path]/jupyter/_build/html/intro.html` in your browser (replace `[path]`)
+- view locally by opening `file://[path]/jupyter/_build/html/index.html` in your browser (replace `[path]`)
 - **ONLY TO PUT IT PUBLIC** upload to github pages `ghp-import -n -p -f jupyter/_build/html` (ensure `pip install ghp-import`)
 - If you don't see the changes try removing the cache (force reload) of your browser. If it still does not work remove `jupyter/_build/html` and build again.
 
