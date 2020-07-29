@@ -13,6 +13,7 @@ logs/
 __MACOSX/
 *Hope*
 *XL*
+_build/
 
 # Results
 results/
