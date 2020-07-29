@@ -20,6 +20,7 @@ html:
   favicon: "favicon.ico"
   home_page_in_navbar: true
 
-sphinx:
-  extra_extensions:
-   - sphinxcontrib.proof
+# sphinx:
+#   extra_extensions:
+#    - sphinxcontrib.proof
+#    - sphinx_panels
