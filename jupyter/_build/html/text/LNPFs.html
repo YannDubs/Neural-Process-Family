@@ -143,44 +143,56 @@
     </div>
     <div class="col pl-2 topbar-main">
         
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
             <i class="fas fa-bars"></i>
             <i class="fas fa-arrow-left"></i>
             <i class="fas fa-arrow-up"></i>
         </button>
         
         <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
 
-            
-            <div class="dropdown-buttons">
-                <!-- ipynb file if we had a myst markdown file -->
-                
-                <!-- Download raw file -->
-                <a class="dropdown-buttons" href="../_sources/text/LNPFs.md"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.md</button></a>
-                <!-- Download PDF via print -->
-                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-            </div>
-            
-        </div>
-
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/text/LNPFs.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
         <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
         
-        <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-            <div class="dropdown-buttons sourcebuttons">
-                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
-                
-                
-            </div>
-        </div>
         
+    </div>
+</div>
+
 
         <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
         <!-- Launch buttons -->
-        
+
     </div>
     <div class="d-none d-md-block col-md-2 bd-toc show">
 <div class="tocsection onthispage pt-5 pb-3">
@@ -268,8 +280,13 @@ With the additional issue that the conditional prior cannot is unkown so we repl
 <p class="caption"><span class="caption-number">Fig. 23 </span><span class="caption-text">Computational graph for LNPS. [drop?]</span><a class="headerlink" href="#computational-graph-lnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>The latent neural process <a class="bibtex reference internal" href="../zbibliography.html#garnelo2018neural" id="id2">[GSR+18]</a> is the latent counterpart of CNP, i.e. once we have a representatoin <span class="math notranslate nohighlight">\(R\)</span> we will pass it through a MLP to predict the mean and variance of the latent representation from which to sample.
-See <a class="reference internal" href="#graph-model-lnps-text"><span class="std std-numref">Fig. 22</span></a> for the graphical model and <a class="reference internal" href="#computational-graph-lnps-text"><span class="std std-numref">Fig. 23</span></a> for the computational graph [… worth putting  computational graph ? …].
-[theory …]</p>
+See <a class="reference internal" href="#graph-model-lnps-text"><span class="std std-numref">Fig. 22</span></a> for the graphical model and <a class="reference internal" href="#computational-graph-lnps-text"><span class="std std-numref">Fig. 23</span></a> for the computational graph.</p>
+<div class="dropdown caution admonition">
+<p class="admonition-title">Advanced</p>
+<p>Theoretical gains of using a latent variable
+More information in <a class="reference internal" href="Theory.html"><span class="doc">Additional Theory</span></a></p>
+</div>
+<p>Note on heteroskedastic noise which is strange and as a result in the case of modeling GPs it collapses to CNPs if you do not use a lower bound[]…</p>
 <div class="figure align-default" id="lnp-rbf-text">
 <a class="reference internal image-reference" href="../_images/LNP_rbf.gif"><img alt="LNP on GP with RBF kernel" src="../_images/LNP_rbf.gif" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 24 </span><span class="caption-text">Samples from posterior predictive of LNPs (Blue) and the oracle GP (Green) with RBF kernel.</span><a class="headerlink" href="#lnp-rbf-text" title="Permalink to this image">¶</a></p>
@@ -335,7 +352,7 @@ In other words, even though the deterministic representation is <span class="mat
 <li><p>talk about global representation ?</p></li>
 </ul>
 <div class="figure align-default" id="convlnp-single-gp-extrap-text">
-<a class="reference internal image-reference" href="../_images/ConvLNP_single_gp_extrap.gif"><img alt="ConvLNP on GPs with RBF, periodic, Matern kernel" src="../_images/ConvLNP_single_gp_extrap.gif" style="width: 35em;" /></a>
+<a class="reference internal image-reference" href="../_images/ConvLNP_single_gp_extrap1.gif"><img alt="ConvLNP on GPs with RBF, periodic, Matern kernel" src="../_images/ConvLNP_single_gp_extrap1.gif" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 31 </span><span class="caption-text">Samples Posterior predictive of AttnLNPs (Blue) and the oracle GP (Green) with RBF,periodic, and noisy Matern kernel.</span><a class="headerlink" href="#convlnp-single-gp-extrap-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>From <a class="reference internal" href="#convlnp-single-gp-extrap-text"><span class="std std-numref">Fig. 31</span></a> we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to <a class="reference internal" href="#attnlnp-single-gp-text"><span class="std std-numref">Fig. 27</span></a>.</p>
@@ -357,7 +374,7 @@ In other words, even though the deterministic representation is <span class="mat
 <a class="reference internal image-reference" href="../_images/ConvLNP_img1.gif"><img alt="ConvLNP on CelebA, MNIST, ZSMM" src="../_images/ConvLNP_img1.gif" style="width: 45em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 34 </span><span class="caption-text">Samples from posterior predictive of an ConvCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, ZSMM.</span><a class="headerlink" href="#convlnp-img-text" title="Permalink to this image">¶</a></p>
 </div>
-<p>[REVERT PLOTS OF CONVLNP, i made a small modifiviation which looks bad…]</p>
+<p>[REVERT PLOTS OF CONVLNP, I made a small modificiation which looks bad…]</p>
 <div class="section" id="issues-of-lnpfs">
 <h3>Issues of LNPFs<a class="headerlink" href="#issues-of-lnpfs" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">

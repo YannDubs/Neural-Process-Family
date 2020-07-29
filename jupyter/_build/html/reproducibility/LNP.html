@@ -143,44 +143,56 @@
     </div>
     <div class="col pl-2 topbar-main">
         
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
             <i class="fas fa-bars"></i>
             <i class="fas fa-arrow-left"></i>
             <i class="fas fa-arrow-up"></i>
         </button>
         
         <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
 
-            
-            <div class="dropdown-buttons">
-                <!-- ipynb file if we had a myst markdown file -->
-                
-                <!-- Download raw file -->
-                <a class="dropdown-buttons" href="../_sources/reproducibility/LNP.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.ipynb</button></a>
-                <!-- Download PDF via print -->
-                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-            </div>
-            
-        </div>
-
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/reproducibility/LNP.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
         <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
         
-        <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-            <div class="dropdown-buttons sourcebuttons">
-                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
-                
-                
-            </div>
-        </div>
         
+    </div>
+</div>
+
 
         <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
         <!-- Launch buttons -->
-        
+
     </div>
     <div class="d-none d-md-block col-md-2 bd-toc show">
 <div class="tocsection onthispage pt-5 pb-3">
@@ -539,65 +551,35 @@ See its docstring for possible parameters. The only difference with <a class="re
 <div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
 --- Loading RBF_Kernel/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>RBF_Kernel/LNP/run_0 | best epoch: None | train loss: 60.4488 | valid loss: None | test log likelihood: -37.1932
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+RBF_Kernel/LNP/run_0 | best epoch: None | train loss: 60.4488 | valid loss: None | test log likelihood: -37.1932
+
 --- Loading Periodic_Kernel/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Periodic_Kernel/LNP/run_0 | best epoch: None | train loss: 125.5136 | valid loss: None | test log likelihood: -122.6891
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Periodic_Kernel/LNP/run_0 | best epoch: None | train loss: 125.5136 | valid loss: None | test log likelihood: -122.6891
+
 --- Loading Noisy_Matern_Kernel/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Noisy_Matern_Kernel/LNP/run_0 | best epoch: None | train loss: 120.2593 | valid loss: None | test log likelihood: -105.8851
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Noisy_Matern_Kernel/LNP/run_0 | best epoch: None | train loss: 120.2593 | valid loss: None | test log likelihood: -105.8851
+
 --- Loading Variable_Matern_Kernel/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Variable_Matern_Kernel/LNP/run_0 | best epoch: None | train loss: -78.7534 | valid loss: None | test log likelihood: -674.3751
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Variable_Matern_Kernel/LNP/run_0 | best epoch: None | train loss: -78.7534 | valid loss: None | test log likelihood: -674.3751
+
 --- Loading All_Kernels/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>All_Kernels/LNP/run_0 | best epoch: None | train loss: 100.7922 | valid loss: None | test log likelihood: -76.0236
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+All_Kernels/LNP/run_0 | best epoch: None | train loss: 100.7922 | valid loss: None | test log likelihood: -76.0236
+
 --- Loading celeba32/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>celeba32/LNP/run_0 | best epoch: 50 | train loss: -3202.3485 | valid loss: -3365.3483 | test log likelihood: 3357.6426
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+celeba32/LNP/run_0 | best epoch: 50 | train loss: -3202.3485 | valid loss: -3365.3483 | test log likelihood: 3357.6426
+
 --- Loading mnist/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>mnist/LNP/run_0 | best epoch: 50 | train loss: -2556.1151 | valid loss: -2690.7319 | test log likelihood: 2686.5392
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+mnist/LNP/run_0 | best epoch: 50 | train loss: -2556.1151 | valid loss: -2690.7319 | test log likelihood: 2686.5392
+
 --- Loading zsmms/LNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>zsmms/LNP/run_0 | best epoch: 9 | train loss: -1923.4493 | valid loss: -1228.2505 | test log likelihood: 112.0439
+zsmms/LNP/run_0 | best epoch: 9 | train loss: -1923.4493 | valid loss: -1228.2505 | test log likelihood: 112.0439
 </pre></div>
 </div>
 </div>

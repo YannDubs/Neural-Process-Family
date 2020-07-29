@@ -1,5 +1,7 @@
 # Neural Process Family
 
+In this tutorial, we introduce the **Neural Process Family** (NPF). Neural Processes are a family of deep learning architectures that model **predictive stochastic processes** with neural networks. The framework is quite general, and NPF members admit flexible, neural network based parameterisations, opening them up to many important settings. For example, in addition to allowing parameterisations for standard structured data such as discrete time-series and images, they also admit parameterisations for continuous domains, making them useful in settings where deep learning is typically not considered, such as continuous-time regression and spatio-temporal modelling.
+
 % I don't know how to put them side by side :/
 
 ```{figure} ../gifs/ConvLNP_norbf_gp_extrap.gif
@@ -20,11 +22,12 @@ alt: Increasing image resolution with ConvCNP
 Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP.
 ```
 
+The goal of this tutorial is to provide a gentle introduction to the NPF. Our approach is to walk through several prominent members of the NPF, highlighting their key advantages and drawbacks. By accompanying the exposition with code and examples, we hope to (i) make the design choices and tradeoffs associated with the different models clear and intuitive, and (ii) demonstrate both the simplicity of the framework and its broad applicability.
 
+Throughout the tutorial, we consider two parallel narratives:
 
-**Neural Processes Family (NPFs)** are a family of models that can be thought of as:
-1. (Statistics Perspective) Modelling **stochastic processes** with neural networks by using large datasets instead of explicitely defining the finite-dimensional distribution.
-2. (Deep Learning Perspective) Performing **meta learning** with uncertainty estimates.
+1. **Probabilistic meta-learning**: NPFs are naturally geared for the meta-learning setting, which has recently been demonstrated to be extremely useful in many important settings. Arguably, the most prominent applications of meta-learning arise when data for each task is sparse, motivating the need to account for **uncertainty**. As we shall see, NPF models provide an elegant framework for modelling uncertainty, both in our predictive distributions and inferences associated with particular tasks.
+2. **Modelling stochastic processes**: A more formal treatment can be achieved by considering maps from a space of finite datasets to a space of predictive stochastic processes. A general view of the NPF is as _deploying and training neural networks to approximate maps of this form_. While the majority of this tutorial avoids such mathematical constructions, this framework is useful for formalising (and proving) important statements about the NPF. As such, we allude to this view when appropriate, and provide more complete derivations and proofs in INSERT REF for the interested reader.
 
 ```{figure} ../gifs/NPFs.gif
 ---
@@ -56,13 +59,13 @@ Outside of NPFs, stochastic processes are typically modelled by choosing the for
 For example, this is the approach of [Gaussian Processes](https://distill.pub/2019/visual-exploration-gaussian-processes/) (GPs), which uses a multivariate normal distribution for any $p(\mathbf{y}|\mathbf{x})$.
 To define a proper stochastic process using $p(\mathbf{y}|\mathbf{x})$, it essentially needs to satisfy two consistency conditions ([Kolmogorov existence theorem](https://en.wikipedia.org/wiki/Kolmogorov_extension_theorem)) that can informally be summarized as follows :
 
-* **Permutation invariance** 
+* **Permutation invariance**
 $p(\mathbf{y}|\mathbf{x})=p(\pi(\mathbf{y})|\pi(\mathbf{x}))$ for all permutations $\pi$ on $1, ..., |\mathbf{y}|$. In other words, $\mathbf{x}$ and $\mathbf{y}$ are sets and should thus be unordered.
 
-* **Consistent under marginalizaion** 
-$p(\mathbf{y}|\mathbf{x})= \int p(\mathbf{y}'|\mathbf{x}') p(\mathbf{y}|\mathbf{x},\mathbf{y}',\mathbf{x}') d\mathbf{y}'$, for all $\mathbf{x}'$. 
+* **Consistent under marginalizaion**
+$p(\mathbf{y}|\mathbf{x})= \int p(\mathbf{y}'|\mathbf{x}') p(\mathbf{y}|\mathbf{x},\mathbf{y}',\mathbf{x}') d\mathbf{y}'$, for all $\mathbf{x}'$.
 
-By ensuring that these two condition hold, one can use standard probability rules and inherits nice mathematical properties. 
+By ensuring that these two condition hold, one can use standard probability rules and inherits nice mathematical properties.
 Unfortunately stochastic processes are usually computationally inefficient.
 For example predicting values of a target set using GPs takes time which is cubic in the context set $\mathcal{O}(|\mathcal{C}|^3)$.
 
@@ -76,13 +79,13 @@ alt: high level computational graph of NPF
 High level computational graph of the Neural Process Family.
 ```
 
-In contrast, the core idea of NPFs is to directly model the posterior predictive using neural networks $p( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) \approx q_{\boldsymbol \theta}(\mathbf{y}_{\mathcal{T}}  | \mathbf{x}_{\mathcal{T}}, \mathcal{C})$. 
+In contrast, the core idea of NPFs is to directly model the posterior predictive using neural networks $p( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) \approx q_{\boldsymbol \theta}(\mathbf{y}_{\mathcal{T}}  | \mathbf{x}_{\mathcal{T}}, \mathcal{C})$.
 It does so by encoding all the context set $\mathcal{C}$ to a global representation $R$ and then decoding from it for each target point.
 The core of NPFs is that the encoder is permutation invariant, i.e. treats $\mathcal{C}$ as a set, to satisfy the first consistency condition of stochastic processes.
 
 
 ```{warning}
-Although all NPFs use permutation invariant encoders to satisfy the first consistency condition, they usually are not consistent under marginalization and thus aren't proper stochastic processes. 
+Although all NPFs use permutation invariant encoders to satisfy the first consistency condition, they usually are not consistent under marginalization and thus aren't proper stochastic processes.
 As a result, they sacrifice many nice mathematical properties.
 [... Practical issues ? ...]
 ```
@@ -90,19 +93,19 @@ As a result, they sacrifice many nice mathematical properties.
 ## NPF Members
 
 The major difference across the NPF, lies in the chosen encoder.
-Usually (see {numref}`NPFs`) it first encode each context points separately ("local encoding") $x^{(c)}, y^{(c)} \mapsto R^{(c)}$ and then aggregates those in a representation for the entire context set $\mathrm{Agg}\left(\{R^{(c)}\}_{c=1}^{C} \right) \mapsto R$ . 
+Usually (see {numref}`NPFs`) it first encode each context points separately ("local encoding") $x^{(c)}, y^{(c)} \mapsto R^{(c)}$ and then aggregates those in a representation for the entire context set $\mathrm{Agg}\left(\{R^{(c)}\}_{c=1}^{C} \right) \mapsto R$ .
 Conditioned on this representation, all the target values become independent (factorization assumption) $q_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, R) =  \prod_{t=1}^{T} q_{\boldsymbol\theta}(y^{(t)} |  x^{(t)}, R)$.
 
 NPFs can essentially be categorized into 2 sub-families depending on whether the global representation is treated as a latent variable ({doc}`Latent NPFs <LNPFs>`[^LNPs]) or not ({doc}`Conditional NPFs <CNPFs>`).
 Inside each subfamily, the member essentially differ in how the representation is generated.
-As we have already seen, the encoder is always permutation invariant. Specifically the aggregator $\mathrm{Agg}$ can be arbitrarily complex but is invariant to all permutations $\pi$ on $1, ..., C$: 
+As we have already seen, the encoder is always permutation invariant. Specifically the aggregator $\mathrm{Agg}$ can be arbitrarily complex but is invariant to all permutations $\pi$ on $1, ..., C$:
 
 ```{math}
 ---
 label: permut_inv
 ---
 \begin{align}
-\mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)=\mathrm{Agg}\left(\pi\left(\{R^{(c)}\}_{c=1}^{C} \right)\right) 
+\mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)=\mathrm{Agg}\left(\pi\left(\{R^{(c)}\}_{c=1}^{C} \right)\right)
 \end{align}
 ```
 
@@ -132,17 +135,17 @@ name: summary_npf
   - Comp. Complexity
 * - {doc}`CNP <../reproducibility/CNP>` {cite}`garnelo2018conditional`,{doc}`LNP <../reproducibility/LNP>` {cite}`garnelo2018neural`
   - mean
-  - 
-  - 
-  - 
+  -
+  -
+  -
   - $\mathcal{O}(T+C)$
 * - {doc}`AttnCNP <../reproducibility/AttnCNP>` [^AttnCNP], {doc}`AttnLNP <../reproducibility/AttnLNP>` {cite}`kim2019attentive`
   - attention
-  - 
+  -
   - True
-  - 
+  -
   - $\mathcal{O}(C(T+C))$
-* - {doc}`ConvCNP <../reproducibility/ConvCNP>` {cite}`gordon2019convolutional`,{doc}`ConvLNP <../reproducibility/ConvLNP>`  {cite}`foong2020convnp`. 
+* - {doc}`ConvCNP <../reproducibility/ConvCNP>` {cite}`gordon2019convolutional`,{doc}`ConvLNP <../reproducibility/ConvLNP>`  {cite}`foong2020convnp`.
   - convolution
   - True
   - True
@@ -164,10 +167,10 @@ The parameters are estimated by minimizing the expectation of the negative condi
 We optimize it using stochastic gradient descent:
 
 1. Sample size of context set $C \sim \mathrm{Unif}(0,|\mathcal{X}|)$
-2. Sample $C$ context features $\mathbf{x}_{\mathcal{C}} \sim p(\mathbf{x}_{\mathcal{C}})$. 
+2. Sample $C$ context features $\mathbf{x}_{\mathcal{C}} \sim p(\mathbf{x}_{\mathcal{C}})$.
 3. Sample associated values $\mathbf{y}_{\mathcal{C}} \sim p(\mathbf{y}_{\mathcal{C}} | \mathbf{x}_{\mathcal{C}})$.
-4. Do the the same for the target set $\mathbf{x}_{\mathcal{T}},\mathbf{y}_{\mathcal{T}}$ [^sampleTargets]. 
-5. Compute the MC gradients of the negative log likelihood $- \nabla_{\pmb \theta} \sum_{t=1}^{T} \log p_{\boldsymbol \theta}(y^{(t)} | \mathbf{y}_\mathcal{C}; \mathbf{x}_\mathcal{C}, x^{(t)})$ 
+4. Do the the same for the target set $\mathbf{x}_{\mathcal{T}},\mathbf{y}_{\mathcal{T}}$ [^sampleTargets].
+5. Compute the MC gradients of the negative log likelihood $- \nabla_{\pmb \theta} \sum_{t=1}^{T} \log p_{\boldsymbol \theta}(y^{(t)} | \mathbf{y}_\mathcal{C}; \mathbf{x}_\mathcal{C}, x^{(t)})$
 6. Backpropagate
 
 
@@ -196,16 +199,16 @@ p_{\boldsymbol \theta}(\mathbf{y}_{\mathcal{T}}  | \mathbf{x}_{\mathcal{T}}, \ma
 $$
 
 * &#10003; **Data Driven Expressivity**. NPs require specification of prior knowledge through neural network architectures rather than a kernel function (like in GPs).
-The former is usually less restrictive due to its large amount of parameters and removing the need of satisfying certain mathematical properties. 
+The former is usually less restrictive due to its large amount of parameters and removing the need of satisfying certain mathematical properties.
 Intuitively, the NPs learn an "implicit kernel function" from the data.
 
-* &#10003; **Test-Time Scalability**. Although the computational complexity depends on the NPF they are usually more computationally efficient (at test time) than proper stochastic processes. 
+* &#10003; **Test-Time Scalability**. Although the computational complexity depends on the NPF they are usually more computationally efficient (at test time) than proper stochastic processes.
 Typically they will be linear or quadratic in the context set instead of cubic as with GPs.
 [intuituin for gain????]
 
 These advantages come at the cost of the following disadvantages
 
-* &#10007; **Lack of consistency under marginalizaion**. So NPFs are not proper stochastic processes. 
+* &#10007; **Lack of consistency under marginalizaion**. So NPFs are not proper stochastic processes.
 This essentially means that even if you had infinite computational power (to be able to marginalize) and sampled points autoregressively, the order in which you do it would change the distribution over targets.
 Formally, there exists $\mathbf{x}'$ such that:
 

@@ -11,6 +11,7 @@ The three previously discussed CNPFs can have a corresponding latent variable mo
 * equations
 * more intuition
 
+
 ## Training
 
 For training it is the same discussion as usual latent variable models 
@@ -51,8 +52,18 @@ Computational graph for LNPS. [drop?]
 ```
 
 The latent neural process {cite}`garnelo2018neural` is the latent counterpart of CNP, i.e. once we have a representatoin $R$ we will pass it through a MLP to predict the mean and variance of the latent representation from which to sample.
-See {numref}`graph_model_LNPs_text` for the graphical model and {numref}`computational_graph_LNPs_text` for the computational graph [... worth putting  computational graph ? ...].
-[theory ...]
+See {numref}`graph_model_LNPs_text` for the graphical model and {numref}`computational_graph_LNPs_text` for the computational graph.
+
+```{admonition} Advanced
+---
+class: dropdown, caution
+---
+Theoretical gains of using a latent variable
+More information in {doc}`Additional Theory <Theory>`
+```
+
+Note on heteroskedastic noise which is strange and as a result in the case of modeling GPs it collapses to CNPs if you do not use a lower bound[]...
+
 
 ```{figure} ../gifs/LNP_rbf.gif
 ---
@@ -214,7 +225,7 @@ alt: ConvLNP on CelebA, MNIST, ZSMM
 Samples from posterior predictive of an ConvCNP for CelebA $32\times32$, MNIST, ZSMM.
 ```
 
-[REVERT PLOTS OF CONVLNP, i made a small modifiviation which looks bad...]
+[REVERT PLOTS OF CONVLNP, I made a small modificiation which looks bad...]
 
 ### Issues of LNPFs
 

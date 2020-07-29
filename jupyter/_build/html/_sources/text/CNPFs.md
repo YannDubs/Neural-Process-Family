@@ -243,7 +243,7 @@ Functional representation [...], discretization [...], {numref}`computational_gr
 class: dropdown, caution
 ---
 ConvDeepSet representation theorem [...] 
-More information in {doc}`AttnCNP Notebook <Theory>`
+More information in {doc}`Additional Theory <Theory>`
 ```
 
 ```{admonition} Computational Complexity

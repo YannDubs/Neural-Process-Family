@@ -142,44 +142,56 @@
     </div>
     <div class="col pl-2 topbar-main">
         
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
             <i class="fas fa-bars"></i>
             <i class="fas fa-arrow-left"></i>
             <i class="fas fa-arrow-up"></i>
         </button>
         
         <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
 
-            
-            <div class="dropdown-buttons">
-                <!-- ipynb file if we had a myst markdown file -->
-                
-                <!-- Download raw file -->
-                <a class="dropdown-buttons" href="../_sources/text/Intro.md"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.md</button></a>
-                <!-- Download PDF via print -->
-                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-            </div>
-            
-        </div>
-
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/text/Intro.md"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
         <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
         
-        <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-            <div class="dropdown-buttons sourcebuttons">
-                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
-                
-                
-            </div>
-        </div>
         
+    </div>
+</div>
+
 
         <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
         <!-- Launch buttons -->
-        
+
     </div>
     <div class="d-none d-md-block col-md-2 bd-toc show">
 <div class="tocsection onthispage pt-5 pb-3">
@@ -226,6 +238,7 @@
                 
   <div class="section" id="neural-process-family">
 <h1>Neural Process Family<a class="headerlink" href="#neural-process-family" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we introduce the <strong>Neural Process Family</strong> (NPF). Neural Processes are a family of deep learning architectures that model <strong>predictive stochastic processes</strong> with neural networks. The framework is quite general, and NPF members admit flexible, neural network based parameterisations, enabling them to be applied to many important settings. For example, in addition to allowing parameterisations for standard structured data such as discrete time-series and images, they also admit parameterisations for continuous domains, making them useful in domains where deep learning is typically not considered, such as continuous-time regression and spatio-temporal modelling.</p>
 <div class="figure align-default" id="convlnp-norbf-gp-extrap">
 <a class="reference internal image-reference" href="../_images/ConvLNP_norbf_gp_extrap.gif"><img alt="Samples from ConvLNP trained on GPs" src="../_images/ConvLNP_norbf_gp_extrap.gif" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Sampled functions from ConvLNPs (Blue) and the oracle GP (Green) with Periodic or Noisy Matern kernel.</span><a class="headerlink" href="#convlnp-norbf-gp-extrap" title="Permalink to this image">¶</a></p>
@@ -234,10 +247,11 @@
 <a class="reference internal image-reference" href="../_images/ConvCNP_superes.png"><img alt="Increasing image resolution with ConvCNP" src="../_images/ConvCNP_superes.png" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Increasing the resolution of <span class="math notranslate nohighlight">\(16 \times 16\)</span> CelebA to <span class="math notranslate nohighlight">\(128 \times 128\)</span> with a ConvCNP.</span><a class="headerlink" href="#convcnp-superes-intro" title="Permalink to this image">¶</a></p>
 </div>
-<p><strong>Neural Processes Family (NPFs)</strong> are a family of models that can be thought of as:</p>
+<p>The goal of this tutorial is to provide a gentle introduction to the NPF. Our approach is to walk through several prominent members of the NPF, highlighting their key advantages and drawbacks. By accompanying the exposition with code and examples, we hope to (i) make the design choices and tradeoffs associated with the different models clear and intuitive, and (ii) demonstrate both the simplicity of the framework and its broad applicability.</p>
+<p>Throughout the tutorial, we consider two parallel narratives:</p>
 <ol class="simple">
-<li><p>(Statistics Perspective) Modelling <strong>stochastic processes</strong> with neural networks by using large datasets instead of explicitely defining the finite-dimensional distribution.</p></li>
-<li><p>(Deep Learning Perspective) Performing <strong>meta learning</strong> with uncertainty estimates.</p></li>
+<li><p><strong>Probabilistic meta-learning</strong>: NPFs are naturally geared for the meta-learning setting, which has recently been demonstrated to be extremely useful in many important settings. Arguably, the most prominent applications of meta-learning arise when data for each task is sparse, motivating the need to account for <strong>uncertainty</strong>. As we shall see, NPF models provide an elegant framework for modelling uncertainty, both in our predictive distributions and inferences associated with particular tasks.</p></li>
+<li><p><strong>Modelling stochastic processes</strong>: A more formal treatment can be achieved by considering maps from a space of finite datasets to a space of predictive stochastic processes. A general view of the NPF is as <em>deploying and training neural networks to approximate maps of this form</em>. While the majority of this tutorial avoids such mathematical constructions, this framework is useful for formalising (and proving) important statements about the NPF. As such, we allude to this view when appropriate, and provide more complete derivations and proofs in INSERT REF for the interested reader.</p></li>
 </ol>
 <div class="figure align-default" id="npfs">
 <a class="reference internal image-reference" href="../_images/NPFs.gif"><img alt="Schematic representation of CNPF computations" src="../_images/NPFs.gif" style="width: 30em;" /></a>
@@ -293,7 +307,7 @@ Inside each subfamily, the member essentially differ in how the representation i
 As we have already seen, the encoder is always permutation invariant. Specifically the aggregator <span class="math notranslate nohighlight">\(\mathrm{Agg}\)</span> can be arbitrarily complex but is invariant to all permutations <span class="math notranslate nohighlight">\(\pi\)</span> on <span class="math notranslate nohighlight">\(1, ..., C\)</span>:</p>
 <div class="math notranslate nohighlight" id="equation-permut-inv">
 <span class="eqno">(1)<a class="headerlink" href="#equation-permut-inv" title="Permalink to this equation">¶</a></span>\[\begin{align}
-\mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)=\mathrm{Agg}\left(\pi\left(\{R^{(c)}\}_{c=1}^{C} \right)\right) 
+\mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)=\mathrm{Agg}\left(\pi\left(\{R^{(c)}\}_{c=1}^{C} \right)\right)
 \end{align}\]</div>
 <div class="dropdown caution admonition">
 <p class="admonition-title">Theory</p>

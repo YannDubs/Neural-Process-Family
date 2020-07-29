@@ -143,44 +143,56 @@
     </div>
     <div class="col pl-2 topbar-main">
         
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
             <i class="fas fa-bars"></i>
             <i class="fas fa-arrow-left"></i>
             <i class="fas fa-arrow-up"></i>
         </button>
         
         <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
 
-            
-            <div class="dropdown-buttons">
-                <!-- ipynb file if we had a myst markdown file -->
-                
-                <!-- Download raw file -->
-                <a class="dropdown-buttons" href="../_sources/reproducibility/ConvLNP.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.ipynb</button></a>
-                <!-- Download PDF via print -->
-                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-            </div>
-            
-        </div>
-
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/reproducibility/ConvLNP.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
         <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
         
-        <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-            <div class="dropdown-buttons sourcebuttons">
-                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
-                
-                
-            </div>
-        </div>
         
+    </div>
+</div>
+
 
         <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
         <!-- Launch buttons -->
-        
+
     </div>
     <div class="d-none d-md-block col-md-2 bd-toc show">
 <div class="tocsection onthispage pt-5 pb-3">
@@ -599,65 +611,35 @@ See its docstring for possible parameters. As previously discussed, we will be u
 <div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
 --- Loading RBF_Kernel/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>RBF_Kernel/ConvLNP/run_0 | best epoch: None | train loss: -225.7376 | valid loss: None | test log likelihood: 224.6257
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+RBF_Kernel/ConvLNP/run_0 | best epoch: None | train loss: -225.7376 | valid loss: None | test log likelihood: 224.6257
+
 --- Loading Periodic_Kernel/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Periodic_Kernel/ConvLNP/run_0 | best epoch: None | train loss: -290.1107 | valid loss: None | test log likelihood: 240.3113
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Periodic_Kernel/ConvLNP/run_0 | best epoch: None | train loss: -290.1107 | valid loss: None | test log likelihood: 240.3113
+
 --- Loading Noisy_Matern_Kernel/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Noisy_Matern_Kernel/ConvLNP/run_0 | best epoch: None | train loss: 85.2746 | valid loss: None | test log likelihood: -85.8749
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Noisy_Matern_Kernel/ConvLNP/run_0 | best epoch: None | train loss: 85.2746 | valid loss: None | test log likelihood: -85.8749
+
 --- Loading Variable_Matern_Kernel/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Variable_Matern_Kernel/ConvLNP/run_0 | best epoch: None | train loss: -259.9347 | valid loss: None | test log likelihood: -6854.7534
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Variable_Matern_Kernel/ConvLNP/run_0 | best epoch: None | train loss: -259.9347 | valid loss: None | test log likelihood: -6854.7534
+
 --- Loading All_Kernels/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>All_Kernels/ConvLNP/run_0 | best epoch: None | train loss: -105.7462 | valid loss: None | test log likelihood: 92.4368
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+All_Kernels/ConvLNP/run_0 | best epoch: None | train loss: -105.7462 | valid loss: None | test log likelihood: 92.4368
+
 --- Loading celeba32/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>celeba32/ConvLNP/run_0 | best epoch: 43 | train loss: -5108.3694 | valid loss: -5222.1083 | test log likelihood: 4858.8153
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+celeba32/ConvLNP/run_0 | best epoch: 43 | train loss: -5108.3694 | valid loss: -5222.1083 | test log likelihood: 4858.8153
+
 --- Loading mnist/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>mnist/ConvLNP/run_0 | best epoch: 49 | train loss: -2927.9383 | valid loss: -2930.0362 | test log likelihood: 2919.4071
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+mnist/ConvLNP/run_0 | best epoch: 49 | train loss: -2927.9383 | valid loss: -2930.0362 | test log likelihood: 2919.4071
+
 --- Loading zsmms/ConvLNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>zsmms/ConvLNP/run_0 | best epoch: 1 | train loss: -1386.7273 | valid loss: -2328.8754 | test log likelihood: 3889.5058
+zsmms/ConvLNP/run_0 | best epoch: 50 | train loss: -1914.5648 | valid loss: -2074.3662 | test log likelihood: 3889.5058
 </pre></div>
 </div>
 </div>
@@ -669,7 +651,7 @@ See its docstring for possible parameters. As previously discussed, we will be u
 <div class="section" id="gps-dataset">
 <h4>GPs Dataset<a class="headerlink" href="#gps-dataset" title="Permalink to this headline">¶</a></h4>
 <p>Let’s define a plotting function that we will use in this section. We’ll reuse the same plotting procedure as in <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a>.</p>
-<div class="cell tag_hide-input docutils container">
+<div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">PRETTY_RENAMER</span><span class="p">,</span> <span class="n">plot_multi_posterior_samples_1d</span>
 <span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
@@ -724,7 +706,7 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 </div>
 <div class="figure align-default" id="convlnp-single-gp-extrap">
-<a class="reference internal image-reference" href="../_images/ConvLNP_single_gp_extrap1.gif"><img alt="ConvLNP on single GP" src="../_images/ConvLNP_single_gp_extrap1.gif" style="width: 35em;" /></a>
+<a class="reference internal image-reference" href="../_images/ConvLNP_single_gp_extrap.gif"><img alt="ConvLNP on single GP" src="../_images/ConvLNP_single_gp_extrap.gif" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 54 </span><span class="caption-text">Posterior predictive of ConvLNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and ConvCNP trained on samples for the corresponding GP. The interpolation and extrapolation regime is delimited delimited by red dashes.</span><a class="headerlink" href="#convlnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
 </div>
 <p>From <a class="reference internal" href="#convlnp-single-gp-extrap"><span class="std std-numref">Fig. 54</span></a> we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to <a class="reference internal" href="AttnLNP.html#attnlnp-single-gp"><span class="std std-numref">Fig. 51</span></a>.</p>
@@ -763,7 +745,7 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 <div class="section" id="samples-from-gps-with-varying-kernel-hyperparameters">
 <h5>Samples from GPs with varying kernel hyperparameters<a class="headerlink" href="#samples-from-gps-with-varying-kernel-hyperparameters" title="Permalink to this headline">¶</a></h5>
 <p>We will now consider a similar experiment as before, but instead of using 3 different kernels we will use range an entire range of different kernel hyperparameters (Noisy Matern Kernel with length scale in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span>). This might seem easier than the previous task, as the kernels are more similar, but it also means that the number of possible kernels is not finite and thus we are never really training or testing on sampled from the same GP.</p>
-<div class="cell tag_hide-input docutils container">
+<div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_hyp_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Variable&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>

@@ -143,44 +143,56 @@
     </div>
     <div class="col pl-2 topbar-main">
         
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
             <i class="fas fa-bars"></i>
             <i class="fas fa-arrow-left"></i>
             <i class="fas fa-arrow-up"></i>
         </button>
         
         <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
 
-            
-            <div class="dropdown-buttons">
-                <!-- ipynb file if we had a myst markdown file -->
-                
-                <!-- Download raw file -->
-                <a class="dropdown-buttons" href="../_sources/reproducibility/ConvCNP.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.ipynb</button></a>
-                <!-- Download PDF via print -->
-                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-            </div>
-            
-        </div>
-
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/reproducibility/ConvCNP.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
         <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
         
-        <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-            <div class="dropdown-buttons sourcebuttons">
-                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
-                
-                
-            </div>
-        </div>
         
+    </div>
+</div>
+
 
         <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
         <!-- Launch buttons -->
-        
+
     </div>
     <div class="d-none d-md-block col-md-2 bd-toc show">
 <div class="tocsection onthispage pt-5 pb-3">
@@ -659,73 +671,39 @@ See its docstring for possible parameters.</p>
 <div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
 --- Loading RBF_Kernel/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>RBF_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -226.017 | valid loss: None | test log likelihood: 175.1153
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+RBF_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -226.017 | valid loss: None | test log likelihood: 175.1153
+
 --- Loading Periodic_Kernel/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Periodic_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -265.034 | valid loss: None | test log likelihood: 192.9748
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Periodic_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -265.034 | valid loss: None | test log likelihood: 192.9748
+
 --- Loading Noisy_Matern_Kernel/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Noisy_Matern_Kernel/ConvCNP/run_0 | best epoch: None | train loss: 63.0761 | valid loss: None | test log likelihood: -83.737
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Noisy_Matern_Kernel/ConvCNP/run_0 | best epoch: None | train loss: 63.0761 | valid loss: None | test log likelihood: -83.737
+
 --- Loading Variable_Matern_Kernel/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Variable_Matern_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -258.4556 | valid loss: None | test log likelihood: -2737.2886
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Variable_Matern_Kernel/ConvCNP/run_0 | best epoch: None | train loss: -258.4556 | valid loss: None | test log likelihood: -2737.2886
+
 --- Loading All_Kernels/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>All_Kernels/ConvCNP/run_0 | best epoch: None | train loss: -92.6999 | valid loss: None | test log likelihood: 81.3551
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+All_Kernels/ConvCNP/run_0 | best epoch: None | train loss: -92.6999 | valid loss: None | test log likelihood: 81.3551
+
 --- Loading celeba32/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>celeba32/ConvCNP/run_0 | best epoch: 17 | train loss: -4850.5891 | valid loss: -4957.254 | test log likelihood: 4767.8543
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+celeba32/ConvCNP/run_0 | best epoch: 17 | train loss: -4850.5891 | valid loss: -4957.254 | test log likelihood: 4767.8543
+
 --- Loading mnist/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>mnist/ConvCNP/run_0 | best epoch: 39 | train loss: -2853.58 | valid loss: -2908.0484 | test log likelihood: 2628.1879
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+mnist/ConvCNP/run_0 | best epoch: 39 | train loss: -2853.58 | valid loss: -2908.0484 | test log likelihood: 2628.1879
+
 --- Loading zsmms/ConvCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>zsmms/ConvCNP/run_0 | best epoch: 48 | train loss: -2593.7651 | valid loss: -2721.6174 | test log likelihood: 1253.1864
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+zsmms/ConvCNP/run_0 | best epoch: 48 | train loss: -2593.7651 | valid loss: -2721.6174 | test log likelihood: 1253.1864
+
 --- Loading celeba128/ConvCNPXL/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>celeba128/ConvCNPXL/run_0 | best epoch: 29 | train loss: -82314.3706 | valid loss: -78628.2975 | test log likelihood: None
+celeba128/ConvCNPXL/run_0 | best epoch: 29 | train loss: -82314.3706 | valid loss: -78628.2975 | test log likelihood: None
 </pre></div>
 </div>
 </div>
@@ -879,9 +857,6 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../_images/ConvCNP_20_0.png" src="../_images/ConvCNP_20_0.png" />
-</div>
 </div>
 </div>
 </div>
@@ -975,9 +950,18 @@ However, it does not perform great when the context set is very small or when it
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvCNP_26_0.png" src="../_images/ConvCNP_26_0.png" />
-<img alt="../_images/ConvCNP_26_1.png" src="../_images/ConvCNP_26_1.png" />
-<img alt="../_images/ConvCNP_26_2.png" src="../_images/ConvCNP_26_2.png" />
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<img alt="../_images/ConvCNP_26_3.png" src="../_images/ConvCNP_26_3.png" />
+<img alt="../_images/ConvCNP_26_4.png" src="../_images/ConvCNP_26_4.png" />
+<img alt="../_images/ConvCNP_26_5.png" src="../_images/ConvCNP_26_5.png" />
 </div>
 </div>
 <p>Although the zero shot generalization when performing on ZSMM are encouraging, it still is a simple artificial dataset.

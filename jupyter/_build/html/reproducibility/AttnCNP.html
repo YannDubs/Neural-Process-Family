@@ -143,44 +143,56 @@
     </div>
     <div class="col pl-2 topbar-main">
         
-        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse" data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu" aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation" title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
             <i class="fas fa-bars"></i>
             <i class="fas fa-arrow-left"></i>
             <i class="fas fa-arrow-up"></i>
         </button>
         
         <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i class="fas fa-download"></i></button>
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
 
-            
-            <div class="dropdown-buttons">
-                <!-- ipynb file if we had a myst markdown file -->
-                
-                <!-- Download raw file -->
-                <a class="dropdown-buttons" href="../_sources/reproducibility/AttnCNP.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip" data-placement="left">.ipynb</button></a>
-                <!-- Download PDF via print -->
-                <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF" onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-            </div>
-            
-        </div>
-
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/reproducibility/AttnCNP.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
         <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
         
-        <div class="dropdown-buttons-trigger">
-            <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-            <div class="dropdown-buttons sourcebuttons">
-                <a class="repository-button" href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left" title="Source repository"><i class="fab fa-github"></i>repository</button></a>
-                
-                
-            </div>
-        </div>
         
+    </div>
+</div>
+
 
         <!-- Full screen (wrap in <a> to have style consistency -->
-        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i class="fas fa-expand"></i></button></a>
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
 
         <!-- Launch buttons -->
-        
+
     </div>
     <div class="d-none d-md-block col-md-2 bd-toc show">
 <div class="tocsection onthispage pt-5 pb-3">
@@ -380,15 +392,9 @@ We use the same as in <a class="reference internal" href="CNP.html"><span class=
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Number Parameters (1D): 252,738
-Number Parameters (2D): 386,054
-</pre></div>
-</div>
-</div>
 </div>
 <p>For more details about all the possible parameters, refer to the docstrings of <code class="docutils literal notranslate"><span class="pre">AttnCNP</span></code> and the base class <code class="docutils literal notranslate"><span class="pre">NeuralProcessFamily</span></code>.</p>
-<div class="cell docutils container">
+<div class="cell tag_hide-output docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># AttnCNP Docstring</span>
 
@@ -500,65 +506,35 @@ See its docstring for possible parameters.</p>
 <div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
 --- Loading RBF_Kernel/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>RBF_Kernel/AttnCNP/run_0 | best epoch: None | train loss: -157.9417 | valid loss: None | test log likelihood: 149.158
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+RBF_Kernel/AttnCNP/run_0 | best epoch: None | train loss: -157.9417 | valid loss: None | test log likelihood: 149.158
+
 --- Loading Periodic_Kernel/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Periodic_Kernel/AttnCNP/run_0 | best epoch: None | train loss: 21.2395 | valid loss: None | test log likelihood: -25.4617
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Periodic_Kernel/AttnCNP/run_0 | best epoch: None | train loss: 21.2395 | valid loss: None | test log likelihood: -25.4617
+
 --- Loading Noisy_Matern_Kernel/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Noisy_Matern_Kernel/AttnCNP/run_0 | best epoch: None | train loss: 87.5571 | valid loss: None | test log likelihood: -91.5147
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Noisy_Matern_Kernel/AttnCNP/run_0 | best epoch: None | train loss: 87.5571 | valid loss: None | test log likelihood: -91.5147
+
 --- Loading Variable_Matern_Kernel/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Variable_Matern_Kernel/AttnCNP/run_0 | best epoch: None | train loss: -204.3232 | valid loss: None | test log likelihood: -4009.3233
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+Variable_Matern_Kernel/AttnCNP/run_0 | best epoch: None | train loss: -204.3232 | valid loss: None | test log likelihood: -4009.3233
+
 --- Loading All_Kernels/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>All_Kernels/AttnCNP/run_0 | best epoch: None | train loss: 74.5616 | valid loss: None | test log likelihood: -116.8501
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+All_Kernels/AttnCNP/run_0 | best epoch: None | train loss: 74.5616 | valid loss: None | test log likelihood: -116.8501
+
 --- Loading celeba32/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>celeba32/AttnCNP/run_0 | best epoch: 43 | train loss: -4760.5214 | valid loss: -4968.2048 | test log likelihood: 4828.3025
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+celeba32/AttnCNP/run_0 | best epoch: 43 | train loss: -4760.5214 | valid loss: -4968.2048 | test log likelihood: 4828.3025
+
 --- Loading mnist/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>mnist/AttnCNP/run_0 | best epoch: 39 | train loss: -2311.3486 | valid loss: -2423.4288 | test log likelihood: 2262.2453
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>
+mnist/AttnCNP/run_0 | best epoch: 39 | train loss: -2311.3486 | valid loss: -2423.4288 | test log likelihood: 2262.2453
+
 --- Loading zsmms/AttnCNP/run_0 ---
 
-</pre></div>
-</div>
-<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>zsmms/AttnCNP/run_0 | best epoch: 1 | train loss: -415.7267 | valid loss: 52463.8337 | test log likelihood: -309088.0422
+zsmms/AttnCNP/run_0 | best epoch: 1 | train loss: -415.7267 | valid loss: 52463.8337 | test log likelihood: -309088.0422
 </pre></div>
 </div>
 </div>
@@ -701,7 +677,7 @@ The issue is two fold : (i) the network takes as input the <em>absolute</em> pos
 <div class="section" id="image-dataset">
 <h4>Image Dataset<a class="headerlink" href="#image-dataset" title="Permalink to this headline">¶</a></h4>
 <p>Let us now look at images. We again will use the same plotting function defined in <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a>.</p>
-<div class="cell tag_hide-input docutils container">
+<div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">plot_multi_posterior_samples_imgs</span>
 <span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
@@ -780,11 +756,6 @@ The issue is two fold : (i) the network takes as input the <em>absolute</em> pos
     <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/AttnCNP_26_0.png" src="../_images/AttnCNP_26_0.png" />
-<img alt="../_images/AttnCNP_26_1.png" src="../_images/AttnCNP_26_1.png" />
-<img alt="../_images/AttnCNP_26_2.png" src="../_images/AttnCNP_26_2.png" />
 </div>
 </div>
 <div class="cell tag_hide-input docutils container">
