@@ -1,0 +1,10 @@
+skorch
+torch
+torchvision
+matplotlib
+tqdm
+scikit-learn
+joblib
+h5py
+seaborn
+scikit-image
