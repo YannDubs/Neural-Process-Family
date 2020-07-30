@@ -1,6 +1,6 @@
 # Neural Process Family
 
-In this tutorial, we introduce the **Neural Process Family** (NPF). Neural Processes are a family of deep learning architectures that model **predictive stochastic processes** with neural networks. The framework is quite general, and NPF members admit flexible, neural network based parameterisations, enabling them to be applied to many important settings. For example, in addition to allowing parameterisations for standard structured data such as discrete time-series and images, they also admit parameterisations for continuous domains, making them useful in domains where deep learning is typically not considered, such as continuous-time regression and spatio-temporal modelling.
+In this tutorial, we introduce the **Neural Process Family** (NPF). Neural Processes are a family of deep learning architectures that model **predictive stochastic processes** with neural networks. The framework is quite general, and NPF members admit flexible, neural network based parameterisations, opening them up to many important settings. For example, in addition to allowing parameterisations for standard structured data such as discrete time-series and images, they also admit parameterisations for continuous domains, making them useful in settings where deep learning is typically not considered, such as continuous-time regression and spatio-temporal modelling.
 
 % I don't know how to put them side by side :/
 

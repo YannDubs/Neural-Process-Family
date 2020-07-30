@@ -238,7 +238,7 @@
                 
   <div class="section" id="neural-process-family">
 <h1>Neural Process Family<a class="headerlink" href="#neural-process-family" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we introduce the <strong>Neural Process Family</strong> (NPF). Neural Processes are a family of deep learning architectures that model <strong>predictive stochastic processes</strong> with neural networks. The framework is quite general, and NPF members admit flexible, neural network based parameterisations, enabling them to be applied to many important settings. For example, in addition to allowing parameterisations for standard structured data such as discrete time-series and images, they also admit parameterisations for continuous domains, making them useful in domains where deep learning is typically not considered, such as continuous-time regression and spatio-temporal modelling.</p>
+<p>In this tutorial, we introduce the <strong>Neural Process Family</strong> (NPF). Neural Processes are a family of deep learning architectures that model <strong>predictive stochastic processes</strong> with neural networks. The framework is quite general, and NPF members admit flexible, neural network based parameterisations, opening them up to many important settings. For example, in addition to allowing parameterisations for standard structured data such as discrete time-series and images, they also admit parameterisations for continuous domains, making them useful in settings where deep learning is typically not considered, such as continuous-time regression and spatio-temporal modelling.</p>
 <div class="figure align-default" id="convlnp-norbf-gp-extrap">
 <a class="reference internal image-reference" href="../_images/ConvLNP_norbf_gp_extrap.gif"><img alt="Samples from ConvLNP trained on GPs" src="../_images/ConvLNP_norbf_gp_extrap.gif" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Sampled functions from ConvLNPs (Blue) and the oracle GP (Green) with Periodic or Noisy Matern kernel.</span><a class="headerlink" href="#convlnp-norbf-gp-extrap" title="Permalink to this image">¶</a></p>
@@ -387,7 +387,7 @@ In deep learning terms, we would say that it is trained through a <em>meta-learn
 <p>[…keep?…]</p>
 <p>NPFs generally have the following desirable properties :</p>
 <ul class="simple">
-<li><p>✓ <strong>Preserve permutation invariance</strong> as with stochastic processes. This comes from the permutation invariance of <span class="math notranslate nohighlight">\(\mathrm{Agg}\)</span> (Eq. <a class="reference internal" href="#equation-permut-inv">(1)</a>) and the factorization assumption (Eq. <a class="reference internal" href="CNPFs.html#equation-formal">(3)</a>).
+<li><p>✓ <strong>Preserve permutation invariance</strong> as with stochastic processes. This comes from the permutation invariance of <span class="math notranslate nohighlight">\(\mathrm{Agg}\)</span> (Eq. <a class="reference internal" href="#equation-permut-inv">(1)</a>) and the factorization assumption (Eq. <a class="reference internal" href="CNPFs_sketch.html#equation-formal">()</a>).
 for all permutations <span class="math notranslate nohighlight">\(\pi_{\mathcal{T}}: |\mathbf{y}_{\mathcal{T}}| \to |\mathbf{y}_{\mathcal{T}}|\)</span> and <span class="math notranslate nohighlight">\(\pi_{\mathcal{C}}: |\mathbf{y}| \to |\mathbf{y}|\)</span>:</p></li>
 </ul>
 <div class="math notranslate nohighlight">
@@ -415,7 +415,7 @@ p(\mathbf{y}'|\mathbf{x}', \mathcal{C}) d\mathbf{y}'
 \]</div>
 <ul class="simple">
 <li><p>✗ <strong>The need for large data</strong>. Learning requires collecting and training on a large dataset of target and context points sampled from different functions. I.e. a large dataset of datasets.</p></li>
-<li><p>✗ <span class="math notranslate nohighlight">\(\sim\)</span> <strong>Lack of smoothness</strong>. Due to highly non linear behaviour of neural networks and the factorized form of the predictive distribution (Eq. <a class="reference internal" href="CNPFs.html#equation-formal">(3)</a>), the output tends to be non-smooth compared to a GP.
+<li><p>✗ <span class="math notranslate nohighlight">\(\sim\)</span> <strong>Lack of smoothness</strong>. Due to highly non linear behaviour of neural networks and the factorized form of the predictive distribution (Eq. <a class="reference internal" href="CNPFs_sketch.html#equation-formal">()</a>), the output tends to be non-smooth compared to a GP.
 This is less true in newer NPFs such as ConvCNP <a class="bibtex reference internal" href="../zbibliography.html#gordon2019convolutional" id="id9">[GBF+19]</a>.</p></li>
 </ul>
 <div class="toctree-wrapper compound">
