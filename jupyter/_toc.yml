@@ -1,31 +1,39 @@
 - file: text/Intro
-  title: NPFs
-- file: text/CNPFs
-- file: text/LNPFs
+  title: Overview
 
-- header: Advanced
-- file: text/Theory
-- file: text/Training
+- chapter: NPFs
+  sections:
+  - file: text/CNPFs
+    title: Conditional NPF
+  - file: text/LNPFs
+    title: Latent NPF
 
-- header: Reproducibility
-- file: reproducibility/Datasets
-- file: reproducibility/CNP
-  title: CNP
-- file: reproducibility/AttnCNP
-  title: AttnCNP
-- file: reproducibility/ConvCNP
-  title: ConvCNP
-- file: reproducibility/LNP
-  title: LNP
-- file: reproducibility/AttnLNP
-  title: AttnLNP
-- file: reproducibility/ConvLNP
-  title: ConvLNP
+- chapter: Advanced
+  sections:
+    - file: text/Theory
+    - file: text/Training
 
-- header: Reference
-- file: text/Related
-  title: Related
-- file: zbibliography # need to add z because has to be processed last
-- url: https://github.com/YannDubs/Neural-Process-Family
-  title: GitHub Repo
+- chapter: Reproducibility
+  sections:
+  - file: reproducibility/Datasets
+  - file: reproducibility/CNP
+    title: CNP
+  - file: reproducibility/AttnCNP
+    title: AttnCNP
+  - file: reproducibility/ConvCNP
+    title: ConvCNP
+  - file: reproducibility/LNP
+    title: LNP
+  - file: reproducibility/AttnLNP
+    title: AttnLNP
+  - file: reproducibility/ConvLNP
+    title: ConvLNP
+
+- chapter: Reference
+  sections:
+  - file: text/Related
+    title: Related
+  - file: zbibliography # need to add z because has to be processed last
+  - url: https://github.com/YannDubs/Neural-Process-Family
+    title: GitHub Repo
 
