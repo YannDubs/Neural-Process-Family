@@ -120,6 +120,7 @@ Let's see what prediction with such a model looks like in practice.
 We first consider a simple 1D setting with samples from a GP with a radial basis function (RBF) kernel (data details in {doc}`Datasets Notebook <../reproducibility/Datasets>`).
 Throughout the tutorial, we refer to similar experiments (though we vary the kernel) quite often.
 Besides providing useful (and aesthetically pleasing) visualisations, the GPs admit ground truth predictive distributions, which allow us to compare to the "best possible" distributions for a given context set.
+In particular, if the CNP was "perfect", it would exactly match the predictions of the oracle GP.
 
 ```{figure} ../gifs/CNP_rbf.gif
 ---
@@ -139,6 +140,8 @@ Moreover, we can see that the CNP predictions quite accurately track the ground 
 
 That being said, looking closely we can see some signs that resemble underfitting: for example, the predictive mean does not pass through all the context points, despite there being no noise in the data-generating distribution.
 The underfitting becomes abundantly clear when considering more complicated kernels, such as a periodic kernel.
+Samples from periodic GPs are random periodic functions.
+One thing we can notice about the ground truth GP is that it when observing data in some region of $X$-space, it leverages the periodic structure, and  becomes confident about predictions at every period.
 
 
 ```{figure} ../gifs/CNP_periodic.gif
@@ -150,7 +153,8 @@ alt: CNP on GP with Periodic kernel
 Posterior predictive of CNPs (Blue) and the oracle GP (Green) with Periodic kernel.
 ```
 
-Here we see that the CNP completely fails to model the predictive distribution: the mean function is overly smooth, hardly passes through the context points, and no notion of periodicity seems to have been learned.
+Here we see that the CNP completely fails to model the predictive distribution: the mean function is overly smooth and hardly passes through the context points.
+Moreover, we might hope that a CNP trained on periodic samples might learn to leverage this structure, but here we see that no notion of periodicity seems to have been learned.
 Moreover, the uncertainty seems constant, and is significantly overestimated everywhere.
 It thus seems reasonable to conclude that the CNP is not expressive enough to accurately model this (more complicated) process.
 
@@ -246,12 +250,22 @@ Posterior predictive of AttnCNPs (Blue) and the oracle GP (Green) with RBF,Perio
 
 {numref}`AttnCNP_single_gp_text` demonstrates that, as desired, AttnCNP alleviates many of the underfitting issues of the CNP, and generally performs much better on the challenging kernels.
 However, looking closely at the resulting fits, we can still see some dissatisfying properties:
-* the fit on the Periodic kernel is still not _great_, and
-* looking carefully, we see that the AttnCNP has a posterior predictive with "kinks", i.e., it is not very smooth. Note that kinks usually appear between 2 context points. This leads us to believe that they are a consequence of the AttnCNP abruptly changing its attention from one context point to the other (due to the exponential in the softmax used to parameterise the attention mechanism).
+* the fit on the Periodic kernel is still not _great_.
+In particular, looking closely, we can see that the mean and variance functions of the AttnCNP often fail to track the oracle GP, as they do not always leverage the periodic structure in the data.
+* Moreover, we see that the AttnCNP has a posterior predictive with "kinks", i.e., it is not very smooth. Note that kinks usually appear between 2 context points. This leads us to believe that they are a consequence of the AttnCNP abruptly changing its attention from one context point to the other (due to the exponential in the softmax used to parameterise the attention mechanism).
 
 Overall, AttnCNP performs quite well in this setting.
 Next, we turn our attention (pun intended) to a more realistic setting, where we do not have access to the underlying data generating process: images.
 In our experiments, we consider images as functions from the 2d integer grid (denoted $\mathbb{Z}^2$) to pixel space (this can be grey-scale or RGB, depending on the context).
+
+```{figure} ../images/images_as_functions.png
+---
+width: 30em
+name: images_as_functions_text
+---
+Viewing images as functions from $\mathbb{Z}^2 \to \mathbb{R}$.
+```
+
 When thinking about images as functions, it makes sense to reference the underlying stochastic process that generated them, though of course we can not express this process, nor have access to its ground truth posterior predictive distributions.
 Just as in the 1D case, our goal is to model the posterior distribution of target pixels (typically the complete image) given a few context pixels.
 
@@ -290,7 +304,7 @@ width: 35em
 name: AttnCNP_rbf_extrap_text
 alt: extrapolation of AttnCNP on GPs with RBF kernel
 ---
-Extrapolation (red dashes) of posterior predictive of AttnCNPs (Blue) and the oracle GP (Green) with RBF kernel.
+Extrapolation (red dashes) of posterior predictive of AttnCNPs (Blue) and the oracle GP (Green) with RBF kernel. Left of the red vertical line is the training range, everything to the right is the "extrapolation range".
 ```
 
 {numref}`AttnCNP_rbf_extrap_text` clearly shows that the AttnCNP breaks as soon as the context set contains observations from outside the training range.

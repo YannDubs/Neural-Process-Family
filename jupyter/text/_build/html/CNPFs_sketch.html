@@ -150,10 +150,10 @@ We can concisely express this assumption as</p>
 <span class="eqno">(1)<a class="headerlink" href="#equation-conditional-predictives" title="Permalink to this equation">¶</a></span>\[\begin{align}
 p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C}) = \prod_{t=1}^{T} p \left( y^{(t)} | x^{(t)}, \mathcal{C} \right).
 \end{align}\]</div>
-<p>A typical (though not <em>necessary</em>) choice is to consider Gaussian distributions for these predictives.
-We collectively refer to members of the NPF that employ this simplifying assumption as <em>conditional</em> NP models, and to this sub-family as the CNPF.
+<p>A typical (though not <em>necessary</em>) choice is to consider Gaussian distributions for these likelihoods.
+We collectively refer to members of the NPF that employ the factorisation assumption as <em>conditional</em> NP models, and to this sub-family as the CNPF.
 Now, recall that one guiding principle of the NPF is to <em>locally</em> encode each input-output pair in <span class="math notranslate nohighlight">\(\mathcal{C}\)</span>, and then <em>aggregate</em> the encodings into a single representation of the context set, which we denote <span class="math notranslate nohighlight">\(R\)</span>.
-Putting these together, we can express the predictive distribution of CNPFs as</p>
+Putting these together, we can express the predictive distribution of CNPF members as</p>
 <div class="math notranslate nohighlight" id="equation-formal">
 <span class="eqno">(2)<a class="headerlink" href="#equation-formal" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{align}
 p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
@@ -173,11 +173,11 @@ R
 &amp;:= d_{\boldsymbol\theta}(x^{(t)},R) &amp; \text{Decoding}  
 \end{align}
 \end{split}\]</div>
-<p>CNPFs make an important tradeoff.
+<p>CNPF members make an important tradeoff.
 On one hand, we have placed a severe restriction on the class of models that we can fit, and this restriction has important consequences.
 We discuss these consequences in further detail, as well as provide some illustrations, at the end of this chapter.
 On the other hand, the factorisation assumption makes evaluation of the predictive likelihoods tractable.
-This means that we can employ exact maximum-likelihood procedures to train the model parameters.</p>
+This means that we can employ simple and exact maximum-likelihood procedures to train the model parameters.</p>
 <div class="tip dropdown admonition">
 <p class="admonition-title">Advanced</p>
 <p>In the <span class="xref std std-doc">Theory</span> chapter we discuss the implications of an unbiased training procedure, and formalise what such a training procedure converges to.</p>
@@ -196,21 +196,21 @@ This means that we can employ exact maximum-likelihood procedures to train the m
 The CNP is defined by the following design choices:</p>
 <ul class="simple">
 <li><p>The encoding function is defined by a feedforward MLP that takes as input the concatenation of <span class="math notranslate nohighlight">\(x^{(c)}\)</span> and <span class="math notranslate nohighlight">\(y^{(c)}\)</span>, and outputs a simple vector <span class="math notranslate nohighlight">\(R^{(c)} \in \mathbb{R}^{dr}\)</span>.</p></li>
-<li><p>The aggregation function is a simple mean over the representations <span class="math notranslate nohighlight">\(\frac{1}{| \mathcal{C} |} \sum_{c=1}^{| \mathcal{C} |} R^{(c)}\)</span>.</p></li>
-<li><p>The decoder <span class="math notranslate nohighlight">\(d_{\boldsymbol\theta}\)</span> is also defined by a feedforward MLP that takes in the concatenation of <span class="math notranslate nohighlight">\(R\)</span> and <span class="math notranslate nohighlight">\(x^{t}\)</span>, and outputs a mean <span class="math notranslate nohighlight">\(\mu\)</span> and standard deviation <span class="math notranslate nohighlight">\(\sigma\)</span>.</p></li>
+<li><p>The aggregation function is a simple average over the representations <span class="math notranslate nohighlight">\(\frac{1}{| \mathcal{C} |} \sum_{c=1}^{| \mathcal{C} |} R^{(c)}\)</span>.</p></li>
+<li><p>The decoder <span class="math notranslate nohighlight">\(d_{\boldsymbol\theta}\)</span> is also defined by a feedforward MLP that takes in the concatenation of <span class="math notranslate nohighlight">\(R\)</span> and <span class="math notranslate nohighlight">\(x^{(t)}\)</span>, and outputs a mean <span class="math notranslate nohighlight">\(\mu^{(t)}\)</span> and standard deviation <span class="math notranslate nohighlight">\(\sigma^{(t)}\)</span>.</p></li>
 </ul>
-<div class="dropdown caution admonition">
-<p class="admonition-title">Advanced</p>
+<div class="dropdown tip admonition">
+<p class="admonition-title">Note</p>
 <p>You should convince yourself (if it is not immediately obvious) that averaging is indeed permutation invariant. Hint: the summation operation is commutative, and this is followed by simple division by <span class="math notranslate nohighlight">\(| \mathcal{C} |\)</span> to achieve “averaging”.</p>
 </div>
-<div class="dropdown caution admonition">
-<p class="admonition-title">Advanced</p>
+<div class="dropdown tip admonition">
+<p class="admonition-title">Details</p>
 <p>There is a strong relationship between this form and DeepSets networks, introduced by <span class="bibtex" id="id2">[zaheer2017deep]</span>.
-In the <span class="xref std std-doc">Theory</span> chapter we leverage this relationship to prove that CNPs can recover maps to any (continous) mean and variance functions.</p>
+In the <span class="xref std std-doc">Theory</span> chapter we leverage this relationship to prove that CNPs can recover maps to any (continuous) mean and variance functions.</p>
 </div>
 <div class="tip dropdown admonition">
 <p class="admonition-title">Implementation Detail</p>
-<p>Typically, we parameterise <span class="math notranslate nohighlight">\(d_{\boldsymbol\theta}\)</span> as outputting <span class="math notranslate nohighlight">\((\mu, \log \sigma)\)</span>, i.e., the <em>log</em> standard deviation, so as to ensure that no negative variances occur.</p>
+<p>Typically, we parameterise <span class="math notranslate nohighlight">\(d_{\boldsymbol\theta}\)</span> as outputting <span class="math notranslate nohighlight">\((\mu^{(t)}, \log \sigma^{(t)})\)</span>, i.e., the <em>log</em> standard deviation, so as to ensure that no negative variances occur.</p>
 </div>
 <p>The resulting computational graph is illustrated in <a class="reference internal" href="#computational-graph-cnps-text"><span class="std std-numref">Fig. 2</span></a>. It is easy to see that the computational cost of making predictions for <span class="math notranslate nohighlight">\(T\)</span> target set points conditioned on <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> with this design is <span class="math notranslate nohighlight">\(\mathcal{O}(T+|\mathcal{C}|)\)</span>.</p>
 <div class="figure align-default" id="computational-graph-cnps-text">
@@ -220,27 +220,32 @@ In the <span class="xref std std-doc">Theory</span> chapter we leverage this rel
 <p>Let’s see what prediction with such a model looks like in practice.
 We first consider a simple 1D setting with samples from a GP with a radial basis function (RBF) kernel (data details in <span class="xref std std-doc">Datasets Notebook</span>).
 Throughout the tutorial, we refer to similar experiments (though we vary the kernel) quite often.
-Besides providing useful (and aesthetically pleasing) visualisations, the GPs admit ground truth predictive distributions, which allow us to compare to the “best possible” distributions.</p>
+Besides providing useful (and aesthetically pleasing) visualisations, the GPs admit ground truth predictive distributions, which allow us to compare to the “best possible” distributions for a given context set.
+In particular, if the CNP was “perfect”, it would exactly match the predictions of the oracle GP.</p>
 <div class="figure align-default" id="cnp-rbf-text">
 <a class="reference internal image-reference" href="_images/CNP_rbf.gif"><img alt="CNP on GP with RBF kernel" src="_images/CNP_rbf.gif" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 3 </span><span class="caption-text">Posterior predictive of CNPs (Blue) and the oracle GP (Green) with RBF kernel.</span><a class="headerlink" href="#cnp-rbf-text" title="Permalink to this image">¶</a></p>
 </div>
 <p><a class="reference internal" href="#cnp-rbf-text"><span class="std std-numref">Fig. 3</span></a> provides the predictive distribution for a CNP trained on many samples from such a GP.
-The blue line (shaded region) is the predicted mean function (two standard deviations).
-The green solid (dashed) line is the ground truth mean (two standard deviations) from the “oracle” GP.
+The blue line represents the predicted mean function, and the shaded region represents two standard deviations on each side.
+Similarly, the green solid line represents the ground truth mean, while the green dashed lines represent two standard deviations for the “oracle” GP.
 The figure demonstrates that the CNP performs quite well in this setting.
-As more data is observed, the predictions become tighter.
-Moreover, we can see that the CNP predictions quite accurately track the ground truth predictive.</p>
+As more data is observed, the predictions become tighter, as we would hope.
+Moreover, we can see that the CNP predictions quite accurately track the ground truth predictive distribution.</p>
 <p>That being said, looking closely we can see some signs that resemble underfitting: for example, the predictive mean does not pass through all the context points, despite there being no noise in the data-generating distribution.
-The underfitting becomes abundantly clear when considering more complicated kernels, such as a periodic kernel.</p>
+The underfitting becomes abundantly clear when considering more complicated kernels, such as a periodic kernel.
+Samples from periodic GPs are random periodic functions.
+One thing we can notice about the ground truth GP is that it when observing data in some region of <span class="math notranslate nohighlight">\(X\)</span>-space, it leverages the periodic structure, and  becomes confident about predictions at every period.</p>
 <div class="figure align-default" id="cnp-periodic-text">
 <a class="reference internal image-reference" href="_images/CNP_periodic.gif"><img alt="CNP on GP with Periodic kernel" src="_images/CNP_periodic.gif" style="width: 35em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Posterior predictive of CNPs (Blue) and the oracle GP (Green) with Periodic kernel.</span><a class="headerlink" href="#cnp-periodic-text" title="Permalink to this image">¶</a></p>
 </div>
-<p>Here we see that the CNP completely fails to model the predictive distribution: the mean function is overly smooth, hardly passes through the context points, and no notion of periodicity seems to have been learned.
+<p>Here we see that the CNP completely fails to model the predictive distribution: the mean function is overly smooth and hardly passes through the context points.
+Moreover, we might hope that a CNP trained on periodic samples might learn to leverage this structure, but here we see that no notion of periodicity seems to have been learned.
 Moreover, the uncertainty seems constant, and is significantly overestimated everywhere.
-One potential solution, motivated by the fact that we know CNPs should be able to approximate <em>any</em> mean and variance functions, might be to simply increase capacity of networks <span class="math notranslate nohighlight">\(e_{\boldsymbol\theta}\)</span> and <span class="math notranslate nohighlight">\(d_{\boldsymbol\theta}\)</span>.
-Unfortunately, it turns out that CNPs’ modelling power scales quite poorly with the capacity of it networks.
+It thus seems reasonable to conclude that the CNP is not expressive enough to accurately model this (more complicated) process.</p>
+<p>One potential solution, motivated by the fact that we know CNPs should be able to approximate <em>any</em> mean and variance functions, might be to simply increase capacity of networks <span class="math notranslate nohighlight">\(e_{\boldsymbol\theta}\)</span> and <span class="math notranslate nohighlight">\(d_{\boldsymbol\theta}\)</span>.
+Unfortunately, it turns out that CNPs’ modelling power scales quite poorly with the capacity of its networks.
 A more promising avenue, which we explore next, is to consider the inductive biases of its architectures.</p>
 <div class="tip admonition">
 <p class="admonition-title">Details</p>
@@ -252,21 +257,22 @@ A more promising avenue, which we explore next, is to consider the inductive bia
 <p>An important observation, made by <span class="bibtex" id="id3">[kim2019attentive]</span>, is that in the CNP parameterisation, all points in the target set share a single, global representation <span class="math notranslate nohighlight">\(R\)</span>.
 In other words, the CNP employs the same, <em>target independent representation</em> when making predictions for any target set location.
 This implies that all points in the context set have the same “importance”, regardless of the location at which a prediction is being made.
-Their proposed solution to this problem is to use a target-specific representation <span class="math notranslate nohighlight">\(R^{(t)}\)</span>, as illustrated in <a class="reference internal" href="#computational-graph-attncnps-text"><span class="std std-numref">Fig. 5</span></a>.</p>
+Intuitively, it may seem natural that different points in the context set may be more relevant to predictions in different regions of <span class="math notranslate nohighlight">\(X\)</span>-space.
+<span class="bibtex" id="id4">[kim2019attentive]</span> propose to address this issue by using a target-specific representation <span class="math notranslate nohighlight">\(R^{(t)}\)</span>, as illustrated in <a class="reference internal" href="#computational-graph-attncnps-text"><span class="std std-numref">Fig. 5</span></a>.</p>
 <div class="figure align-default" id="computational-graph-attncnps-text">
 <a class="reference internal image-reference" href="_images/computational_graph_AttnCNPs.svg"><img alt="Computational graph of AttnCNP" src="_images/computational_graph_AttnCNPs.svg" width="300em" /></a>
 <p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">Computational graph for AttnCNP.</span><a class="headerlink" href="#computational-graph-attncnps-text" title="Permalink to this image">¶</a></p>
 </div>
-<div class="dropdown caution admonition">
-<p class="admonition-title">Advanced</p>
-<p>An other perspective, which we will be useful later on, is that the representation of the context <span class="math notranslate nohighlight">\(R\)</span> is actually a function of the form <span class="math notranslate nohighlight">\(R : \mathcal{X} \to \mathbb{R}^{dr}\)</span> instead of a vector.
+<div class="dropdown tip admonition">
+<p class="admonition-title">Note</p>
+<p>Another perspective, which we will be useful later on, is that the representation <span class="math notranslate nohighlight">\(R\)</span> is actually a function of the form <span class="math notranslate nohighlight">\(R : \mathcal{X} \to \mathbb{R}^{dr}\)</span> instead of a vector.
 This function will be queried at the target position <span class="math notranslate nohighlight">\(x^{(t)}\)</span> to yield a target specific vector representation <span class="math notranslate nohighlight">\(R^{(t)}\)</span>.</p>
 </div>
-<p>To achieve this, <span class="bibtex" id="id4">[kim2019attentive]</span> propose the Attentive CNP (AttnCNP<a class="footnote-reference brackets" href="#attncnp" id="id5">1</a>), which employs an <em>attention mechanism</em> (<span class="bibtex" id="id6">[bahdanau2014neural]</span>) to compute <span class="math notranslate nohighlight">\(R^{(t)}\)</span>.
-There are many great resources about the use of attention mechanisms in machine learning [(LINKS TO PAPERS / BLOG POSTS ON ATTENTION?], and we encourage readers unfamiliar with the concept to look through these.
+<p>To achieve this, <span class="bibtex" id="id5">[kim2019attentive]</span> propose the Attentive CNP (AttnCNP<a class="footnote-reference brackets" href="#attncnp" id="id6">1</a>), which employs an <em>attention mechanism</em> (<span class="bibtex" id="id7">[bahdanau2014neural]</span>) to compute <span class="math notranslate nohighlight">\(R^{(t)}\)</span>.
+There are many great resources available about the use of attention mechanisms in machine learning [(LINKS TO PAPERS / BLOG POSTS ON ATTENTION?], and we encourage readers unfamiliar with the concept to look through these.
 For our purposes, it suffices to think of attention mechanisms as learning to <em>attend</em> to specific parts of an input that are particularly relevant to the desired output, giving them more <em>weight</em> than others when making a prediction.</p>
-<div class="dropdown caution admonition">
-<p class="admonition-title">Advanced</p>
+<div class="dropdown tip admonition">
+<p class="admonition-title">Note</p>
 <p>To see that attention mechanisms satisfy permutation invariance, we must provide a more explicit form for the resulting representations.
 With an attention mechanism, we can express these forms as</p>
 <div class="math notranslate nohighlight">
@@ -302,19 +308,24 @@ We will first evaluate it on GPs from different kernels (RBF, periodic, and Nois
 <p><a class="reference internal" href="#attncnp-single-gp-text"><span class="std std-numref">Fig. 6</span></a> demonstrates that, as desired, AttnCNP alleviates many of the underfitting issues of the CNP, and generally performs much better on the challenging kernels.
 However, looking closely at the resulting fits, we can still see some dissatisfying properties:</p>
 <ul class="simple">
-<li><p>the fit on the Periodic kernel is still not <em>great</em>, and</p></li>
-<li><p>looking carefully, we see that the AttnCNP has a posterior predictive with “kinks”, i.e., it is not very smooth. Note that kinks usually appear between 2 context points. This leads us to believe that they are a consequence of the AttnCNP abruptly changing its attention from one context point to the other (due to the exponential in the softmax used to parameterise the attention mechanism).</p></li>
+<li><p>the fit on the Periodic kernel is still not <em>great</em>.
+In particular, looking closely, we can see that the mean and variance functions of the AttnCNP often fail to track the oracle GP, as they do not always leverage the periodic structure in the data.</p></li>
+<li><p>Moreover, we see that the AttnCNP has a posterior predictive with “kinks”, i.e., it is not very smooth. Note that kinks usually appear between 2 context points. This leads us to believe that they are a consequence of the AttnCNP abruptly changing its attention from one context point to the other (due to the exponential in the softmax used to parameterise the attention mechanism).</p></li>
 </ul>
 <p>Overall, AttnCNP performs quite well in this setting.
 Next, we turn our attention (pun intended) to a more realistic setting, where we do not have access to the underlying data generating process: images.
-In our experiments, we consider images as functions from the 2d integer grid (denoted <span class="math notranslate nohighlight">\(\mathbb{Z}^2\)</span>) to pixel space (this can be grey-scale or RGB, depending on the context).
-When thinking about images as functions, it makes sense to reference the underlying stochastic process that generated them, though of course we can not express this process, nor have access to its ground truth posterior predictive distributions.
+In our experiments, we consider images as functions from the 2d integer grid (denoted <span class="math notranslate nohighlight">\(\mathbb{Z}^2\)</span>) to pixel space (this can be grey-scale or RGB, depending on the context).</p>
+<div class="figure align-default" id="images-as-functions-text">
+<a class="reference internal image-reference" href="_images/images_as_functions.png"><img alt="_images/images_as_functions.png" src="_images/images_as_functions.png" style="width: 30em;" /></a>
+<p class="caption"><span class="caption-number">Fig. 7 </span><span class="caption-text">Viewing images as functions from <span class="math notranslate nohighlight">\(\mathbb{Z}^2 \to \mathbb{R}\)</span>.</span><a class="headerlink" href="#images-as-functions-text" title="Permalink to this image">¶</a></p>
+</div>
+<p>When thinking about images as functions, it makes sense to reference the underlying stochastic process that generated them, though of course we can not express this process, nor have access to its ground truth posterior predictive distributions.
 Just as in the 1D case, our goal is to model the posterior distribution of target pixels (typically the complete image) given a few context pixels.</p>
 <div class="figure align-default" id="attncnp-img-interp-text">
 <a class="reference internal image-reference" href="_images/AttnCNP_img_interp.gif"><img alt="AttnCNP on CelebA and MNIST" src="_images/AttnCNP_img_interp.gif" style="width: 30em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 7 </span><span class="caption-text">Posterior predictive of an AttnCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span> and MNIST.</span><a class="headerlink" href="#attncnp-img-interp-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Posterior predictive of an AttnCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span> and MNIST.</span><a class="headerlink" href="#attncnp-img-interp-text" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#attncnp-img-interp-text"><span class="std std-numref">Fig. 7</span></a> illustrates the performance of the AttnCNP on image reconstruction tasks with CelebA (left) and MNIST (right).
+<p><a class="reference internal" href="#attncnp-img-interp-text"><span class="std std-numref">Fig. 8</span></a> illustrates the performance of the AttnCNP on image reconstruction tasks with CelebA (left) and MNIST (right).
 The results are quite impressive, and we can see that the AttnCNP is able to learn complicated structure in the underlying process, and produce compelling reconstructions of the data when faced with small context sets, and also structured obfuscation of the image that is different from what was observed during training.
 The image experiments hammer home an important advantage of the NPF over other approaches to modelling stochastic processes.
 We can see that the same architecture can scale to complicated underlying processes, learning the important properties from the data (rather than requiring intricate kernel design, as in the case of GPs).
@@ -332,17 +343,17 @@ We know that neural networks are typically quite bad at generalising outside the
 To do so, we can examine what happens when trained models are provided with observations from the underlying process, but outside the training range.</p>
 <div class="figure align-default" id="attncnp-rbf-extrap-text">
 <a class="reference internal image-reference" href="_images/AttnCNP_rbf_extrap.gif"><img alt="extrapolation of AttnCNP on GPs with RBF kernel" src="_images/AttnCNP_rbf_extrap.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Extrapolation (red dashes) of posterior predictive of AttnCNPs (Blue) and the oracle GP (Green) with RBF kernel.</span><a class="headerlink" href="#attncnp-rbf-extrap-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 9 </span><span class="caption-text">Extrapolation (red dashes) of posterior predictive of AttnCNPs (Blue) and the oracle GP (Green) with RBF kernel. Left of the red vertical line is the training range, everything to the right is the “extrapolation range”.</span><a class="headerlink" href="#attncnp-rbf-extrap-text" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#attncnp-rbf-extrap-text"><span class="std std-numref">Fig. 8</span></a> clearly shows that the AttnCNP breaks as soon as the context set contains observations from outside the training range.
+<p><a class="reference internal" href="#attncnp-rbf-extrap-text"><span class="std std-numref">Fig. 9</span></a> clearly shows that the AttnCNP breaks as soon as the context set contains observations from outside the training range.
 In other words, the AttnCNP really was not able to model the the fact that RBF kernel is stationary, i.e., that the absolute position of target points is not important only their relative position compared to context points.</p>
 <p>We can also observe this phenomenon in the image setting.
 For example let us take an AttnCNP trained on MNIST (augmented with translations) and test it on a larger canvas with 2 digits (Zero Shot Multi MNIST, ZSMM).</p>
 <div class="figure align-default" id="attncnp-img-extrap-text">
 <a class="reference internal image-reference" href="_images/AttnCNP_img_extrap.gif"><img alt="AttnCNP on ZSMM" src="_images/AttnCNP_img_extrap.gif" style="width: 15em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 9 </span><span class="caption-text">Posterior predictive of an AttnCNP for ZSMM.</span><a class="headerlink" href="#attncnp-img-extrap-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">Posterior predictive of an AttnCNP for ZSMM.</span><a class="headerlink" href="#attncnp-img-extrap-text" title="Permalink to this image">¶</a></p>
 </div>
-<p>Again we see in <a class="reference internal" href="#attncnp-rbf-extrap-text"><span class="std std-numref">Fig. 8</span></a> that the model completely breaks in this generalisation task.
+<p>Again we see in <a class="reference internal" href="#attncnp-rbf-extrap-text"><span class="std std-numref">Fig. 9</span></a> that the model completely breaks in this generalisation task.
 This is probably not surprising to anyone who worked with neural nets as the test set is significantly different of the training set, which is challenging.
 Despite the challenging nature of the failure mode, it turns out that we can in fact construct NPF members that avoid it.
 This leads us to our next CNPF member – the ConvCNP.</p>
@@ -362,11 +373,11 @@ In particular, the type of generalisation we are looking for – that the NPF me
 In the <span class="xref std std-doc">Theory</span> chapter we provide formal definitions for these notions, but for now the following intuition for translation equivariance (TE) should suffice: if observations are shifted in time or space, then the resulting predictions should be shifted by the same amount.
 It turns out that this simple inductive bias, when appropriate, is <em>wildly</em> effective.
 Arguably the most prominent example of translation equivariance in machine learning are convolutional neural networks (CNNs), which are built around this simple intuition.</p>
-<p>This provides the central motivation behind the ConvCNP <span class="bibtex" id="id7">[gordon2019convolutional]</span>: how can we bake TE into CNPF members, while preserving other desirable aspects of the models?
+<p>This provides the central motivation behind the ConvCNP <span class="bibtex" id="id8">[gordon2019convolutional]</span>: how can we bake TE into CNPF members, while preserving other desirable aspects of the models?
 Hopefully, doing so should lead to CNPF members that exhibit the generalisation capacities we are after, as well as improved performance and <em>parameter efficiency</em> (which is another benefit often associated with baking in TE).
-To achieve this, <span class="bibtex" id="id8">[gordon2019convolutional]</span> propose a special form of convolutional layer, which can be seen as an extension of standard convolutions to <em>set-structured</em> inputs.
+To achieve this, <span class="bibtex" id="id9">[gordon2019convolutional]</span> propose a special form of convolutional layer, which can be seen as an extension of standard convolutions to <em>set-structured</em> inputs.
 We refer to such layers as <em>SetConvs</em>.
-With this layer, we can then construct ConvCNPs by defining the following design choices (illustrated in <a class="reference internal" href="#computational-graph-convcnps-text"><span class="std std-numref">Fig. 10</span></a>):</p>
+With this layer, we can then construct ConvCNPs by defining the following design choices (illustrated in <a class="reference internal" href="#computational-graph-convcnps-text"><span class="std std-numref">Fig. 11</span></a>):</p>
 <ul class="simple">
 <li><p>The encoding function is a SetConv layer.</p></li>
 <li><p>The aggregation function is a standard convolutional layer.</p></li>
@@ -382,9 +393,9 @@ While this means the forward pass through the ConvCNP can only be approximated, 
 </div>
 <div class="dropdown caution admonition">
 <p class="admonition-title">Advanced</p>
-<p>One of the key results of <span class="bibtex" id="id9">[gordon2019convolutional]</span> is to show that SetConv layers are both permutation invariant and translation equivariant.
-Moreover, <span class="bibtex" id="id10">[gordon2019convolutional]</span> demonstrate that <em>any</em> (continuous) permutation invariance and TE function can be represented by a ConvCNP.
-The proof relies on first extending the DeepSets work of <span class="bibtex" id="id11">[zaheer2017deep]</span> to include TE as well.
+<p>One of the key results of <span class="bibtex" id="id10">[gordon2019convolutional]</span> is to show that SetConv layers are both permutation invariant and translation equivariant.
+Moreover, <span class="bibtex" id="id11">[gordon2019convolutional]</span> demonstrate that <em>any</em> (continuous) permutation invariance and TE function can be represented by a ConvCNP.
+The proof relies on first extending the DeepSets work of <span class="bibtex" id="id12">[zaheer2017deep]</span> to include TE as well.
 In the <span class="xref std std-doc">Theory</span> chapter, we provide a sketch of this proof.</p>
 </div>
 <div class="dropdown important admonition">
@@ -393,15 +404,15 @@ In the <span class="xref std std-doc">Theory</span> chapter, we provide a sketch
 </div>
 <div class="figure align-default" id="computational-graph-convcnps-text">
 <a class="reference internal image-reference" href="_images/computational_graph_ConvCNPs.svg"><img alt="Computational graph ConvCNP" height="300em" src="_images/computational_graph_ConvCNPs.svg" /></a>
-<p class="caption"><span class="caption-number">Fig. 10 </span><span class="caption-text">Computational graph of ConvCNP [to keep ? to simplify ?].</span><a class="headerlink" href="#computational-graph-convcnps-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Computational graph of ConvCNP [to keep ? to simplify ?].</span><a class="headerlink" href="#computational-graph-convcnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>Now that we have constructed a translation equivariant CNPF, we can test it in the more challenging extrapolation regime.
 We begin with the same set of GP experiments, but this time already including data observed from outside the original training range.</p>
 <div class="figure align-default" id="convcnp-single-gp-extrap-text">
 <a class="reference internal image-reference" href="_images/ConvCNP_single_gp_extrap.gif"><img alt="_images/ConvCNP_single_gp_extrap.gif" src="_images/ConvCNP_single_gp_extrap.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Extrapolation (red dashes) of posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with (top) RBF, (center) periodic, and (bottom) Noisy Matern kernel.</span><a class="headerlink" href="#convcnp-single-gp-extrap-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">Extrapolation (red dashes) of posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with (top) RBF, (center) periodic, and (bottom) Noisy Matern kernel.</span><a class="headerlink" href="#convcnp-single-gp-extrap-text" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#convcnp-single-gp-extrap-text"><span class="std std-numref">Fig. 11</span></a> demonstrates that the ConvCNP indeed performs very well!
+<p><a class="reference internal" href="#convcnp-single-gp-extrap-text"><span class="std std-numref">Fig. 12</span></a> demonstrates that the ConvCNP indeed performs very well!
 In particular, we can see that:</p>
 <ul class="simple">
 <li><p>Like the use of attention, the TE inductive bias also helps the model avoid the tendency to underfit the data.</p></li>
@@ -418,7 +429,7 @@ In fact, we know that it cannot exactly recover the underlying process, because 
 This is best seen when considering a much larger target interval (<span class="math notranslate nohighlight">\([-2,14]\)</span> instead of <span class="math notranslate nohighlight">\([0,4]\)</span>), as below.</p>
 <div class="figure align-default" id="convcnp-periodic-large-extrap-text">
 <a class="reference internal image-reference" href="_images/ConvCNP_periodic_large_extrap.gif"><img alt="ConvCNP on single images" src="_images/ConvCNP_periodic_large_extrap.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 12 </span><span class="caption-text">Large extrapolation (red dashes) of posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with periodic kernel.</span><a class="headerlink" href="#convcnp-periodic-large-extrap-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 13 </span><span class="caption-text">Large extrapolation (red dashes) of posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with periodic kernel.</span><a class="headerlink" href="#convcnp-periodic-large-extrap-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>In fact, this is true for any of the GPs above, all of which have infinite receptive fields, meaning that no model with a bounded field (such as the ConvCNP) can ever exactly recover them.
 This discussion alludes to one of the key design choices of the ConvCNP, which is the size of its receptive field.
@@ -429,9 +440,9 @@ Thus, when designing ConvCNP architectures, some consideration should be given t
 As with the AttnCNP, we consider CelebA and MNIST reconstruction experiments, but also unclude the ZSMM experiments that evaluate the model’s ability to generalise beyond the training data.</p>
 <div class="figure align-default" id="convcnp-img-text">
 <a class="reference internal image-reference" href="_images/ConvCNP_img.gif"><img alt="ConvCNP on CelebA, MNIST, ZSMM" src="_images/ConvCNP_img.gif" style="width: 45em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 13 </span><span class="caption-text">Posterior predictive of an AttnCNP for CelebA, MNIST, and ZSMM.</span><a class="headerlink" href="#convcnp-img-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 14 </span><span class="caption-text">Posterior predictive of an AttnCNP for CelebA, MNIST, and ZSMM.</span><a class="headerlink" href="#convcnp-img-text" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#convcnp-img-text"><span class="std std-numref">Fig. 13</span></a> we see that the ConvCNP performs quite well on all datasets when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM).
+<p>From <a class="reference internal" href="#convcnp-img-text"><span class="std std-numref">Fig. 14</span></a> we see that the ConvCNP performs quite well on all datasets when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM).
 However, performance is less impressive when the context set is very small or when it is structured, e.g., half images.
 In our experiments we find that this is more of an issue for the ConvCNP than the AttnCNP (<code class="xref std std-numref docutils literal notranslate"><span class="pre">AttnCNP_img</span></code>).
 We hypothesise that this happens because the effective receptive field of the former is too small, whilst the AttnCNP has an infinite receptive field, allowing it to make more use of observed pixels far from the target pixel.
@@ -441,17 +452,17 @@ Let us consider more complex zero shot generalisation tasks.
 First, we will evaluate a ConvCNP trained on CelebA128 on an image with multiple faces of different scale and orientation.</p>
 <div class="figure align-default" id="convcnp-img-zeroshot-text">
 <a class="reference internal image-reference" href="_images/ConvCNP_img_zeroshot.png"><img alt="Zero shot generalization of ConvCNP to a real picture" src="_images/ConvCNP_img_zeroshot.png" style="width: 50em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 14 </span><span class="caption-text">Zero shot generalization of a ConvCNP trained on CelebA and evaluated on Ellen’s selfie</span><a class="headerlink" href="#convcnp-img-zeroshot-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 15 </span><span class="caption-text">Zero shot generalization of a ConvCNP trained on CelebA and evaluated on Ellen’s selfie</span><a class="headerlink" href="#convcnp-img-zeroshot-text" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#convcnp-img-zeroshot-text"><span class="std std-numref">Fig. 14</span></a> we see that the model is able to generalise reasonably well to real world data in a zero shot fashion.
+<p>From <a class="reference internal" href="#convcnp-img-zeroshot-text"><span class="std std-numref">Fig. 15</span></a> we see that the model is able to generalise reasonably well to real world data in a zero shot fashion.
 Although the previous results look nice, the use-cases are not immediately obvious, as it is not very to have missing pixels.
 One possible application is increasing the resolution of an image.
 This can be achieved by querying positions “in between” pixels.</p>
 <div class="figure align-default" id="convcnp-superes-text">
 <a class="reference internal image-reference" href="_images/ConvCNP_superes.png"><img alt="Increasing image resolution with ConvCNP" src="_images/ConvCNP_superes.png" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 15 </span><span class="caption-text">Increasing the resolution of <span class="math notranslate nohighlight">\(16 \times 16\)</span> CelebA to <span class="math notranslate nohighlight">\(128 \times 128\)</span> with a ConvCNP.</span><a class="headerlink" href="#convcnp-superes-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 16 </span><span class="caption-text">Increasing the resolution of <span class="math notranslate nohighlight">\(16 \times 16\)</span> CelebA to <span class="math notranslate nohighlight">\(128 \times 128\)</span> with a ConvCNP.</span><a class="headerlink" href="#convcnp-superes-text" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#convcnp-superes-text"><span class="std std-numref">Fig. 15</span></a> demonstrates such an application.
+<p><a class="reference internal" href="#convcnp-superes-text"><span class="std std-numref">Fig. 16</span></a> demonstrates such an application.
 We see that CNPFs can indeed be used to increase the resolution of an image, even though it was not trained to do so!</p>
 <div class="tip admonition">
 <p class="admonition-title">Details</p>
@@ -472,10 +483,10 @@ One immediate consequence of using the Gaussian likelihood is that we cannot rec
 To see why this might be an issue, consider making predictions for the MNIST reconstruction experiments.</p>
 <div class="figure align-default" id="convcnp-marginal-text">
 <a class="reference internal image-reference" href="_images/ConvCNP_marginal.png"><img alt="Samples from ConvCNP on MNIST and posterior of different pixels" src="_images/ConvCNP_marginal.png" style="width: 20em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 16 </span><span class="caption-text">Samples form the posterior predictive of ConvCNPs on MNIST (left) and posterior predictive of some pixels (right).</span><a class="headerlink" href="#convcnp-marginal-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 17 </span><span class="caption-text">Samples form the posterior predictive of ConvCNPs on MNIST (left) and posterior predictive of some pixels (right).</span><a class="headerlink" href="#convcnp-marginal-text" title="Permalink to this image">¶</a></p>
 </div>
-<p>Looking at <a class="reference internal" href="#convcnp-marginal-text"><span class="std std-numref">Fig. 16</span></a>, we might expect that sampling from the predictive distribution of an unobserved pixels sometimes yield completely white values, and sometimes completely black, depending on whether the sample represents, for example, a 3 or a 5.
-However, a Gaussian distribution, which is uni-modal (see <a class="reference internal" href="#convcnp-marginal-text"><span class="std std-numref">Fig. 16</span></a> right), cannot achieve this type of multi-modal behaviour.</p>
+<p>Looking at <a class="reference internal" href="#convcnp-marginal-text"><span class="std std-numref">Fig. 17</span></a>, we might expect that sampling from the predictive distribution of an unobserved pixels sometimes yield completely white values, and sometimes completely black, depending on whether the sample represents, for example, a 3 or a 5.
+However, a Gaussian distribution, which is uni-modal (see <a class="reference internal" href="#convcnp-marginal-text"><span class="std std-numref">Fig. 17</span></a> right), cannot achieve this type of multi-modal behaviour.</p>
 <div class="tip dropdown admonition">
 <p class="admonition-title">Note</p>
 <p>One solution to this particular problem might be to employ some other parametric distribution that enables multimodality, for example, a mixture of Gaussians.
@@ -491,7 +502,7 @@ Another implication is that we can not produce <em>coherent</em> samples from th
 In fact, sampling from the posterior corresponds to adding independent noise to the mean at each target location, resulting in samples that look nothing like the underlying process.</p>
 <div class="figure align-default" id="convcnp-rbf-samples-text">
 <a class="reference internal image-reference" href="_images/ConvCNP_rbf_samples.png"><img alt="Sampling from ConvCNP on GP with RBF kernel" src="_images/ConvCNP_rbf_samples.png" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 17 </span><span class="caption-text">Samples form the posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with RBF kernel.</span><a class="headerlink" href="#convcnp-rbf-samples-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 18 </span><span class="caption-text">Samples form the posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with RBF kernel.</span><a class="headerlink" href="#convcnp-rbf-samples-text" title="Permalink to this image">¶</a></p>
 </div>
 <div class="tip dropdown admonition">
 <p class="admonition-title">Note</p>
@@ -501,8 +512,8 @@ One such example is the use of Thompson sampling algorithms for e.g., contextual
 <p>In the next chapter, we will see one approach to solving both these issues by treating the representation as a latent variable in the latent Neural Process sub-family.</p>
 <hr class="docutils" />
 <dl class="footnote brackets">
-<dt class="label" id="attncnp"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
-<dd><p><span class="bibtex" id="id12">[kim2019attentive]</span> only introduced the latent variable model, but one can easily drop the latent variable if not needed.</p>
+<dt class="label" id="attncnp"><span class="brackets"><a class="fn-backref" href="#id6">1</a></span></dt>
+<dd><p><span class="bibtex" id="id13">[kim2019attentive]</span> only introduced the latent variable model, but one can easily drop the latent variable if not needed.</p>
 </dd>
 </dl>
 </div>
