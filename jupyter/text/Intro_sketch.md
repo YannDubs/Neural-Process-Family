@@ -36,21 +36,51 @@ First of all, what is a stochastic process (SP)? Intuitively speaking, an SP is 
 
 In the examples given above, the underlying SP might be "the distribution over all possible natural audio signals" or "the distribution over all possible medical image scans". Observing a dataset $D = \{(x_n, y_n)\}_{n=1}^N$ is then equivalent to sampling a function from the SP and observing it at a finite set of inputs $\{x_n\}_{n=1}^N$. Once we observe $D$, our state of belief about the function changes --- we _condition_ on $D$ to obtain a new SP, called the _predictive stochastic process_. This procedure is shown in {numref}`ConvLNP_norbf_gp_extrap` --- as points are observed, the error bars (light blue region) and predictive samples (dark blue lines) of the Neural Process get updated.
 
-```{note}
+```{admonition} Gaussian Processes
+---
+class: tip, dropdown
+---
 {numref}`ConvLNP_norbf_gp_extrap` also shows the predictive mean and error-bars of the ground truth _Gaussian process_ (GP) used to generate the data. GPs are another way to specify stochastic processes. Unlike the NPF, GPs require the user to specify a kernel function to model the data. GPs are attractive due to the fact that exact prediction in GPs can be done _in closed form_. However, this has computational complexity $O(N^3)$ in the dataset size, which limits the application of exact GPs to large datasets. For an accessible introduction to GPs, see INSERT REF.
 
 In this tutorial, we mainly use GPs to specify simple synthetic stochastic processes for benchmarking. We then train NPs to perform GP prediction. Since we can obtain the GP predictive distribution in closed form, we can use GPs to test the efficacy of NPs. It is important to remember, however, that NPs can model a broader range of SPs than GPs can (e.g. image data), are more computationally efficient at test time, and can learn directly from data without the need to hand-specify a kernel.   
 ```
 
-From this perspective, the task of SP prediction can be thought of as a _map_ from datasets $D$ to SPs --- for every dataset we might observe, the predictor returns the corresponding predictive SP. However, we immediately run into an obstacle --- since the space of functions is infinite-dimensional, how can we actually specify an SP in practice?
+From this perspective, SP prediction can be thought of as a _map_ from datasets $D$ to SPs --- for every dataset we might observe, the predictor returns the corresponding predictive SP. The NPF can be viewed as _deploying and training neural networks to approximate maps of this form_. To make this concrete, let the input space be $\mathcal{X}$ (e.g. time) and the output space be $\mathcal{Y}$ (e.g. amplitude). Let $f: \mathcal{X} \to \mathcal{Y}$ be a random function (e.g. an audio recording of someone speaking). We say that $f \sim P_f$, where $P_f$ is a stochastic process. Now assume we observe a dataset $D_c = \{(x_c, y_c)\}_{c=1}^C$. $D_c$ is the dataset we wish to condition on, to obtain a predictive SP denoted $P_{f|D_c}$. In the NPF literature, $D_c$ is referred to as a _context set_.
 
-More concretely, let the input space be $\mathcal{X}$ (e.g. time) and the output space be $\mathcal{Y}$ (e.g. amplitude). Let $f: \mathcal{X} \to \mathcal{Y}$ be a random function. We say that $f \sim P$, where $P$ is the distribution of $f$ --- a stochastic process. To sample an entire function from $P$ would require specifying $f(x)$ for all $x \in \mathcal{X}$, which would require infinite memory and computation. To get around this, we specify the _finite marginals_ of $P$: the distributions of $\{f(x_i) \}_{i=1}^N$ for all possible finite collections of inputs $(x_1, \hdots x_N)$. For a fixed choice of inputs, $\{f(x_i) \}_{i=1}^N$ is just a finite-dimensional random vector. However, we cannot just choose any set of finite marginals to specify an SP: they must be _consistent_, as shown below.
+To specify $P_{f|D_c}$ might seem impractical at first, as $f$ is infinite-dimensional. However, in practice we only need to specify the collection of _finite marginals_ of $P_{f|D_c}$: the distributions of $\{f(x_t) \}_{t=1}^T$ for all possible finite collections of test inputs $(x_1, ..., x_T)$. In the NPF literature, $(x_1, ..., x_T)$ are known as _target inputs_ and the collection of target inputs with their corresponding outputs, $D_t = \{(x_t, y_t)\}_{t=1}^T$, is called a _target set_.  For a fixed choice of target inputs, $\{f(x_t)\}_{t=1}^T$ is just a finite-dimensional random vector. However, we cannot just choose any set of finite marginals to specify an SP: they must be _consistent_ with each other for varying target sets, or else we might give contradictory predictions depending on which target set we consider.
+
+```{admonition} Target Set Consistency
+---
+class: tip, dropdown
+---
+To illustrate the importance of consistency in specifying an SP, let's look at some artificial examples of finite marginals that are _not_ consistent. Let $x_1, x_2$ be two target inputs.
+
+1. Consider a collection of finite marginals with $f(x_1) \sim \mathcal{N}(0, 1)$ and $[f(x_1), f(x_2)] \sim \mathcal{N}([10, 0], \mathbf{I})$. What is the mean of $f(x_1)$?
+2. Consider a collection with $[f(x_1), f(x_2)] \sim \mathcal{N}([0, 0], \mathbf{I})$ and $[f(x_2), f(x_1)] \sim \mathcal{N}([1, 1], \mathbf{I})$. What is the mean of $f(x_1)$? What is the mean of $f(x_2)$?
+
+We see the problem here: inconsistent marginals lead to self-contradictory predictions! In the first example, the marginals were not _consistent under marginalisation_: marginalising out $f(x_2)$ from the distribution of $[f(x_1), f(x_2)]$ did not yield the distribution of $f(x_1)$. In the second case, the marginals were not _consistent under permutation_: the distributions differed depending on whether you considered $f(x_1)$ first or $f(x_2)$ first.
+```
+
+The good news is that a well-known result called the Kolmogorov extension theorem states that as long as all the marginals satisfy these simple consistency requirements, they specify a well-defined SP. We'll refer to this kind of consistency as _target-set consistency_, since it relates to what happens when you vary the target set. Later, we'll look at various ways to use deep neural networks to specify SPs that are guaranteed to be target-set consistent.
+
+There is another kind of consistency that SP prediction must satisfy to obey the rules of probability theory, which involves more than just varying target sets. Consider two input-output pairs, $(x_1, y_1)$ and $(x_2, y_2)$. The product rule tells us that the joint predictive density must satisfy
+
+$$
+\begin{align}
+p(y_1, y_2| x_1, x_2) = p(y_1| x_1) p(y_2| x_2, y_1, x_1) = p(y_2| x_2) p(y_1| x_1, y_2, x_2)
+\end{align}
+$$
+
+We can see that this condition relates the finite marginals of SPs with varying context sets, and hence we refer to this as _context-set consistency_. If we computed our predictive SPs in exact form using the rules of probability theory, we would be guaranteed to make context-set consistent predictions. However, neural networks are general function approximators, and unlike target-set consistency, there's no simple way to constrain them to ensure that a member of the NPF is context-set consistent. However, we can still make predictions as long as we only consider a single context set for a given random function. One situation where the context set inconsistency of NPs may cause issues is if we were observing data in an online setting. 
+
+```{admonition} Autoregressive Sampling
+---
+class: tip, dropdown
+---
+
+```
 
 ## Meta-learning Under Uncertainty
-
-As mentioned earlier, the NPF can be thought of as a synthesis of two key ideas:
-
-1. **Modelling stochastic processes**: A more formal treatment can be achieved by considering maps from a space of finite datasets to a space of predictive stochastic processes. A general view of the NPF is as _deploying and training neural networks to approximate maps of this form_. While the majority of this tutorial avoids such mathematical constructions, this framework is useful for formalising (and proving) important statements about the NPF. As such, we allude to this view when appropriate, and provide more complete derivations and proofs in INSERT REF for the interested reader.
 
 1. **Meta-learning**: The NPF is naturally geared for the meta-learning setting, also known as _learning to learn_. Arguably, the most prominent applications of meta-learning arise when the data for each task is sparse, motivating the need to account for **uncertainty**. As we shall see, NPF models provide an elegant framework for modelling uncertainty
 
