@@ -14,7 +14,7 @@ __MACOSX/
 *Hope*
 *XL*
 _build/
-jupyter/text/_build
+jupyter/text/_build/
 
 # Results
 results/
