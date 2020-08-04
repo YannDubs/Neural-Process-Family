@@ -28,7 +28,7 @@ To motivate the NPF, consider the following tasks:
 
 - Interpolating **image data** with uncertainty estimates. For example, we may be given satellite images of a region, which may be obscured by cloud-cover, or a medical imaging scan which has some occluded regions. In both cases we might be interested not just in a single interpolation, but in the _entire probability distribution_ over them. Images can be viewed as real-valued _functions_ on the two-dimensional plane. Each input $x$ is a two-dimensional vector denoting pixel location in the image, and each $y$ is a real number representing pixel intensity (or a three-dimensional vector for RGB images).
 
-Each member of the NPF is a method for tackling problems such as these. To do this, the NPF brings together two key ideas: **stochastic process prediction** and **meta-learning**. 
+Each member of the NPF is a method for tackling problems such as these. To do this, the NPF brings together two key ideas: **stochastic process prediction** and **meta-learning**.
 
 ## Stochastic Process Prediction
 
@@ -97,6 +97,74 @@ To recap, we've seen that many tasks involving prediction under uncertainty can 
 
 ## Meta-learning Under Uncertainty
 
+What is meta-learning? Simply put, meta-learning is _learning to learn_. Whereas a standard machine learning algorithm is trained (e.g. by stochastic gradient descent) on a single dataset, and makes predictions at a new test point, a meta-learning algorithm is trained to _directly_ model the map from datasets to predictive distributions. In the case of the NPF, after meta-training is done, when presented with a new context set, a Neural Process does not need to perform an expensive gradient descent procedure to learn from the new context set. Instead, it receives the context set as input, and returns the predictive SP conditioned on that context set _in a single forward pass_.
+
+In order to do this, each member of the NPF has to answer these questions: 1) how should we parameterise a map from datasets to predictive SPs? 2) how are we going to train this map?
+
+#### Parameterising the Predictor
+
+Let's first consider how to parameterise a map from datasets to stochastic processes using deep neural networks. The first challenge we have to address is how to input a _dataset_ into a neural network. This differs from standard vector-valued inputs in two ways:
+
+* Datasets may have _varying sizes_: we might condition on a context set of size 1, 2 or 100. We would like the same architecture to be able to handle all these cases.
+* Datasets have no intrinsic ordering. Hence any map $g$ acting on a dataset $E$ should be _permutation invariant_: $E(D) = E(\pi D)$, where $\pi$ is any permutation operator.
+
+```{admonition} Deep Sets
+---
+class: tip, dropdown
+---
+In {cite}`zaheer2017deep`, the authors show that (subject to certain conditions) any permutation invariant map $E$ from a sequence $( x_n )_{n=1}^N$ to a real number can be expressed as:
+
+$$
+\begin{align}
+E \left(( x_n )_{n=1}^N \right) = \rho \left ( \sum_{n=1}^N \phi(x_n) \right),
+\end{align}
+$$
+
+for some suitable functions $\rho$ and $\phi$. This is known as a 'sum decomposition' or a 'Deep Sets encoding'. The NPF makes heavy use of sum-decompositions in its architectures. This result tells us that, as long as $\rho$ and $\phi$ are universal function approximators, this sum-decomposition can be done without loss of generality in terms of the class of permutation-invariant maps that can be expressed. We will later encounter a generalisation of this result for _translation equivariant_ functions, proven in {cite}`gordon2019convolutional`.
+
+```
+
+To tackle these requirements, members of the NPF first encode each point in the context set $D_c$ separately: $(x^{(c)}, y^{(c)}) \mapsto R^{(c)}$ for each $(x^{(c)}, y^{(c)} \in D_c$. These can be thought of as "local encodings" --- one for each context point. These local encodings are then aggregated into a single global encoding $R$ using an aggregation function $\mathrm{Agg}$. Importantly, $\mathrm{Agg}$ is _permutation invariant_: for any permutation $\pi$ of $\{ 1, 2, ..., C \}$,
+
+$$
+\mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)=\mathrm{Agg}\left(\pi\left(\{R^{(c)}\}_{c=1}^{C} \right)\right)
+$$
+
+The global encoding $R = \mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)$ can be thought of as a representation of the entire context set. This encoding may then undergo further processing by a deep neural network. At this point, the NPF splits into two sub-families, the _conditional_ Neural Process family (CNPF), and the _latent_ Neural Process family (LNPF):
+
+* In the CNPF, the predictive distribution at any set of target inputs $\{ x^{(t)} \}_{t=1}^T$ is defined to be _factorised_ conditioned on $R$: $p(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) = \prod_{t=1}^T p(y^{(t)} | x^{(t)}, \mathcal{C})$
+
+* In the LNPF, 
+
+#### Meta-Training in the NPF
+
+In order to perform meta-learning, we are going to need a meta-dataset or a _dataset of datasets_. In the meta-learning literature, each dataset in the meta-dataset is referred to as a _task_. For the NPF, this means having access to many observed samples of functions from the data-generating process $P$. Each sampled function is then a task. For example, we may have a large collection of audio waveforms $\{ D_i \}_{i=1}^{N_{\mathrm{tasks}}}$ of people speaking. Each of these waveforms is itself a time-series $D = \{ (x_j, y_j) \}_{j=1}^N$, where each $(x_j, y_j)$ is a timestamp/audio amplitude pair. Or we might have a large collection of natural images. Then each $D_i$ would be a task, consisting of many pixel-location/pixel-value pairs.
+
+We next define an _episodic training procedure_ for the NPF. Each episode can be summarised in five steps:
+
+1. Sample a task $D$ from $\{ D_i \}_{i=1}^{N_{\mathrm{tasks}}}$.
+2. Randomly split the task into context and target sets: $D = D_c \cup D_t$.
+3. Pass $D_c$ through the Neural Process to obtain a predictive stochastic process $P_{f|D_c}$.
+4. Compute the objective function, measuring predictive performance on the target set $\mathcal{L}(D_t, P_{f|D_c})$.[^objective]
+5. Compute the gradient of $\mathcal{L}$ with respect to the Neural Process parameters for stochastic gradient optimisation.
+
+The episodes are then repeated until training converges. How should we choose $\mathcal{L}$? The simplest choice is to let it be the log-likelihood of the target set:
+
+$$
+\begin{align}
+\mathcal{L}(D_t, P_{f|D_c}) = \log p( \{ y_t \}_{t=1}^T | \{ x_t \}_{t=1}^T, D_c),
+\end{align}
+$$
+
+where $\log p( \{ y_t \}_{t=1}^T | \{ x_t \}_{t=1}^T, D_c)$ is obtained by evaluating the predictive SP $P_{f|D_c}$ at the target inputs $\{ x_t \}_{t=1}^T$. Intuitively, this procedure encourages the NPF to produce predictions that fit an unseen target set, given access to only the context set. Once meta-training is complete, if the Neural Process generalises well, it will be able to do this for brand new, unseen context sets.   
+
+#### When is Meta-Learning Useful?
+
+
+#### Relation to MAML
+
+#### Relation to Probabilistic Meta-Learning
+
 1. **Meta-learning**: The NPF is naturally geared for the meta-learning setting, also known as _learning to learn_. Arguably, the most prominent applications of meta-learning arise when the data for each task is sparse, motivating the need to account for **uncertainty**. As we shall see, NPF models provide an elegant framework for modelling uncertainty
 
 ```{figure} ../gifs/NPFs.gif
@@ -106,58 +174,6 @@ name: NPFs
 alt: Schematic representation of CNPF computations
 ---
 Schematic representation of NPF computations from [Marta Garnelo](https://www.martagarnelo.com/conditional-neural-processes).
-```
-
-{numref}`NPFs` [... high level intuition ? ...]
-
-## Meta Learning Under Uncertainty
-
-[...keep?...]
-
-## Modeling Stochastic Processes
-
-If you think of neural networks as a way of approximating a function $f : \mathcal{X} \to \mathcal{Y}$, then you can think of NPFs as a way of modeling a *distribution* over functions $f \sim P_{\mathcal{F}}$ (a stochastic process) conditioned on a certain set of points.
-
-Specifically, we want to model a distribution over **target** values $\mathbf{y}_{\mathcal{T}} := \{y^{(t)}\}_{t=1}^T$ conditioned on a set of corresponding target features $\mathbf{x}_{\mathcal{T}} := \{x^{(t)}\}_{t=1}^T$ and a **context** set of feature-value pairs $\mathcal{C} := \{(x^{(c)}, y^{(c)})\}_{c=1}^C$.
-We call such distribution $p(\mathbf{y}_{\mathcal{T}}|\mathbf{x}_{\mathcal{T}}, \mathcal{C})$ the **posterior predictive** as it predicts $\mathbf{y}_{\mathcal{T}}$ after (a *posteriori*) conditioning on $\mathcal{C}$.
-
-```{note}
-If you sampled $\mathbf{y}_{\mathcal{T}}$ according to $p(\mathbf{y}_{\mathcal{T}}|\mathbf{x}_{\mathcal{T}}, \mathcal{C})$, for all possible features $\mathbf{x}_{\mathcal{T}}=\mathcal{X}$ then you effectively sampled an entire function.
-```
-
-Outside of NPFs, stochastic processes are typically modelled by choosing the form of the distribution $p(\mathbf{y}|\mathbf{x})$ and then using rules of probabilities to infer different terms such as the posterior predictive $p(\mathbf{y}_{\mathcal{T}}|\mathbf{x}_{\mathcal{T}}, \mathcal{C}) = \frac{p(\mathbf{y}_{\mathcal{T}},\mathbf{y}_{\mathcal{C}}|\mathbf{x}_{\mathcal{T}}, \mathbf{x}_\mathcal{C})}{p(\mathbf{y}_\mathcal{C}|\mathbf{x}_\mathcal{C})}$.
-For example, this is the approach of [Gaussian Processes](https://distill.pub/2019/visual-exploration-gaussian-processes/) (GPs), which uses a multivariate normal distribution for any $p(\mathbf{y}|\mathbf{x})$.
-To define a proper stochastic process using $p(\mathbf{y}|\mathbf{x})$, it essentially needs to satisfy two consistency conditions ([Kolmogorov existence theorem](https://en.wikipedia.org/wiki/Kolmogorov_extension_theorem)) that can informally be summarized as follows :
-
-* **Permutation invariance**
-$p(\mathbf{y}|\mathbf{x})=p(\pi(\mathbf{y})|\pi(\mathbf{x}))$ for all permutations $\pi$ on $1, ..., |\mathbf{y}|$. In other words, $\mathbf{x}$ and $\mathbf{y}$ are sets and should thus be unordered.
-
-* **Consistent under marginalizaion**
-$p(\mathbf{y}|\mathbf{x})= \int p(\mathbf{y}'|\mathbf{x}') p(\mathbf{y}|\mathbf{x},\mathbf{y}',\mathbf{x}') d\mathbf{y}'$, for all $\mathbf{x}'$.
-
-By ensuring that these two condition hold, one can use standard probability rules and inherits nice mathematical properties.
-Unfortunately stochastic processes are usually computationally inefficient.
-For example predicting values of a target set using GPs takes time which is cubic in the context set $\mathcal{O}(|\mathcal{C}|^3)$.
-
-
-```{figure} ../images/computational_graph_NPFs.svg
----
-width: 300em
-name: computational_graph_NPFs
-alt: high level computational graph of NPF
----
-High level computational graph of the Neural Process Family.
-```
-
-In contrast, the core idea of NPFs is to directly model the posterior predictive using neural networks $p( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) \approx q_{\boldsymbol \theta}(\mathbf{y}_{\mathcal{T}}  | \mathbf{x}_{\mathcal{T}}, \mathcal{C})$.
-It does so by encoding all the context set $\mathcal{C}$ to a global representation $R$ and then decoding from it for each target point.
-The core of NPFs is that the encoder is permutation invariant, i.e. treats $\mathcal{C}$ as a set, to satisfy the first consistency condition of stochastic processes.
-
-
-```{warning}
-Although all NPFs use permutation invariant encoders to satisfy the first consistency condition, they usually are not consistent under marginalization and thus aren't proper stochastic processes.
-As a result, they sacrifice many nice mathematical properties.
-[... Practical issues ? ...]
 ```
 
 ## NPF Members
@@ -299,6 +315,8 @@ This is less true in newer NPFs such as ConvCNP {cite}`gordon2019convolutional`.
 
 
 [^sampleTargets]: Instead of sampling targets, we will often use all the available targets $\mathbf{x}_\mathcal{T} = \mathcal{X}$. For example, in images the targets will usually be all pixels.
+
+[^objective]: Some Neural Processes also define the loss function to include the loss on the context set as well as the target set.
 
 [^AttnCNP]: {cite}`kim2019attentive` only introduced the latent variable model, but one can easily drop the latent variable if not needed.
 
