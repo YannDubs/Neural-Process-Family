@@ -13,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
     <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/sphinx-book-theme.js"></script>
@@ -29,6 +30,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 
@@ -89,44 +97,49 @@
         <!-- Launch buttons -->
 
     </div>
+
+    <!-- Table of contents -->
     <div class="d-none d-md-block col-md-2 bd-toc show">
-<div class="tocsection onthispage pt-5 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> On this page
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overview">
+   Overview
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conditional-neural-process-cnp">
+   Conditional Neural Process (CNP)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#attentive-conditional-neural-process-attncnp">
+   Attentive Conditional Neural Process (AttnCNP)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#generalisation-and-extrapolation">
+   Generalisation and Extrapolation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convolutional-conditional-neural-process-convcnp">
+   Convolutional Conditional Neural Process (ConvCNP)
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#issues-with-cnpfs">
+     Issues With CNPFs
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
 
-<nav id="bd-toc-nav">
-    <ul class="nav section-nav flex-column">
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#overview" class="nav-link">Overview</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#conditional-neural-process-cnp" class="nav-link">Conditional Neural Process (CNP)</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#attentive-conditional-neural-process-attncnp" class="nav-link">Attentive Conditional Neural Process (AttnCNP)</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#generalisation-and-extrapolation" class="nav-link">Generalisation and Extrapolation</a>
-        </li>
-    
-        <li class="nav-item toc-entry toc-h2">
-            <a href="#convolutional-conditional-neural-process-convcnp" class="nav-link">Convolutional Conditional Neural Process (ConvCNP)</a><ul class="nav section-nav flex-column">
-                
-        <li class="nav-item toc-entry toc-h3">
-            <a href="#issues-with-cnpfs" class="nav-link">Issues With CNPFs</a>
-        </li>
-    
-            </ul>
-        </li>
-    
-    </ul>
-</nav>
-
-
+        </nav>
     </div>
 </div>
     <div id="main-content" class="row">
@@ -142,7 +155,7 @@
 <a class="reference internal image-reference" href="_images/graph_model_CNPF.svg"><img alt="_images/graph_model_CNPF.svg" src="_images/graph_model_CNPF.svg" width="200em" /></a>
 <p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Graphical model for the Conditional NPFs.</span><a class="headerlink" href="#graph-model-cnpf" title="Permalink to this image">¶</a></p>
 </div>
-<p>As we have seen, the key design choice of members of the NPF is how to model the predictive distribution <span class="math notranslate nohighlight">\(p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{C}, \mathbf{x}_\mathcal{T})\)</span>.
+<p>As we have seen, the key design choice of members of the NPF is how to model the predictive distribution <span class="math notranslate nohighlight">\(p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})\)</span>.
 One simplifying assumption that we could make, illustrated in <a class="reference internal" href="#graph-model-cnpf"><span class="std std-numref">Fig. 1</span></a>, is that the predictive distribution <em>factorises</em> conditioned on the context set.
 This means that, having observed the context set <span class="math notranslate nohighlight">\(\mathcal{C}\)</span>, the prediction for each target location is <em>independent</em> of any other target locations.
 We can concisely express this assumption as</p>
@@ -520,6 +533,25 @@ One such example is the use of Thompson sampling algorithms for e.g., contextual
 </div>
 </div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

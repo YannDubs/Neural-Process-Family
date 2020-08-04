@@ -119,7 +119,7 @@ main.bd-content {
             }
 
             span {
-                font-size: .9em;
+                font-size: .9rem;
             }
         }
 
@@ -146,9 +146,13 @@ main.bd-content {
 
         // Tables from sphinx-tabs
 
-        div.sphinx-tabs > div.menu > a.item {
+        div.sphinx-tabs > div.sphinx-menu {
+            padding: 0;
+        }
+
+        div.sphinx-tabs > div.sphinx-menu > a.item {
             width: auto;
-            margin: 0;
+            margin: 0px 0px -1px 0px;
         }
 
         // Footnotes and Citations
@@ -327,6 +331,11 @@ button.thebe-launch-button {
     font-size: 1em;
 }
 
+// toc directive styles
+div.tableofcontents-wrapper p.caption {
+    font-weight: 600 !important;
+    margin-bottom: 0em !important;
+}
 
 /*********************************************
 * Top Bar *
@@ -637,11 +646,8 @@ button.topbarbtn img {
     }
 
     // Captions
-    li + li.navbar-special {
+    p.caption {
         margin-top: 1em;
-    }
-
-    p.margin-caption {
         margin-bottom: 0;
         font-size: 1.2em;
     }
@@ -717,26 +723,45 @@ nav.bd-links {
     margin-left: 0px;
     max-height: none !important;
 
-    ul.nav li {
+    p.caption {
+        font-size: 1.4em;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    li {
         width: 100%;
     }
 
-    ul.sidenav_l1 > li {
+    li.toctree-l1 {
         font-size: 1.2em
     }
 
-    ul.sidenav_l2  {
+    li.toctree-l2, li.toctree-l3, li.toctree-l4, li.toctree-l5  {
         font-size: .8em
     }
 
-    ul.nav > li > a {
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
-    }
+    > ul.nav {
+        // Make sure the first items don't have any padding
+        padding-left: 0px !important;
 
-    ul.nav ul {
-        padding-left: 1rem !important;
-        padding-right: 0rem !important;
+        // Subsequent items should have padding
+        ul {
+            padding-left: 1rem !important;
+            padding-right: 0rem !important;
+        }
+
+        // Links don't have the padding, uls do
+        a {
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
+        }
     }
 }
 
