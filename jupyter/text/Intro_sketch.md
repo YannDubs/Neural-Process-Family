@@ -28,7 +28,7 @@ To motivate the NPF, consider the following tasks:
 
 - Interpolating **image data** with uncertainty estimates. For example, we may be given satellite images of a region, which may be obscured by cloud-cover, or a medical imaging scan which has some occluded regions. In both cases we might be interested not just in a single interpolation, but in the _entire probability distribution_ over them. Images can be viewed as real-valued _functions_ on the two-dimensional plane. Each input $x$ is a two-dimensional vector denoting pixel location in the image, and each $y$ is a real number representing pixel intensity (or a three-dimensional vector for RGB images).
 
-Each member of the NPF is a method for tackling problems such as these. To do this, the NPF brings together two key ideas: **stochastic process prediction** and **meta-learning**.
+Each member of the NPF is a method for tackling problems such as these. To do this, the NPF brings together two key ideas: **stochastic process prediction** and **meta-learning**. 
 
 ## Stochastic Process Prediction
 
@@ -45,11 +45,13 @@ class: tip, dropdown
 In this tutorial, we mainly use GPs to specify simple synthetic stochastic processes for benchmarking. We then train NPs to perform GP prediction. Since we can obtain the GP predictive distribution in closed form, we can use GPs to test the efficacy of NPs. It is important to remember, however, that NPs can model a broader range of SPs than GPs can (e.g. image data), are more computationally efficient at test time, and can learn directly from data without the need to hand-specify a kernel.   
 ```
 
-From this perspective, SP prediction can be thought of as a _map_ from datasets $D$ to SPs --- for every dataset we might observe, the predictor returns the corresponding predictive SP. The NPF can be viewed as _deploying and training neural networks to approximate maps of this form_. To make this concrete, let the input space be $\mathcal{X}$ (e.g. time) and the output space be $\mathcal{Y}$ (e.g. amplitude). Let $f: \mathcal{X} \to \mathcal{Y}$ be a random function (e.g. an audio recording of someone speaking). We say that $f \sim P_f$, where $P_f$ is a stochastic process. Now assume we observe a dataset $D_c = \{(x_c, y_c)\}_{c=1}^C$. $D_c$ is the dataset we wish to condition on, to obtain a predictive SP denoted $P_{f|D_c}$. In the NPF literature, $D_c$ is referred to as a _context set_.
+From this perspective, SP prediction can be thought of as a _map_ from datasets $D$ to SPs --- for every dataset we might observe, the predictor returns the corresponding predictive SP. The NPF can be viewed as _deploying and training neural networks to approximate maps of this form_. To make this concrete, let the input space be $\mathcal{X}$ (e.g. time) and the output space be $\mathcal{Y}$ (e.g. amplitude). Let $f: \mathcal{X} \to \mathcal{Y}$ be a random function (e.g. an audio recording of someone speaking). We say that $f \sim P_f$, where $P_f$ is a stochastic process. Now assume we observe a dataset $D_c = \{(x_c, y_c)\}_{c=1}^C$. $D_c$ is the dataset we wish to condition on, to obtain a predictive SP denoted $P_{f|D_c}$. In the NPF literature, $D_c$ is referred to as a _context set_. (A SCHEMATIC DIAGRAM MIGHT BE GOOD HERE)
 
-To specify $P_{f|D_c}$ might seem impractical at first, as $f$ is infinite-dimensional. However, in practice we only need to specify the collection of _finite marginals_ of $P_{f|D_c}$: the distributions of $\{f(x_t) \}_{t=1}^T$ for all possible finite collections of test inputs $(x_1, ..., x_T)$. In the NPF literature, $(x_1, ..., x_T)$ are known as _target inputs_ and the collection of target inputs with their corresponding outputs, $D_t = \{(x_t, y_t)\}_{t=1}^T$, is called a _target set_.  For a fixed choice of target inputs, $\{f(x_t)\}_{t=1}^T$ is just a finite-dimensional random vector. However, we cannot just choose any set of finite marginals to specify an SP: they must be _consistent_ with each other for varying target sets, or else we might give contradictory predictions depending on which target set we consider.
+#### Target-set Consistency
 
-```{admonition} Target Set Consistency
+To specify $P_{f|D_c}$ might seem impractical at first, as $f$ is infinite-dimensional. However, in practice we only need to specify the collection of _finite marginals_ of $P_{f|D_c}$: the distributions of $\{f(x_t) \}_{t=1}^T$ for all possible finite collections of test inputs $(x_1, ..., x_T)$. Think of $(x_1, ..., x_T)$ as the locations where we wish to query the predictive SP. In the NPF literature, these are known as _target inputs_ or _target features_. The collection of target inputs with their corresponding outputs, $D_t = \{(x_t, y_t)\}_{t=1}^T$, is called a _target set_.  For a fixed choice of target inputs, $\{f(x_t)\}_{t=1}^T$ is just a finite-dimensional random vector. However, we cannot just choose any set of finite marginals to specify an SP: they must be _consistent_ with each other for varying target sets, or else we might give contradictory predictions depending on which target set we consider.
+
+```{admonition} Examples of Inconsistency
 ---
 class: tip, dropdown
 ---
@@ -63,22 +65,35 @@ We see the problem here: inconsistent marginals lead to self-contradictory predi
 
 The good news is that a well-known result called the Kolmogorov extension theorem states that as long as all the marginals satisfy these simple consistency requirements, they specify a well-defined SP. We'll refer to this kind of consistency as _target-set consistency_, since it relates to what happens when you vary the target set. Later, we'll look at various ways to use deep neural networks to specify SPs that are guaranteed to be target-set consistent.
 
+#### Context-set Consistency
+
 There is another kind of consistency that SP prediction must satisfy to obey the rules of probability theory, which involves more than just varying target sets. Consider two input-output pairs, $(x_1, y_1)$ and $(x_2, y_2)$. The product rule tells us that the joint predictive density must satisfy
 
-$$
 \begin{align}
-p(y_1, y_2| x_1, x_2) = p(y_1| x_1) p(y_2| x_2, y_1, x_1) = p(y_2| x_2) p(y_1| x_1, y_2, x_2)
+p(y_1, y_2| x_1, x_2) = p(y_1| x_1) p(y_2| y_1, x_1, x_2) = p(y_2| x_2) p(y_1| y_2, x_1, x_2) \label{AR}\tag{1}
 \end{align}
-$$
 
-We can see that this condition relates the finite marginals of SPs with varying context sets, and hence we refer to this as _context-set consistency_. If we computed our predictive SPs in exact form using the rules of probability theory, we would be guaranteed to make context-set consistent predictions. However, neural networks are general function approximators, and unlike target-set consistency, there's no simple way to constrain them to ensure that a member of the NPF is context-set consistent. However, we can still make predictions as long as we only consider a single context set for a given random function. One situation where the context set inconsistency of NPs may cause issues is if we were observing data in an online setting. 
+We can see that this condition relates the finite marginals of SPs with varying context sets, and hence we refer to this as _context-set consistency_. If we computed our predictive SPs in exact form using the rules of probability theory, we would be guaranteed to make context-set consistent predictions. However, neural networks are general function approximators, and there's no simple way to constrain them to ensure that a member of the NPF is context-set consistent. In practice, the NPF yields good predictive performance even though it violates context-set consistency. This is because a well-trained Neural Process _learns_ a map that is approximately context-set consistent, even though it is not explicitly constrained to.
 
-```{admonition} Autoregressive Sampling
+```{admonition} Relation to AR Models
 ---
 class: tip, dropdown
 ---
+Equation \ref{AR} may seem familiar --- this method of factorising a joint distribution into conditional ones is exactly that used in _autoregressive density models_. Such autoregressive (AR) models have been applied with great success for modelling a wide range of data, such as image data. However, to define a consistent density, AR models are usually defined with a _fixed_ ordering for the factorisation (e.g. left-to-right and top-to-bottom for the pixels in an image).
+
+By contrast, the NPF allows us to evaluate the density of any target set given any context set. Hence the NPF may end up violating equation \ref{AR} if the relevant target and context sets are fed into it. One thing this means in practice is that if we were to use a Neural Process to sample functions autoregressively, we might get different distributions depending on what order we sampled the points.
 
 ```
+
+```{admonition} Online Data
+---
+class: tip, dropdown
+---
+One situation where context-set consistency arises naturally is in _online data acquisition_. In this setting, we continually observe data and our context set grows with time. For example, we might first want to make a prediction for $y_1, y_2$ with an empty context set --- $p(y_1, y_2| x_1, x_2)$. Then we might later observe $y_1$. Equation \ref{AR} can then be seen as demanding that the updated prediction for $y_2$ conditioned on $y_1$ is consistent with the initial guess for $y_1, y_2$. This notion can be straightforwardly generalised to more than 2 datapoints.
+
+```
+
+To recap, we've seen that many tasks involving prediction under uncertainty can be framed as stochastic process prediction. And we've also seen that stochastic process prediction can be thought of as a map from context sets to stochastic processes. We've looked at how we can specify stochastic processes by defining their finite marginal distributions in a target-set consistent way. The NPF is a way of using deep neural networks to do exactly that. Next we'll look at how we might _train_ these neural networks via meta-learning.
 
 ## Meta-learning Under Uncertainty
 
