@@ -218,6 +218,7 @@ Computational graph for LNPS. [drop?]
 
 The latent neural process {cite}`garnelo2018neural` is the latent counterpart of the CNP, and the first member of the LNPF proposed in the literature.
 Given the vector $R$, which is computed as in the CNP, we simply pass it through an additional MLP to predict the mean and variance of the latent representation $\mathbf{z}$, from which we can produce samples.
+We call the computational graph that produces the distribution over $\mathbf{z}$ the _latent path_, to distinguish from a computation graph for a deterministic representation, which we refer to as a _deterministic path_.
 The decoder then has the same architecture, and we can simply pass samples of $\mathbf{z}$, together with desired target locations, to produce our predictive distributions.
 We typically treat samples from the predictive as the mean functions produced by passing one sample of $\mathbf{z}$ through the decoder.
 {numref}`computational_graph_LNPs_text` illustrates the computational graph of the LNP.
@@ -335,7 +336,12 @@ class: tip
 Model details, training and many more plots in {doc}`AttnLNP Notebook <../reproducibility/AttnLNP>`
 ```
 
+
 ## Convolutional Latent Neural Process (ConvLNP)
+
+The Convolutional LNP {cite}`foong2020convnp` is the latent counterpart of the ConvCNP.
+Similar to the LNP (and in contrast with the AttnLNP), the latent path _replaces_ the deterministic one, resulting in a latent functional representation (a latent stochastic process) instead of a latent vector valued variable.
+We can represent this model with a graphical representation as illustrated in {numref}`graph_model_ConvLNPs_text`.
 
 ```{figure} ../images/graph_model_ConvLNPs.svg
 ---
@@ -345,6 +351,10 @@ alt: graphical model ConvLNP
 ---
 Graphical model for ConvLNPs.
 ```
+
+Another way of viewing the ConvLNP, which is useful in gaining an intuitive understanding of the computational graph (see {numref}`computational_graph_ConvLNPs_text`) is as consisting of two stacked ConvCNPs: the first takes in context sets and outputs a latent stochastic process (the encoder).
+The second takes as input a sample from the latent process and models the posterior predictive conditioned on that sample (the decoder).
+
 ```{figure} ../images/computational_graph_ConvLNPs.svg
 ---
 width: 400em
@@ -354,16 +364,21 @@ alt: Computational graph ConvLNP
 Computational graph for ConvLNPS. [simplify ? useful to mention or show induced points ? drop?]
 ```
 
-The Convolutional LNPs {cite}`foong2020convnp` is the latent counterpart of ConvCNPs. A major difference compared to AttnLNP is that the latent path *replaces* the deterministic, which is done by actually having a latent functional representation (a latent stochastic process) instead of a latent vector valued variable. [intuition ...]
+One difficulty arises in training the ConvLNP with the NPVI objective, as it requires evaluating the KL divergence between two stochastic processes, which is a tricky proposition.
+{cite}`foong2020convnp` propose a simple approach, that approximates this quantity by instead summing the KL divergences at each discretisation location.
+However, as they note, the ConvLNP tends to perform significantly better in most cases when trained with NPML rather than NPVI.
+Below, we show similar plots for the ConvLNP on the GP experiments.
+However, here we are illustrating the performance of a ConvLNP trained with NPML, not NPVI. (SAME QUESTION: SHOULD WE PUT THESE SIDE BY SIDE WITH A MODEL TRAINED WITH NPML?.)
 
-```{note}
-An other way of viewing the ConvLNP is that it consists of 2 stacked ConvCNP, the first one models the latent stochastic process. The second one takes as input a sample from the latent stochastic process and models the posterior predictive conditioned on that sample.
+```{note} Global representation ConvLNPs
+---
+class: tip, dropdown
+---
+In this tutorial, we consider a simple extension to the ConvLNP proposed by {cite}`foong2020convnp`, which includes a _global latent representation_ as well.
+The global representation is computed by average-pooling half of the channels in the latent function, resulting in a translation _invariant_ latent representation (further details regarding this can be found in the ConvLNP notebook).
+The intuition behind such a representation is that it may help to capture aspects of the underlying function that are global, allowing the functional representation to represent more localised information.
+This intuition is clearest when considering mixture of GPs experiments discussed below.
 ```
-
-* Mention that better trained using MLE probably because of the functional KL [better explanation ?]
-* Link to theory
-* talk about global representation ?
-
 
 ```{figure} ../gifs/ConvLNP_single_gp_extrap.gif
 ---
@@ -371,13 +386,17 @@ width: 35em
 name: ConvLNP_single_gp_extrap_text
 alt: ConvLNP on GPs with RBF, periodic, Matern kernel
 ---
-
-Samples Posterior predictive of AttnLNPs (Blue) and the oracle GP (Green) with RBF,periodic, and noisy Matern kernel.
+Samples Posterior predictive of ConvLNPs (Blue) and the oracle GP (Green) with RBF,periodic, and noisy Matern kernel.
 ```
 
 From {numref}`ConvLNP_single_gp_extrap_text` we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to {numref}`AttnLNP_single_gp_text`.
+Further, as in the case of the ConvCNP, we see that the ConvLNP elegantly generalises beyond the range in $X$-space on which it was trained.
 
-Let us now make the problem harder by having the ConvLNP model a stochastic process whose posterior predictive is non Gaussian. We will do so by having the following underlying generative process: sample one of the 3 previous kernels then sample funvtion. Note that the data generating process is not a GP (when marginalizing over kernel hyperparameters). Theoretically this could still be modeled by a LNPF as the latent variables could model the current kernel hyperparameter. This is where the use of a global representation makes sense.
+Next, we consider the more challenging problem of having the ConvLNP model a stochastic process whose posterior predictive is non Gaussian.
+We do so by having the following underlying generative process: first, sample one of the 3 kernels discussed above, and second, sample a function from the sampled kernel.
+Importantly, the data generating process is a mixture of GPs, and the true posterior predictive process (achieved by marginalising over kernel hyperparameters) does not have a closed form representation.
+Theoretically, this could still be modelled by a LNPF as the latent variables could represent the current kernel hyperparameters as well.
+
 
 ```{figure} ../gifs/ConvLNP_kernel_gp.gif
 ---
@@ -388,7 +407,7 @@ alt: ConvLNP trained on GPs with RBF,Matern,periodic kernel
 Similar to {numref}`ConvLNP_single_gp_extrap_text` but the training was performed on all data simultaneously.
 ```
 
-From {numref}`ConvLNP_kernel_gp_text` we see that ConvLNP performs quite well in this harder setting. Indeed, it seems to model process using the periodic kernel when the number of context points is small but quickly (around 10 context points) recovers the correct underlying kernel. Note that we plot the posterior predictive of the actual underlying GP but the generating process is highly non Gaussian.
+{numref}`ConvLNP_kernel_gp_text` demonstrates that ConvLNP performs quite well in this harder setting. Indeed, it seems to model process using the periodic kernel when the number of context points is small but quickly (around 10 context points) recovers the correct underlying kernel. Note that we plot the posterior predictive of the actual underlying GP but the generating process is highly non Gaussian.
 
 [should we also add the results of {numref}`ConvLNP_vary_gp` to show that not great when large/ uncountable number of kernels?]
 
