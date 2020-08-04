@@ -11,7 +11,7 @@
 - chapter: Advanced
   sections:
     - file: text/Theory
-    - file: text/Training
+    - file: text/Format
 
 - chapter: Reproducibility
   sections:
