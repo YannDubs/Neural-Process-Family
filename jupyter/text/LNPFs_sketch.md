@@ -64,19 +64,67 @@ In fact, this story is not new, and the same issues arise when considering many 
 The question of training LNPF members is still open, and there is ongoing research in this area.
 In this section, we will cover two methods for training LNPF models, but we emphasise that both have their flaws, and deciding on an appropriate training method is an open question that must often be answered empirically.
 
+```{admonition} Warning
+---
+class: caution, dropdown
+---
+In this tutorial, the chronology with which we introduce the objective functions does not follow the order in which they were originally introduced in the literature.
+We begin with an approximate likelihood procedure, which was recently introduced by {cite}`foong2020convnp` due to its simplicity, and how it relates to the training procedure used for the CNPF.
+Following this, we introduce the variational inference inspired approach, which was originally proposed by {cite}`garnelo2018neural` to train members of the LNPF.
+```
+
+
+### Neural Process Maximum Likelihood (NPML)
+
+First, let's consider a direct approach to optimising the log-marginal predictive likelihood of LNPF members.
+Using Monte-Carlo sampling and the so-called LogSumExp trick, we can derive an approximation to this objective as
+
+```{math}
+:label: npml
+\begin{align}
+\log p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
+&= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Parameterisation} \\
+& \approx \log \left( \frac{1}{L} \sum_{l=1}^{L} \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) & \text{Monte-Carlo approximation} \\
+& = \log \left( \sum_{l=1}^{L} \exp \left(  \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) \right) - \log L & \text{LogSumExp trick}\\
+& = \text{LogSumExp}_{l=1}^{L} \left( \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) - \log L
+\end{align}
+```
+
+{numref}`npml` provides a simple-to-compute objective function for training LNPF-members, which we can then use with standard optimisers to maximise $\hat{L}$ with respect to $\boldsymbol\theta$..
+1. Sample from the encoder $L$ times: $\mathbf{z}_l \sim p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)$.
+2. For each sample, compute the log-likelihood of the target set: $\log p_l \leftarrow \sum_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z}_l  \right)$.
+3. Compute the LogSumExp over the sampling dimension: $\hat{\mathcal{L}} \leftarrow \text{LogSumExp}_{l=1}^{L} \log p_l$
+
+NPML is conceptually very simple.
+It also links nicely with the procedure of the CNPF, in the sense that it targets the same predictive likelihood during training.
+Moreover, it tends to work well in practice, typically leading to good performance of the models.
+However, it suffers from two important drawbacks:
+1. When applying the Monte-Carlo approximation, we have employed in unbiased estimator to the predictive likelihood. However, in practice we are interested in the _log_ likelihood. Unfortunately, the log of an unbiased estimator is not itself unbiased. As a result, NPML is a _biased_ (conservative) estimator of the quantity we would actually like to optimise.
+2. In practice it turns out that NPML is quite sensitive to the number of samples $L$ used to approximate it. In both our GP and image experiments, we find that on the order of 20 samples are required to achieve "good" performance. Of course, the computational and memory costs of training scale with $L$, often limiting the number of samples that can be used in practice.
+
+Unfortunately, addressing the first issue proves quite difficult, and is an open question in training latent variable models in general.
+However, we next describe an alternative training procedure, inspired by _variational inference_ that typically works well with fewer samples, often even allowing us to employ single sample estimators in practice.
+
+```{admonition} Warning
+---
+class: caution, dropdown
+---
+Another issue is that the bias in the estimator makes it challenging to exactly carry out quantitative experiments, since our performance metrics are only ever lower bounds to the true model performance, and quantifying how tight those bounds are is quite challenging.
+```
+
 
 ### Neural Process Variational Inference (NPVI)
 
-The first solution to training LNPF members, proposed by {cite}`garnelo2018neural` takes inspiration from the literature on variational inference (VI), and in particular, amortised VI, which is used in training VAEs.
-There are many resources available on amortised VI (LINKS TO BLOGS / PAPERS), and we encourage readers unfamiliar with the concept to take the time to go through these.
-Many of the relevant ideas are widely applicable, and provide valuable insights for many sub-areas of ML.
+Next, we discuss a training procedure, proposed by {cite}`garnelo2018neural`, which takes inspiration from the literature on variational inference (VI). In particular, we can think about this objective as a variate of _amortised_ VI (used in training VAEs) for the NPF.
+There are many resources available on amortised VI (LINKS TO BLOGS / PAPERS), and we encourage readers unfamiliar with the concept to take the time to go through some of these.
+Many of the relevant ideas are widely applicable, and provide valuable insights for several sub-areas of ML.
 For our purposes, the following intuitions should suffice.
 
 The central idea in amortised VI is to introduce an _inference network_, denoted $q_{\boldsymbol\phi}$, which is trained to approximate the _posterior distribution_ over the latent variable.
-In our case, the posterior distribution of interest is $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable had we observed _both_ the context and target sets.
+In our case, the posterior distribution of interest is $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable having observed _both_ the context and target sets.
 To approximate this posterior, we can introduce a network that maps datasets to distributions over the latent variable.
-We already know how to define such networks in the NPF -- it has the same form as our encoder $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})!
-In fact, as we will see below, NPVI proposes to use the encoder as the inference network when training LNPF members.
+We already know how to define such networks in the NPF -- it has the same form as our encoder $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$!
+In fact, as we discuss below, NPVI proposes to use the encoder as the inference network when training LNPF members.
 
 ```{admonition} Advanced
 ---
@@ -85,7 +133,6 @@ class: dropdown, caution
 In fact, the inference network is trained to approximate a mapping from the observed data to the posterior distribution over the latent variable.
 This is where the term _amortised_ comes from: rather than freely optimise the parameters of each approximate posterior distribution, we share the parameters via a global mapping (often parameterised as a neural network).
 ```
-
 Having introduced $q_{\boldsymbol\phi}$, we can use it to derive a _lower bound_ (often coined an _ELBO_) to the log marginal likelihood we would like to optimise.
 Denoting $\mathcal{D} = \mathcal{C} \cup \mathcal{T}$, we have that
 
@@ -142,24 +189,10 @@ These can be roughly summarised as
 * Sharing the encoder and inference network introduces additional complexities in the training procedure. In particular, it muddies the distinction between modelling and inference that is typical in probabilistic modelling. Moreover, it is unclear what the effect of the dual roles of the encoder in the model are, and it may be that using the encoder as an approximate posterior has a detrimental effect on the resulting predictive distributions.
 
 Despite these (and other) drawbacks NPVI is the most commonly employed procedure for training LNPF members.
-Next, we turn our attention to recently proposed procedure that abandons the approximate posterior interpretation of training LNPF members in favour of a simpler, approximate maximum-likelihood procedure.
+Next, we turn our attention to several members of the LNPF.
+In particular, we will introduce the latent-variable variant of each of the conditional models introduced in the previous section, and we shall see that having addressed the training procedures, the extension to latent variables is quite straightforward from a practical perspective.
+After introducing the models, we will illustrate a brief comparison of the two described training procedures.
 
-
-### Neural Process Maximum Likelihood (NPML)
-
-A more direct approach is to optimise the log-marginal predictive likelihood directly.
-We can achieve this by using the log-sum-exp trick, as follows
-
-```{math}
-:label: npml
-\begin{align}
-p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
-&= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \mathrm{d}\mathbf{z} \\
-& \approx \log \left( \frac{1}{L} \sum_{l=1}^{L} \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) \\
-& = \log \left( \sum_{l=1}^{L} \exp \left(  \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) \right) - \log L\\
-& = \text{LogSumExp}_{l=1}^{L} \left( \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) - \log L
-\end{align}
-```
 
 
 ## Latent Neural Process (LNP)
