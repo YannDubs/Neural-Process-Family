@@ -1,4 +1,4 @@
-# Training
+# Format
 
 ```{admonition} Note
 ---
@@ -8,15 +8,15 @@ General note about anything + examples
 ```
 
 
-```{admonition} Warning
+```{admonition} Caution
 ---
-class: warning
+class: caution
 ---
 disclaimers or words of cautions.
 ```
 
 
-```{admonition} Theory
+```{admonition} Advanced
 ---
 class: hint
 ---
@@ -24,7 +24,7 @@ Some additional theoretical note
 ```
 
 
-```{admonition} Note: ...
+```{admonition} Note$\qquad$Some title
 ---
 class: note, dropdown
 ---
@@ -32,15 +32,15 @@ Same as before, but with dropdown. Notice that we are adding a title for the rea
 ```
 
 
-```{admonition} Warning: ...
+```{admonition} Caution$\qquad$Some title
 ---
-class: warning, dropdown
+class: caution, dropdown
 ---
 Same as before, but with dropdown. Notice that we are adding a title for the reader to know whether they are interested.
 ```
 
 
-```{admonition} Theory: ...
+```{admonition} Advanced$\qquad$Some title
 ---
 class: hint, dropdown
 ---

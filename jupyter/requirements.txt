@@ -1,4 +1,2 @@
-sphinxcontrib-proof
-pygifsicle
 jupyter-book
 sphinx-panels

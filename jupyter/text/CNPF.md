@@ -1,20 +1,20 @@
-# Conditional NPFs
+# Conditional NPF
 
 ## Overview
 
 ```{figure} ../images/graph_model_CNPF.svg
 ---
-width: 200em
+width: 300em
 name: graph_model_CNPF
 ---
-Graphical model for the Conditional NPFs.
+Graphical model for member of the Conditional NPF.
 ```
 
 The key design choice of members of the NPF is how to model the predictive distribution $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$.
-In particular, we require a design of the predictive that results in _target set consistency_, as discussed in the previous section.
-Arguably the simplest way to assure this property in the predictive is by assuming a _factorised structure_ on the predictive (illustrated via graphical representation in {numref}`graph_model_CNPF`), i.e., that the predictive distribution factorises conditioned on the context set.
+In particular, we require a design of the predictive that results in _target set consistency_, i.e., forms a proper stochastic process as discussed in the {ref}`previous section <target_consistency>`.
+Arguably the simplest way to assure this property is by assuming that the predictive distribution *factorises* conditioned on the context set (illustrated via graphical representation in {numref}`graph_model_CNPF`).
 This means that, having observed the context set $\mathcal{C}$, the prediction for each target location is _independent_ of any other target locations.
-We can concisely express this assumption as
+We can concisely express this assumption as:
 
 ```{math}
 ---
@@ -25,7 +25,14 @@ p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C}) = \prod_{t=1}^{
 \end{align}
 ```
 
-A typical (though not _necessary_) choice is to consider Gaussian distributions for these likelihoods.
+```{admonition} Advanced$\qquad$Factorisation $\implies$ consistency
+---
+class: hint, dropdown
+---
+[to do]
+```
+
+A typical (though not necessary) choice is to consider Gaussian distributions for these likelihoods.
 We collectively refer to members of the NPF that employ the factorisation assumption as _conditional_ NP models, and to this sub-family as the CNPF.
 Now, recall that one guiding principle of the NPF is to _locally_ encode each input-output pair in $\mathcal{C}$, and then _aggregate_ the encodings into a single representation of the context set, which we denote $R$.
 Putting these together, we can express the predictive distribution of CNPF members as
@@ -45,77 +52,79 @@ Where:
 $$
 \begin{align}
 R^{(c)}
-&:= e_{\boldsymbol\theta} \left(x^{(c)}, y^{(c)} \right) & \text{Encoding} \\
+&:= \mathrm{Enc}_{\boldsymbol\theta} \left(x^{(c)}, y^{(c)} \right) & \text{Encoding} \\
 R
 &:= \mathrm{Agg}\left(\{R^{(c)}\}_{c=1}^{C} \right) & \text{Aggregation} \\
 (\mu^{(t)},\sigma^{2(t)})
-&:= d_{\boldsymbol\theta}(x^{(t)},R) & \text{Decoding}  
+&:= \mathrm{Dec}_{\boldsymbol\theta}(x^{(t)},R) & \text{Decoding}  
 \end{align}
 $$
 
 CNPF members make an important tradeoff.
-On one hand, we have placed a severe restriction on the class of models that we can fit, and this restriction has important consequences.
-We discuss these consequences in further detail, as well as provide some illustrations, at the end of this chapter.
+On one hand, we have placed a severe restriction on the class of models that we can fit.
+As discussed at the end of this chapter, this restriction has important consequences such as the inability of (coherently) sampling. 
 On the other hand, the factorisation assumption makes evaluation of the predictive likelihoods tractable.
-This means that we can employ simple and exact maximum-likelihood procedures to train the model parameters.
+This means that we can employ simple and exact maximum-likelihood procedures to train the model parameters, i.e., training amounts in directly minimising the negative log likelihood ({eq}`training`) which we previously discussed.
 
-```{admonition} Advanced
+```{admonition} Advanced$\qquad$Unbiasedness 
 ---
-class: tip, dropdown
+class: hint, dropdown
 ---
 In the {doc}`Theory <Theory>` chapter we discuss the implications of an unbiased training procedure, and formalise what such a training procedure converges to.
 ```
 
 Members of CNPF are distinguished by how they parameterise each of the key components:
-* the encoding function $e_{\boldsymbol\theta}$,
+* the encoding function $\mathrm{Enc}_{\boldsymbol\theta}$,
 * the aggregation function $\mathrm{Agg}$, and
-* the decoder $d_{\boldsymbol\theta}$.
+* the decoder $\mathrm{Dec}_{\boldsymbol\theta}$.
 
 Next, we detail some prominent members of the CNPF, and discuss some of their advantages and disadvantages.
 
-
+(cnp)=
 ## Conditional Neural Process (CNP)
 
 Arguably the simplest member of the CNPF, and the first considered in the literature, is the Conditional Neural Process (CNP) {cite}`garnelo2018conditional`.
 The CNP is defined by the following design choices:
-* The encoding function is defined by a feedforward MLP that takes as input the concatenation of $x^{(c)}$ and $y^{(c)}$, and outputs a simple vector $R^{(c)} \in \mathbb{R}^{dr}$.
-*  The aggregation function is a simple average over the representations $\frac{1}{| \mathcal{C} |} \sum_{c=1}^{| \mathcal{C} |} R^{(c)}$.
-* The decoder $d_{\boldsymbol\theta}$ is also defined by a feedforward MLP that takes in the concatenation of $R$ and $x^{(t)}$, and outputs a mean $\mu^{(t)}$ and standard deviation $\sigma^{(t)}$.
+* The encoding function is a feedforward multi-layer perceptron (MLP) that takes as input the concatenation of $x^{(c)}$ and $y^{(c)}$, and outputs a vector $R^{(c)} \in \mathbb{R}^{dr}$.
+*  The aggregation function is a simple average over each local representation $\frac{1}{C} \sum_{c=1}^{C} R^{(c)}$.
+* The decoder $d_{\boldsymbol\theta}$ is a MLP that takes in the concatenation of the global representation $R$ and the target location $x^{(t)}$, and outputs a mean $\mu^{(t)}$ and standard deviation $\sigma^{(t)}$.
 
 
-```{admonition} Note
+```{admonition} Note$\qquad$Permutation Invariance
 ---
-class: dropdown, tip
+class: note, dropdown
 ---
-You should convince yourself (if it is not immediately obvious) that averaging is indeed permutation invariant. Hint: the summation operation is commutative, and this is followed by simple division by $| \mathcal{C} |$ to achieve "averaging".
-```
-```{admonition} Details
----
-class: dropdown, tip
----
-There is a strong relationship between this form and DeepSets networks, introduced by {cite}`zaheer2017deep`.
-In the {doc}`Theory <Theory>` chapter we leverage this relationship to prove that CNPs can recover maps to any (continuous) mean and variance functions.
+You should convince yourself (if it is not immediately obvious) that the aggregation function is indeed permutation invariant. Hint: the summation operation is commutative.
 ```
 
-```{admonition} Implementation Detail
+```{admonition} Note$\qquad$Implementation Detail
 ---
-class: tip, dropdown
+class: note, dropdown
 ---
-Typically, we parameterise $d_{\boldsymbol\theta}$ as outputting $(\mu^{(t)}, \log \sigma^{(t)})$, i.e., the _log_ standard deviation, so as to ensure that no negative variances occur.
+Typically, we parameterise $\mathrm{Dec}_{\boldsymbol\theta}$ as outputting $(\mu^{(t)}, \log \sigma^{(t)})$, i.e., the _log_ standard deviation, so as to ensure that no negative variances occur.
 ```
 
-The resulting computational graph is illustrated in {numref}`computational_graph_CNPs_text`. It is easy to see that the computational cost of making predictions for $T$ target set points conditioned on $\mathcal{C}$ with this design is $\mathcal{O}(T+|\mathcal{C}|)$.
+The resulting computational graph is illustrated in {numref}`computational_graph_CNPs_text`. Notice that the computational cost of making predictions for $T$ target points conditioned on $C$ context points with this design is $\mathcal{O}(T+C)$.
+Indeed, each location-value pairs of the context set are encoded independently ($\mathcal{O}(C)$) and the representation $R$ can then be re-used for predicting at each target location ($\mathcal{O}(T)$).
+This means that once trained, CNPs are much more efficient for than GPs (which scale as $\mathcal{O}((C+T)^3)$).
 
 
 ```{figure} ../images/computational_graph_CNPs.svg
 ---
-width: 300em
+width: 400em
 name: computational_graph_CNPs_text
 alt: Computational graph CNP
 ---
-Computational graph for CNP.
+Computational graph for CNPs.
 ```
 
+```{admonition} Advanced$\qquad$Universality and DeepSets
+---
+class: dropdown, tip
+---
+There is a strong relationship between this encoder+aggregator and DeepSets networks, introduced by {cite}`zaheer2017deep`.
+In the {doc}`Theory <Theory>` chapter we leverage this relationship to prove that CNPs can recover maps to any (continuous) mean and variance functions.
+```
 
 Let's see what prediction with such a model looks like in practice.
 We first consider a simple 1D setting with samples from a GP with a radial basis function (RBF) kernel (data details in {doc}`Datasets Notebook <../reproducibility/Datasets>`).
@@ -129,21 +138,17 @@ width: 35em
 name: CNP_rbf_text
 alt: CNP on GP with RBF kernel
 ---
-Posterior predictive of CNPs (Blue) and the oracle GP (Green) with RBF kernel.
+Posterior predictive of a CNP (the blue line represents the predicted mean function and the shaded region shows a standard deviations on each side $[\mu-\sigma,\mu+\sigma]$) and the oracle GP (green line represents the ground truth mean and the dashed line show a standard deviations on each side) with RBF kernel.
 ```
 
 {numref}`CNP_rbf_text` provides the predictive distribution for a CNP trained on many samples from such a GP.
-The blue line represents the predicted mean function, and the shaded region represents two standard deviations on each side.
-Similarly, the green solid line represents the ground truth mean, while the green dashed lines represent two standard deviations for the "oracle" GP.
 The figure demonstrates that the CNP performs quite well in this setting.
 As more data is observed, the predictions become tighter, as we would hope.
 Moreover, we can see that the CNP predictions quite accurately track the ground truth predictive distribution.
 
-That being said, looking closely we can see some signs that resemble underfitting: for example, the predictive mean does not pass through all the context points, despite there being no noise in the data-generating distribution.
-The underfitting becomes abundantly clear when considering more complicated kernels, such as a periodic kernel.
-Samples from periodic GPs are random periodic functions.
-One thing we can notice about the ground truth GP is that it when observing data in some region of $X$-space, it leverages the periodic structure, and  becomes confident about predictions at every period.
-
+That being said, we can see some signs that resemble underfitting: for example, the predictive mean does not pass through all the context points, despite there being no noise in the data-generating distribution.
+The underfitting becomes abundantly clear when considering more complicated kernels, such as a periodic kernel (i.e. GPs generating random periodic functions as seen in {ref}`Datasets Notebook <samples_from_gp>`).
+One thing we can notice about the ground truth GP is that it leverages the periodic structure, and  becomes confident about predictions at every period.
 
 ```{figure} ../gifs/CNP_periodic.gif
 ---
@@ -151,90 +156,102 @@ width: 35em
 name: CNP_periodic_text
 alt: CNP on GP with Periodic kernel
 ---
-Posterior predictive of CNPs (Blue) and the oracle GP (Green) with Periodic kernel.
+Posterior predictive of a CNP (Blue line for the mean with shaded area for $[\mu-\sigma,\mu+\sigma]$) and the oracle GP (Green line for the mean with dotted lines for +/- standard deviation) with Periodic kernel.
 ```
 
 Here we see that the CNP completely fails to model the predictive distribution: the mean function is overly smooth and hardly passes through the context points.
-Moreover, we might hope that a CNP trained on periodic samples might learn to leverage this structure, but here we see that no notion of periodicity seems to have been learned.
-Moreover, the uncertainty seems constant, and is significantly overestimated everywhere.
+Moreover, we might hope that a CNP trained on periodic samples might learn to leverage this structure, but it seems that no notion of periodicity have been learned.
+Finally, the uncertainty seems constant, and is significantly overestimated everywhere.
 It thus seems reasonable to conclude that the CNP is not expressive enough to accurately model this (more complicated) process.
 
-One potential solution, motivated by the fact that we know CNPs should be able to approximate _any_ mean and variance functions, might be to simply increase capacity of networks $e_{\boldsymbol\theta}$ and $d_{\boldsymbol\theta}$.
+One potential solution, motivated by the fact that we know CNPs should be able to approximate _any_ mean and variance functions, might be to simply increase capacity of networks $\mathrm{Enc}_{\boldsymbol\theta}$ and $\mathrm{Dec}_{\boldsymbol\theta}$.
 Unfortunately, it turns out that CNPs' modelling power scales quite poorly with the capacity of its networks.
 A more promising avenue, which we explore next, is to consider the inductive biases of its architectures.
 
 
-```{admonition} Details
+```{admonition} Note
 ---
-class: tip
+class: note
 ---
-Model details and (many more) plots, along with code for constructing and training, CNPs can be found in {doc}`CNP Notebook <../reproducibility/CNP>`
+Model details and (many more) plots, along with code for constructing and training CNPs, can be found in {doc}`CNP Notebook <../reproducibility/CNP>`
 ```
 
+(attncnp)=
 ## Attentive Conditional Neural Process (AttnCNP)
 
 
-An important observation, made by {cite}`kim2019attentive`, is that in the CNP parameterisation, all points in the target set share a single, global representation $R$.
-In other words, the CNP employs the same, _target independent representation_ when making predictions for any target set location.
+One possible explanation for CNP's underfitting is that all points in the target set share a global representation $R$ of the context set, i.e., $R$ is *independent* of the location of the desired target.
 This implies that all points in the context set have the same "importance", regardless of the location at which a prediction is being made.
-Intuitively, it may seem natural that different points in the context set may be more relevant to predictions in different regions of $X$-space.
-{cite}`kim2019attentive` propose to address this issue by using a target-specific representation $R^{(t)}$, as illustrated in {numref}`computational_graph_AttnCNPs_text`.
+For example, CNPs cannot take advantage of the fact that if a target point is very close to a context point they will often both have similar values. A possible solution is to use a target-specific representation $R^{(t)}$, as illustrated in {numref}`computational_graph_AttnCNPs_text`.
 
 ```{figure} ../images/computational_graph_AttnCNPs.svg
 ---
-width: 300em
+width: 400em
 name: computational_graph_AttnCNPs_text
 alt: Computational graph of AttnCNP
 ---
-Computational graph for AttnCNP.
+Computational graph for AttnCNPs.
 ```
-```{admonition} Note
+
+```{admonition} Note$\qquad$Functional Representation
 ---
-class: dropdown, tip
+class: dropdown, note
 ---
 Another perspective, which we will be useful later on, is that the representation $R$ is actually a function of the form $R : \mathcal{X} \to \mathbb{R}^{dr}$ instead of a vector.
 This function will be queried at the target position $x^{(t)}$ to yield a target specific vector representation $R^{(t)}$.
 ```
 
-To achieve this, {cite}`kim2019attentive` propose the Attentive CNP (AttnCNP[^AttnCNP]), which employs an _attention mechanism_ ({cite}`bahdanau2014neural`) to compute $R^{(t)}$.
-There are many great resources available about the use of attention mechanisms in machine learning [(LINKS TO PAPERS / BLOG POSTS ON ATTENTION?], and we encourage readers unfamiliar with the concept to look through these.
+To achieve this, Kim et al. {cite}`kim2019attentive` propose the Attentive CNP (AttnCNP[^AttnCNP]), which aggregates all the local $R^{(c)}$ in a target dependent representation $R^{(t)}$ using an _attention mechanism_ {cite}`bahdanau2014neural` instead of CNPs' mean aggregation.
+There are many great resources available about the use of attention mechanisms in machine learning (e.g. [Distill's interactive visualisation](https://distill.pub/2016/augmented-rnns/#attentional-interfaces), [Lil'Log](https://lilianweng.github.io/lil-log/2018/06/24/attention-attention.html), or the [Illustrated Transformer](http://jalammar.github.io/illustrated-transformer/)), and we encourage readers unfamiliar with the concept to look through these.
 For our purposes, it suffices to think of attention mechanisms as learning to _attend_ to specific parts of an input that are particularly relevant to the desired output, giving them more _weight_ than others when making a prediction.
 
-```{admonition} Note
+In the AttnCNP, we can think of the attention mechanism as a 
+set of weights for $\{ w^{(c)}(x^{(t)}) \}$, one for each point in the context set.
+Importantly, this set of weights is different for (and depends directly on) every target location!
+In other words, the AttnCNP replaces CNP's simple average by a (more general) weighted average which gives a larger weight to important context points.
+
+
+```{admonition} Note$\qquad$Permutation Invariance
 ---
-class: dropdown, tip
+class: dropdown, note
 ---
 To see that attention mechanisms satisfy permutation invariance, we must provide a more explicit form for the resulting representations.
 With an attention mechanism, we can express these forms as
 
 $$
 \begin{align}
-R^{(t)} = \sum_{c=1}^{| \mathcal{C} |} w_{\boldsymbol \theta}(x^{(c)}, x^{(t)}) R^{(c)},
+R^{(t)} = \frac{1}{\sum_{c=1}^{C} w_{\boldsymbol \theta}(x^{(c)}, x^{(t)})} \sum_{c=1}^{C} w_{\boldsymbol \theta}(x^{(c)}, x^{(t)}) R^{(c)},
 \end{align}
 $$
 
-where $w_{\boldsymbol \theta}(x^{(c)}, x^{(t)})$ is the weight output by the attention mechanism, and $R^{(c)} = e_{\boldsymbol \theta}(x^{(c)}, y^{(c)})$ as before.
-Thus, we can see that the resulting representation is simply a weighted sum, which is permutation invariant due to the commutativity of the summation operation.
-
-From this view, we can also immediately see that the AttnCNP is a strict generalisation of the CNP, in the sense that the AttnCNP recovers the CNP if we set $w_{\boldsymbol \theta}(x^{(c)}, x^{(t)}) = \frac{1}{| \mathcal{C} |}$, for any $x^{(t)}$.
+where $w_{\boldsymbol \theta}(x^{(c)}, x^{(t)})$ is the weight output by the attention mechanism, and $R^{(c)} = \mathrm{Enc}_{\boldsymbol \theta}(x^{(c)}, y^{(c)})$ as before.
+Thus, we can see that the resulting representation is simply a weighted average, which is permutation invariant due to the commutativity of the summation operation.
 ```
 
-In the AttnCNP, we can think of the attention mechanism as providing a set of weights for $\{ w^{(c)}(x^{(t)}) \}$, one for each point in the context set.
-Importantly, this set of weights is different for (and depends directly on) every target location!
-To illustrate how this alleviates underfitting, imagine that our context set contains to points which are "very far" apart in $X$-space.
+To illustrate how attention alleviates underfitting, imagine that our context set contains to points which are "very far" apart in $X$-space.
 When making predictions close to the first point, we should largely ignore the $R^{(2)}$, since it contains little information about this region of $X$-space compared to $R^{(1)}$.
-The converse is true when making predictions near the second point.
 Attention allows us to parameterise and generalise this intuition, and learn it directly from the data!
 
-```{admonition} Computational Complexity
+```{admonition} Warning$\qquad$Self-Attention
 ---
-class: dropdown, important
+class: dropdown, warning
 ---
-Note that attention comes at the cost of additional computational complexity: from  $\mathcal{O}(T+C)$ to $\mathcal{O}(C(C*T))$ although it can be efficiently parallelised on GPUs.
-For every target we now have to attend to a representation at each context element (cross attention).
-For each target point a representation $R^{(t)}$ is then computed using cross-attention $\mathcal{O}(C*T)$.
-In addition, the context representations (target independent) usually first go through a self attention layer, where each context point attends to one another $\mathcal{O}(C^2)$.
-Putting all together that gives  $\mathcal{O}(C(C*T))$ computational complexity.
+In the above discussion we only talk about an attention mechanism between a target and the context set (referred to as cross-attention).
+In reality, AttnCNP often first uses an attention mechanism between context points (self-attention) to better model dependencies in the context set.
+
+Notice that this does not impact the permutation invariance as the resulting encoder+aggregator is a composition of permutation invariant functions, which is also permutation invariant.
+```
+
+```{admonition} Note$\qquad$Computational Complexity
+---
+class: dropdown, note
+---
+Notice that attention comes at the cost of additional computational complexity: from  $\mathcal{O}(T+C)$ to $\mathcal{O}(C*T)$ when using self-attention) although it can be efficiently parallelised on GPUs.
+Indeed, for each $T$ target we now have to attend to compute a different representation $R^{(t)}$ by taking a weighted average of the local representation at each context element $\mathcal{O}(C)$, i.e. this is done in $\mathcal{O}(C*T)$.
+
+If a self-attention layer is used then each context point attends to one another in $\mathcal{O}(C^2)$.
+This does not depend on the target as is thus only performed once. 
+Putting all together that gives $\mathcal{O}(C(C*T))$ computational complexity.
 ```
 
 Without further ado, let us see how the AttnCNP performs in practice.
@@ -244,16 +261,17 @@ We will first evaluate it on GPs from different kernels (RBF, periodic, and Nois
 ---
 width: 35em
 name: AttnCNP_single_gp_text
-alt: AttnCNP on GPs with RBF, periodic, noisy Matern kernel
+alt: AttnCNP on GPs with RBF, Periodic, Noisy Matern kernel
 ---
-Posterior predictive of AttnCNPs (Blue) and the oracle GP (Green) with RBF,Periodic,noisy Matern kernel.
+
+Posterior predictive of AttnCNPs (Blue line for the mean with shaded area for $[\mu-\sigma,\mu+\sigma]$) and the oracle GP (Green line for the mean with dotted lines for +/- standard deviation) with RBF, Periodic, and Noisy Matern kernel.
 ```
 
 {numref}`AttnCNP_single_gp_text` demonstrates that, as desired, AttnCNP alleviates many of the underfitting issues of the CNP, and generally performs much better on the challenging kernels.
 However, looking closely at the resulting fits, we can still see some dissatisfying properties:
-* the fit on the Periodic kernel is still not _great_.
-In particular, looking closely, we can see that the mean and variance functions of the AttnCNP often fail to track the oracle GP, as they do not always leverage the periodic structure in the data.
-* Moreover, we see that the AttnCNP has a posterior predictive with "kinks", i.e., it is not very smooth. Note that kinks usually appear between 2 context points. This leads us to believe that they are a consequence of the AttnCNP abruptly changing its attention from one context point to the other (due to the exponential in the softmax used to parameterise the attention mechanism).
+* The fit on the Periodic kernel is still not _great_.
+In particular, we see that the mean and variance functions of the AttnCNP often fail to track the oracle GP, as they do not really leverage the periodic structure in the data.
+* Moreover, the posterior predictive of the AttnCNP has "kinks", i.e., it is not very smooth. Notice that these kinks usually appear between 2 context points. This leads us to believe that they are a consequence of the AttnCNP abruptly changing its attention from one context point to the other.
 
 Overall, AttnCNP performs quite well in this setting.
 Next, we turn our attention (pun intended) to a more realistic setting, where we do not have access to the underlying data generating process: images.
@@ -264,10 +282,10 @@ In our experiments, we consider images as functions from the 2d integer grid (de
 width: 30em
 name: images_as_functions_text
 ---
-Viewing images as functions from $\mathbb{Z}^2 \to \mathbb{R}$.
+Viewing images as functions from $\mathbb{Z}^2 \to \mathbb{R}$. Figure from {cite}`garnelo2018neural`.
 ```
 
-When thinking about images as functions, it makes sense to reference the underlying stochastic process that generated them, though of course we can not express this process, nor have access to its ground truth posterior predictive distributions.
+When thinking about images as functions, it makes sense to reference the underlying stochastic process that generated them, though of course we cannot express this process, nor have access to its ground truth posterior predictive distributions.
 Just as in the 1D case, our goal is to model the posterior distribution of target pixels (typically the complete image) given a few context pixels.
 
 ```{figure} ../gifs/AttnCNP_img_interp.gif
@@ -280,69 +298,101 @@ Posterior predictive of an AttnCNP for CelebA $32\times32$ and MNIST.
 ```
 
 {numref}`AttnCNP_img_interp_text` illustrates the performance of the AttnCNP on image reconstruction tasks with CelebA (left) and MNIST (right).
-The results are quite impressive, and we can see that the AttnCNP is able to learn complicated structure in the underlying process, and produce compelling reconstructions of the data when faced with small context sets, and also structured obfuscation of the image that is different from what was observed during training.
-The image experiments hammer home an important advantage of the NPF over other approaches to modelling stochastic processes.
-We can see that the same architecture can scale to complicated underlying processes, learning the important properties from the data (rather than requiring intricate kernel design, as in the case of GPs).
+The results are quite impressive, as the AttnCNP is able to learn complicated structure in the underlying process, and even produce descent reconstructions of structured obfuscation of the image that is different from the random context pixels seen during training.
+The image experiments hammer home an important advantage of the NPF over other approaches to modelling stochastic processes:
+the same architecture can scale to complicated underlying processes, learning the important properties from the data (rather than requiring intricate kernel design, as in the case of GPs).
 Intuitively, we can think of NPF models as implicitly learning these properties, or kernels, from the data, while allowing us to bake in some inductive biases into the architecture of the model.
 
 
+```{admonition} Note
+---
+class: note
+---
+Model details, training and many more plots in {doc}`AttnCNP Notebook <../reproducibility/AttnCNP>`
+```
+
 ## Generalisation and Extrapolation
 
-So far, we have seen that CNPF members can flexibly model a range of stochastic processes, and that we can overcome some of the key limitations by carefully designing the model architectures.
-This led us to the AttnCNP, which achieves compelling performance on a range of both GP and image-based tasks.
+So far, we have seen that well designed CNPF members can flexibly model a range of stochastic processes by being trained from functions sampled from the desired stochastic process.
 Next, we consider the question of _generalisation_ and _exptrapolation_ with CNPF members.
 
 One property of GPs is that they can condition predictions on data observed in any region of $X$-space.
-When training a NPF member, we must specify a bounded range of $X$ on which data is observed, since we can never sample data from an infinite range.
+A possible downside from the fact that neural processes learn how to model a stochastic process from a dataset, is that during training we must specify a bounded range of $X$ on which data is observed, since we can never sample data from an infinite range.
 We know that neural networks are typically quite bad at generalising outside the training distribution, and so we might suspect that CNPF model will not have this appealing property.
 
 Let's first probe this question in the GP experiments.
 To do so, we can examine what happens when trained models are provided with observations from the underlying process, but outside the training range.
 
-```{figure} ../gifs/AttnCNP_rbf_extrap.gif
----
-width: 35em
-name: AttnCNP_rbf_extrap_text
-alt: extrapolation of AttnCNP on GPs with RBF kernel
----
-Extrapolation (red dashes) of posterior predictive of AttnCNPs (Blue) and the oracle GP (Green) with RBF kernel. Left of the red vertical line is the training range, everything to the right is the "extrapolation range".
+
+
+
+```{figure} ../gifs/CNP_rbf_extrap.gif
+:width: 100%
+:name: CNP_rbf_extrap_text
+:alt: extrapolation of CNP on GPs with RBF kernel
+
+Extrapolation of posterior predictive of CNP (Blue) and the oracle GP (Green) with RBF kernel. Left of the red vertical line is the training range, everything to the right is the "extrapolation range".
 ```
 
-{numref}`AttnCNP_rbf_extrap_text` clearly shows that the AttnCNP breaks as soon as the context set contains observations from outside the training range.
-In other words, the AttnCNP really was not able to model the the fact that RBF kernel is stationary, i.e., that the absolute position of target points is not important only their relative position compared to context points.
+
+
+```{figure} ../gifs/AttnCNP_rbf_extrap.gif
+:width: 100%
+:name: AttnCNP_rbf_extrap_text
+:alt: extrapolation of AttnCNP on GPs with RBF kernel
+
+Extrapolation of posterior predictive of AttnCNP (Blue) and the oracle GP (Green) with RBF kernel. Left of the red vertical line is the training range, everything to the right is the "extrapolation range".
+```
+
+
+
+{numref}`AttnCNP_rbf_extrap_text` and {numref}`CNP_rbf_extrap_text` clearly shows that the CNP and the AttnCNP  break as soon as the context set contains observations from outside the training range.
+In other words, they really were not able to model the fact that RBF kernel is stationary, i.e., that the absolute position of target points is not important only their relative position compared to context points.
 
 We can also observe this phenomenon in the image setting.
-For example let us take an AttnCNP trained on MNIST (augmented with translations) and test it on a larger canvas with 2 digits (Zero Shot Multi MNIST, ZSMM).
+For example let us evaluate the CNP and AttnCNP on Zero Shot Multi MNIST (ZSMM, examples in {doc}`Datasets Notebook <../reproducibility/Datasets>`)) where the training set consists of MNIST examples (augmented with translations) and while the test imahes are larger canvases with 2 digits.
 
+
+
+% The following puts 2 figures side by side in large screens but one after the other on phones
+
+````{panels}
+:container: container-fluid 
+:column: col-lg-6 col-md-6 col-sm-12 col-xs-12 p-0 m-0
+:card: shadow-none border-0
+
+```{figure} ../gifs/CNP_img_extrap.gif
+:width: 100%
+:name: CNP_img_extrap_text
+:alt: CNP on ZSMM
+
+Posterior predictive of an CNP for ZSMM.
+```
+
+---
 
 ```{figure} ../gifs/AttnCNP_img_extrap.gif
----
-width: 15em
-name: AttnCNP_img_extrap_text
-alt: AttnCNP on ZSMM
----
+:width: 100%
+:name: AttnCNP_img_extrap_text
+:alt: AttnCNP on ZSMM
+
 Posterior predictive of an AttnCNP for ZSMM.
 ```
 
-Again we see in {numref}`AttnCNP_rbf_extrap_text` that the model completely breaks in this generalisation task.
+````
+
+Again we see in {numref}`AttnCNP_rbf_extrap_text` and {numref}`CNP_rbf_extrap_text` that the models completely break in this generalisation task.
 This is probably not surprising to anyone who worked with neural nets as the test set is significantly different of the training set, which is challenging.
 Despite the challenging nature of the failure mode, it turns out that we can in fact construct NPF members that avoid it.
 This leads us to our next CNPF member -- the ConvCNP.
 
 
-```{admonition} Details
----
-class: tip
----
-Model details, training and many more plots in {doc}`AttnCNP Notebook <../reproducibility/AttnCNP>`
-```
-
 
 ## Convolutional Conditional Neural Process (ConvCNP)
 
-```{admonition} Disclaimer
+```{admonition} Caution
 ---
-class: tip
+class: caution
 ---
 The authors of this tutorial are co-authors on the ConvCNP paper.
 ```
@@ -375,7 +425,7 @@ While this means the forward pass through the ConvCNP can only be approximated, 
 
 ```{admonition} Advanced
 ---
-class: dropdown, caution
+class: dropdown, hint
 ---
 One of the key results of {cite}`gordon2019convolutional` is to show that SetConv layers are both permutation invariant and translation equivariant.
 Moreover, {cite}`gordon2019convolutional` demonstrate that _any_ (continuous) permutation invariance and TE function can be represented by a ConvCNP.
