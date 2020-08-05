@@ -1,17 +1,16 @@
-- file: text/Intro
-  title: Overview
+- file: text/Intro_sketch
 
-- chapter: NPFs
+- chapter: Sub-Families
   sections:
-  - file: text/CNPFs
+  - file: text/CNPF
     title: Conditional NPF
-  - file: text/LNPFs
+  - file: text/LNPF
     title: Latent NPF
 
 - chapter: Advanced
   sections:
     - file: text/Theory
-    - file: text/Training
+    - file: text/Format
 
 - chapter: Reproducibility
   sections:

@@ -1,6 +1,6 @@
 # Book settings
 title: Neural Process Family
-author: Yann Dubois and Jonathan Gordon
+author: Yann Dubois, Jonathan Gordon, ‪Andrew Foong
 logo: logo.gif
 exclude_patterns: ["* Hope*","**/* Old*","**/*_old*","*-Copy*"]  # Patterns to skip when building the book. Can be glob-style (e.g. "*skip.ipynb")
 
@@ -20,7 +20,6 @@ html:
   favicon: "favicon.ico"
   home_page_in_navbar: true
 
-# sphinx:
-#   extra_extensions:
-#    - sphinxcontrib.proof
-#    - sphinx_panels
+sphinx:
+  extra_extensions:
+   - sphinx_panels
