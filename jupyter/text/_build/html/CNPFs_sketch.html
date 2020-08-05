@@ -155,8 +155,9 @@
 <a class="reference internal image-reference" href="_images/graph_model_CNPF.svg"><img alt="_images/graph_model_CNPF.svg" src="_images/graph_model_CNPF.svg" width="200em" /></a>
 <p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Graphical model for the Conditional NPFs.</span><a class="headerlink" href="#graph-model-cnpf" title="Permalink to this image">¶</a></p>
 </div>
-<p>As we have seen, the key design choice of members of the NPF is how to model the predictive distribution <span class="math notranslate nohighlight">\(p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})\)</span>.
-One simplifying assumption that we could make, illustrated in <a class="reference internal" href="#graph-model-cnpf"><span class="std std-numref">Fig. 1</span></a>, is that the predictive distribution <em>factorises</em> conditioned on the context set.
+<p>The key design choice of members of the NPF is how to model the predictive distribution <span class="math notranslate nohighlight">\(p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})\)</span>.
+In particular, we require a design of the predictive that results in <em>target set consistency</em>, as discussed in the previous section.
+Arguably the simplest way to assure this property in the predictive is by assuming a <em>factorised structure</em> on the predictive (illustrated via graphical representation in <a class="reference internal" href="#graph-model-cnpf"><span class="std std-numref">Fig. 1</span></a>), i.e., that the predictive distribution factorises conditioned on the context set.
 This means that, having observed the context set <span class="math notranslate nohighlight">\(\mathcal{C}\)</span>, the prediction for each target location is <em>independent</em> of any other target locations.
 We can concisely express this assumption as</p>
 <div class="math notranslate nohighlight" id="equation-conditional-predictives">
