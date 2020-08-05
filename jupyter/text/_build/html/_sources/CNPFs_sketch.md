@@ -10,8 +10,9 @@ name: graph_model_CNPF
 Graphical model for the Conditional NPFs.
 ```
 
-As we have seen, the key design choice of members of the NPF is how to model the predictive distribution $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$.
-One simplifying assumption that we could make, illustrated in {numref}`graph_model_CNPF`, is that the predictive distribution _factorises_ conditioned on the context set.
+The key design choice of members of the NPF is how to model the predictive distribution $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$.
+In particular, we require a design of the predictive that results in _target set consistency_, as discussed in the previous section.
+Arguably the simplest way to assure this property in the predictive is by assuming a _factorised structure_ on the predictive (illustrated via graphical representation in {numref}`graph_model_CNPF`), i.e., that the predictive distribution factorises conditioned on the context set.
 This means that, having observed the context set $\mathcal{C}$, the prediction for each target location is _independent_ of any other target locations.
 We can concisely express this assumption as
 
