@@ -10,8 +10,12 @@ from torch.distributions import Normal
 from torch.distributions.independent import Independent
 
 from npf.architectures import MLP, merge_flat_input
-from npf.utils.helpers import (MultivariateNormalDiag, dist_to_device,
-                               isin_range, make_abs_conv)
+from npf.utils.helpers import (
+    MultivariateNormalDiag,
+    dist_to_device,
+    isin_range,
+    make_abs_conv,
+)
 from npf.utils.initialization import weights_init
 
 from .helpers import pool_and_replicate_middle, replicate_z_samples
@@ -456,7 +460,8 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
 
     @property
     def dflt_Modules(self):
-        dflt_Modules = dict()
+        # allow inheritence
+        dflt_Modules = NeuralProcessFamily.dflt_Modules.__get__(self)
 
         dflt_Modules["LatentEncoder"] = partial(
             MLP, n_hidden_layers=1, hidden_size=self.r_dim,

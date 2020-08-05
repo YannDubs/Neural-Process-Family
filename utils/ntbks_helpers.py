@@ -253,7 +253,7 @@ PRETTY_RENAMER = StrFormatter(
         "npfxl Islnpf": "LNP IS XL",
         "npfxl Elbolnpf": "LNP ELBO XL",
     },
-    to_upper=["Mnist", "Svhn", "Cnp", "Lnp"],
+    to_upper=["Mnist", "Svhn", "Cnp", "Lnp", "Rbf"],
 )
 
 
