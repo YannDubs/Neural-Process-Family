@@ -1,6 +1,6 @@
-# Neural Process Family
+# The Neural Process Family
 
-In this tutorial, we introduce the **Neural Process Family** (NPF). Neural Processes (NPs) are a broad range of deep learning methods that model **predictive stochastic processes** via **meta-learning**. They are particularly well-suited to tasks which require fast test-time inference and well-calibrated uncertainty on continuous input domains. The goal of this tutorial is to provide a gentle introduction to the NPF. Our approach is to walk through several prominent members of the NPF, highlighting their key advantages and drawbacks. By accompanying the exposition with code and examples, we hope to (i) make the design choices and tradeoffs associated with each model clear and intuitive, and (ii) demonstrate both the simplicity of the framework and its broad applicability.
+In this tutorial, we introduce the **Neural Process Family** (NPF). Neural Processes (NPs) are a family of deep learning methods that use **meta-learning** to model **stochastic processes**. They are particularly well-suited to tasks which require fast test-time inference and well-calibrated uncertainty, and have been applied to time-series data, image data and environmental data, among others. The goal of this tutorial is to provide a gentle introduction to the NPF. Our approach is to walk through several prominent members of the NPF, highlighting their key advantages and drawbacks. By accompanying the exposition with code and examples, we hope to (i) make the design choices and tradeoffs associated with each model clear and intuitive, and (ii) demonstrate both the simplicity of the framework and its broad applicability.
 
 % I don't know how to put them side by side :/
 
@@ -10,7 +10,7 @@ width: 35em
 name: ConvLNP_norbf_gp_extrap
 alt: Samples from ConvLNP trained on GPs
 ---
-Sample functions from the predictive stochastic process of ConvLNPs (blue) and the oracle GP (green) with periodic and noisy Matern kernels.
+Sample functions from the predictive distribution of ConvLNPs (blue) and the oracle GP (green) with periodic and noisy Matern kernels.
 ```
 
 ```{figure} ../images/ConvCNP_superes.png
@@ -20,6 +20,17 @@ name: ConvCNP_superes_intro
 alt: Increasing image resolution with ConvCNP
 ---
 Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP.
+```
+
+## Outline and Motivation
+
+This tutorial is split into three sections. This first page will give a broad, bird's eye view of the entire Neural Process Family. We'll see that the family splits naturally into two sub-families: the Conditional Neural Process Family (CNPF), and the Latent Neural Process Family (LNPF). These are covered in the following two pages, and there we'll get into more detail about the different architectures in each family. We'll make liberal use of dropdown boxes in this tutorial to avoid breaking up the exposition. Feel free to skip or skim the boxes marked as 'advanced' on a first reading. Without further ado, let's get started!
+
+```{admonition} Note
+---
+class: note
+---
+**All the code to run the models discussed in this tutorial is provided** --- these can be accessed in the Reproducibility section. (LINK TO GITHUB REPO?)
 ```
 
 To motivate the NPF, consider the following tasks:
@@ -123,7 +134,7 @@ Schematic representation of CNP forward pass taken from [Marta Garnelo](https://
 
 As we'll see in the following pages of this tutorial, both the CNPF and LNPF come with their specific advantages and disadvantages. Roughly speaking, the LNPF allows us to model _dependencies_ in the predictive distribution over the target set, at the cost of requiring us to approximate an intractable objective function.
 
-Furthermore, even _within_ each family, there are myriad choices that can be made: Should we use an MLP or a convolutional network? What kind of aggregator function should we use? Each of these choices will lead to neural processes with different inductive biases and capabilities. For example, later in the CNPF and LNPF pages of this tutorial, we will see that incorporating attention can help reduce underfitting, and that incorporating convolutions can help with spatial generalisation. As a teaser, we provide a very brief summary of the neural processes considered in this tutorial (this should be skimmed for now, but feel free to return here to get a quick overview once each model has been introduced):
+Furthermore, even _within_ each family, there are myriad choices that can be made: Should we use an MLP or a convolutional network? What kind of aggregator function should we use? Each of these choices will lead to neural processes with different inductive biases and capabilities. For example, later in the CNPF and LNPF pages of this tutorial, we will see that incorporating attention can help reduce underfitting, and that incorporating convolutions can help with spatial generalisation. As a teaser, we provide a very brief summary of the neural processes considered in this tutorial (This should be skimmed for now, but feel free to return here to get a quick overview once each model has been introduced. Clicking on each model brings you to the Reproducibility page which includes code for running the model):
 
 ```{list-table} Summary of different members of the Neural Process Family
 ---
@@ -241,6 +252,18 @@ This essentially states that the distribution over $y^{(1)}, y^{(2)}$ obtained b
 
 ```
 
+## Use Cases
+
+What tasks can a trained Neural Process be applied to? Broadly speaking, they can be used in any situation where predictions need to be made under uncertainty. We list a few examples here.
+
+* **Regression with uncertainty**. Imagine you're writing an algorithm to predict rainfall in the future, or to forecast demand for materials in your supply chain. These are all regression tasks where a well-trained Neural Process could exploit intricate structure in the data to make predictions and provide crucial uncertainty estimates.
+
+* **Interpolating missing values**. This is closely related to the previous use case. Given a corrupted image or audio signal, we may want to see what the plausible interpolations are. Moreover, if the corrupted region is large, we want to be aware of the whole range of plausible interpolations, not just one guess. If the image is, say, a medical scan, this could be crucial for decision-making.
+
+* **Active learning**. In active learning, our goal is to provide accurate predictions with as few measurements as possible. This is typically done by performing measurements at points with the greatest uncertainty. A Neural Process can be used to provide these uncertainty estimates. Once the measurement is taken, the new context point can be fed back into the Neural Process, and the uncertainty estimates can be updated for the next measurement.
+
+* **Bayesian optimisation**. In Bayesian optimisation, the goal is to perform black-box optimisation of an unknown function when gradient information is unavailable, and each evaluation of the objective function is expensive. Most algorithms for Bayesian optimisation rely on querying points which have high expected reward and also high uncertainty, thus trading off exploration and exploitation.
+
 ## Summary of NPF Properties
 
 Would an NPF be a good fit for your machine learning problem? To summarise, we note the advantages and disadvantages of the NPF:
@@ -249,50 +272,13 @@ Would an NPF be a good fit for your machine learning problem? To summarise, we n
 * &#10003; **Well calibrated uncertainty**. Often meta-learning is applied to situations where each task has only a small number of examples at test time (also known as _few-shot learning_). These are exactly the situations where we should have uncertainty in our predictions, since there are many possible ways to interpolate a context set with few points. The NPF _learns_ to represent this uncertainty during episodic training.
 * &#10003; **Data-driven expressivity**. The enormous flexibility of deep learning architectures means that the NPF can learn to model very intricate predictive distributions directly from the data. The user mainly has to specify the inductive biases of the network architecture, e.g. convolutional vs attentive.
 
-However, these these advantages come at the cost of the following disadvantages:
+However, these advantages come at the cost of the following disadvantages:
 
-* &#10007; **The need for a large dataset for meta-training**. Learning requires collecting and training on a large dataset of target and context points sampled from different functions, i.e., a large dataset of datasets. In some situations, a dataset of datasets may simply not be available. Furthermore, although predicting on a new context set after meta-training is fast, meta-training itself can be computationally expensive depending on the size of the network and the meta-dataset. As with all deep learning algorithms, getting the network to train well may also require hyperparameter tuning.
+* &#10007; **The need for a large dataset for meta-training**. Meta-learning requires training on a large dataset of target and context points sampled from different functions, i.e., a large dataset of datasets. In some situations, a dataset of datasets may simply not be available. Furthermore, although predicting on a new context set after meta-training is fast, meta-training itself can be computationally expensive depending on the size of the network and the meta-dataset.
 
 * &#10007; **Underfitting and smoothness issues**. The NPF predictive distribution has been known to underfit the context set, and also sometimes to provide unusually jagged predictions for regression tasks. The sharpness and diversity of the image samples for the LNPF could also be improved. However, improvements are being made on this front, with both the attentive and convolutional variants of the NPF providing significant advances.
 
-<!-- ## Properties
-
-[...keep?...]
-
-NPFs generally have the following desirable properties :
-
-* &#10003; **Preserve permutation invariance** as with stochastic processes. This comes from the permutation invariance of $\mathrm{Agg}$ (Eq. {eq}`permut_inv`) and the factorization assumption (Eq. {eq}`formal`).
- for all permutations $\pi_{\mathcal{T}}: |\mathbf{y}_{\mathcal{T}}| \to |\mathbf{y}_{\mathcal{T}}|$ and $\pi_{\mathcal{C}}: |\mathbf{y}| \to |\mathbf{y}|$:
-
-$$
-p_{\boldsymbol \theta}(\mathbf{y}_{\mathcal{T}}  | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) = p_{\boldsymbol \theta}(\pi_{\mathcal{T}}(\mathbf{y})|\pi_{\mathcal{T}}(\mathbf{x}), \pi_{\mathcal{C}}(\mathcal{C}))
-$$
-
-* &#10003; **Data Driven Expressivity**. NPs require specification of prior knowledge through neural network architectures rather than a kernel function (like in GPs).
-The former is usually less restrictive due to its large amount of parameters and removing the need of satisfying certain mathematical properties.
-Intuitively, the NPs learn an "implicit kernel function" from the data.
-
-* &#10003; **Test-Time Scalability**. Although the computational complexity depends on the NPF they are usually more computationally efficient (at test time) than proper stochastic processes.
-Typically they will be linear or quadratic in the context set instead of cubic as with GPs.
-[intuituin for gain????]
-
-These advantages come at the cost of the following disadvantages
-
-* &#10007; **Lack of consistency under marginalizaion**. So NPFs are not proper stochastic processes.
-This essentially means that even if you had infinite computational power (to be able to marginalize) and sampled points autoregressively, the order in which you do it would change the distribution over targets.
-Formally, there exists $\mathbf{x}'$ such that:
-
-$$
-p(\mathbf{y}_{\mathcal{T}}|\mathbf{x}_{\mathcal{T}}, \mathcal{C}) \neq \int p(\mathbf{y}_{\mathcal{T}}|\mathbf{x}_{\mathcal{T}}, \mathcal{C},\mathbf{y}',\mathbf{x}')  
-p(\mathbf{y}'|\mathbf{x}', \mathcal{C}) d\mathbf{y}'
-$$
-
-%This lack of nice mathematical properties enable NPFs to predict in a more computationally efficient way.
-
-* &#10007; **The need for large data**. Learning requires collecting and training on a large dataset of target and context points sampled from different functions. I.e. a large dataset of datasets.
-
-* &#10007; $\sim$ **Lack of smoothness**. Due to highly non linear behaviour of neural networks and the factorized form of the predictive distribution (Eq. {eq}`formal`), the output tends to be non-smooth compared to a GP.
-This is less true in newer NPFs such as ConvCNP {cite}`gordon2019convolutional`. -->
+In summary, we've taken a bird's eye view of the Neural Process Family and seen some of their properties and use cases. We've also seen  Let's now dive into the architectures! In the next two pages we'll cover everything you need to know to get started with the models in the Conditional Neural Process Family and the  
 
 
 [^objective]: Some Neural Processes also define the loss function to include the loss on the context set as well as the target set.
