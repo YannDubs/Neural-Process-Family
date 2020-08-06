@@ -10,7 +10,7 @@ General note about anything + examples
 
 ```{admonition} Caution
 ---
-class: caution
+class: warning
 ---
 disclaimers or words of cautions.
 ```
@@ -21,6 +21,13 @@ disclaimers or words of cautions.
 class: hint
 ---
 Some additional theoretical note
+```
+
+```{admonition} Important
+---
+class: attention
+---
+Important text (dont't use dropdown if important)
 ```
 
 
@@ -34,7 +41,7 @@ Same as before, but with dropdown. Notice that we are adding a title for the rea
 
 ```{admonition} Caution$\qquad$Some title
 ---
-class: caution, dropdown
+class: warning, dropdown
 ---
 Same as before, but with dropdown. Notice that we are adding a title for the reader to know whether they are interested.
 ```
@@ -42,8 +49,16 @@ Same as before, but with dropdown. Notice that we are adding a title for the rea
 
 ```{admonition} Advanced$\qquad$Some title
 ---
-class: hint, dropdown
+class: attention, dropdown
 ---
 Same as before, but with dropdown. Notice that we are adding a title for the reader to know whether they are interested.
+```
+
+
+```{admonition} References$\qquad$Some title
+---
+class: hint, dropdown
+---
+Additional references.
 ```
 
