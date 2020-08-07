@@ -8,7 +8,7 @@ We concluded the previous section by noting two important drawbacks of the CNPF:
 * The marginal predictive distributions require specification of a particular parametric form.
 
 In this section we discuss an alternative parametrisation of $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$ that still enforces consistency in the predictive, and addresses both of these issues.
-The main idea is to introduce a latent variable $\mathbf{z}$ in to the definition of the predictive distribution.
+The main idea is to introduce a latent variable $\mathbf{z}$ into the definition of the predictive distribution.
 This leads us to the second major branch of the NPF, which we refer to as the Latent Neural Process Sub-family, or LNPF for short.
 A graphical representation of the LNPF  is given in {numref}`graph_model_LNPs_text`.
 
@@ -61,7 +61,7 @@ This is great news, as it (conceptually) relieves us of the burden of choosing /
 While this parameterisation seems to solve the major problems associated with the CNPF, it introduces an important drawback.
 In particular, the key difficulty with the LNPF is that the likelihood we defined in {numref}`latent_likelihood` is no longer _tractable_.
 This has several severe implications, and in particular means that we can longer use simple maximum-likelihood training for the parameters of the model.
-In the remainder of this section, we first discuss the  question of training members of the LNPF -- without having any particular member in mind.
+In the remainder of this section, we first discuss the  question of training members of the LNPF, without having any particular member in mind.
 After discussing several training procedures, we introduce extensions of each of the CNPF members discussed in the previous section to their corresponding member of the LNPF.
 
 ## Training LNPF members
@@ -117,63 +117,105 @@ However, we next describe an alternative training procedure, inspired by _variat
 
 ### Neural Process Variational Inference (NPVI)
 
-Next, we discuss a training procedure, proposed by {cite}`garnelo2018neural`, which takes inspiration from the literature on variational inference (VI). In particular, we can think about this objective as a variant of _amortised_ VI (used in training VAEs) for the NPF.
-There are many resources available on amortised VI (LINKS TO BLOGS / PAPERS), and we encourage readers unfamiliar with the concept to take the time to go through some of these.
-Many of the relevant ideas are widely applicable, and provide valuable insights for several sub-areas of ML.
-For our purposes, the following intuitions should suffice:
+Next, we discuss a training procedure proposed by {cite}`garnelo2018neural`, which takes inspiration from the literature on variational inference (VI).
+The central idea behind this objective function is to use _posterior sampling_ to reduce the sample complexity issue associated with NPML.
+For a better intuition regarding this, note that NPML is defined using an expectation against $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$.
+The idea in posterior sampling is to use all the data available during training to produce the distribution over $\mathbf{z}$, thus leading to more informative samples and lower variance objectives.
 
-The central idea in amortised VI is to introduce an _inference network_, denoted $q_{\boldsymbol\phi}$, which is trained to approximate the (intractable) _posterior distribution_ over the latent variable.
-In our case, the posterior distribution of interest is $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable having observed _both_ the context and target sets.
-To approximate this posterior, we can introduce a network that maps datasets to distributions over the latent variable.
-We already know how to define such networks in the NPF -- they require the same form as our encoder $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$!
-In fact, as we discuss below, NPVI proposes to use the encoder as the inference network when training LNPF members.
+In our case, the posterior distribution from which we would like to sample is $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable having observed _both_ the context and target sets.
+Unfortunately, this posterior is intractable.
+To address this, {cite}`garnelo2018neural` propose to replace the true posterior with simply passing both the context and target sets through the encoder, i.e.
 
-```{admonition} Inference network details
+```{math}
 ---
-class: dropdown, caution
+label: approximate_posterior
 ---
-In fact, the inference network is trained to approximate a mapping from the observed data to the posterior distribution over the latent variable.
-This is where the term _amortised_ comes from: rather than freely optimise the parameters of each approximate posterior distribution, we share the parameters via a global mapping (often parameterised as a neural network).
+\begin{align}
+p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) \approx p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \cup \mathcal{T} \right).
+\end{align}
 ```
-Having introduced $q_{\boldsymbol\phi}$, we can use it to derive a _lower bound_ (often coined an _ELBO_) to the log marginal likelihood we would like to optimise.
+
+```{admonition} Caution$\qquad$Intractable posterior
+---
+class: warning, dropdown
+---
+Using Bayes' rule and our model definition, we can see that the true posterior we desire is given as
+
+$$
+\begin{align}
+p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) = \frac{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right)}{ \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \mathrm{d} \mathbf{z}}.
+\end{align}
+$$
+
+Recalling that our decoder is defined by a complicated, non-linear neural network, we can see that this posterior is intractable, as it involves an integration against complicated likelihoods.
+```
+
+In fact, we can use such an approximation to derive a _lower bound_ to the log marginal likelihood.
+The key insight in deriving this bound is to (i) introduce the approximate posterior as a sampling distribution, and (ii) employ a straightforward application of [Jensen's inequality](https://en.wikipedia.org/wiki/Jensen%27s_inequality).
 Denoting $\mathcal{D} = \mathcal{C} \cup \mathcal{T}$, we have that
 
 ```{math}
-:label: np_elbo
+:label: npvi
 \begin{align}
-p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
-\geq \mathbb{E}_{\mathbf{z} \sim q_{\boldsymbol\phi}(\mathbf{z} | \mathcal{D})} \left[ \sum_{t=1}^T \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right] - \mathrm{KL} \left( q_{\boldsymbol\phi} \left( \mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} | \mathcal{C} \right) \right),
+\log p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
+&= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)  p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation} \\
+& = \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \frac{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)} p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Approximate posterior} \\
+& \geq \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \left( \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) + \log \frac{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)} \right) & \text{Jensen's inequality} \\
+& = \mathbb{E}_{\mathbf{z} \sim q_{\boldsymbol\phi}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \right] - \mathrm{KL} \left( q_{\boldsymbol\phi} \left( \mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} | \mathcal{C} \right) \right),
 \end{align}
 ```
 
-where $\mathrm{KL}(p \| q)$ is the Kullback-Liebler (KL) divergence between two distributions $p$ and $q$.
-We can derive an unbiased estimator to {numref}`np_elbo` by taking samples from $q_{\boldsymbol\phi}$ to estimate the first term on the RHS.
-When both the encoder and inference network parameterise Gaussian distributions over $\mathbf{z}$ (as is standard), the KL-term can be computed analytically.
-Note that {numref}`np_elbo` provides an objective function for training both the inference network parameters $\boldsymbol\phi$ and model parameters $\boldsymbol\theta$.
-In fact, typical practice when designing LNPF members is to _share_ the parameters between the encoder and inference network.
-When doing so, we can express a single training step for LNPF members with NPVI as follows:
+where $\mathrm{KL}(p \| q)$ is the Kullback-Liebler (KL) divergence between two distributions $p$ and $q$, and we have used the shorthand $p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) = \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right)$ to ease notation.
+Let's consider what we have achieved in {numref}`npvi`.
+We have taken our original objective, and re-expressed it as an expectation with respect to an approximate posterior distribution.
+The hope is that, by sampling from this more informative distribution, we can produce more meaningful samples and thus reduce the number of samples we need to properly estimate this objective.
 
-1. Sample a task $(\mathcal{C}, \mathcal{T})$ from the data.
-2. Take $L$ samples as $\mathbf{z}_l \sim p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{D} \right)$.
-3. Approximate the lower-bound as (assuming the KL has an analytical form)
-```{math}
+```{admonition} Important
+---
+class: attention
+---
+Of course, we can only sample from this approximate posterior during training, when we assume access to both the context _and_ target sets.
+At test time, we will only have access to the context set, and so the forward pass through the model will be equivalent to that of the model when trained with NPML, i.e., we will only pass the context set through the encoder.
+This is an important detail of NPVI: forward passes at meta-train time look different than they do at meta-test time!
+```
+
+There is an important connection between the above procedure and _amortised_ VI.
+Amortised VI is a method for performing approximate inference and learning in probabilistic latent variable models, which uses a similar trick to train an _inference_ network to approximate the true posterior distribution under the model.
+
+```{admonition} Advanced$\qquad$LNPF and Amortised VI
+---
+class: attention, dropdown
+---
+There are many resources available on (amortised) VI (e.g., [Jaan Altosaar's VAE tutorial](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/), [The spectator's take](http://blog.shakirm.com/2015/01/variational-inference-tricks-of-the-trade/), or this [review paper on modern VI](https://arxiv.org/pdf/1711.05597.pdf)), and we encourage readers unfamiliar with the concept to take the time to go through some of these.
+Many of the relevant ideas are widely applicable, and provide valuable insights for several sub-areas of ML.
+For our purposes, the following intuitions should suffice:
+
+Assume that we have a latent variable model with a prior $p(\mathbf{z})$, and a conditional likelihood for observations $y$, written $p_{\boldsymbol\theta} \left(y | \mathbf{z} \right)$.
+The central idea in amortised VI is to introduce an _inference network_, denoted $q_{\boldsymbol\phi}(\mathbf{z} | y)$, which maps observations to distributions over $\mathbf{z}$.
+We can then use $q_{\boldsymbol\phi}$ to derive a lower bound to the log-marginal likelihood, just as we did above:
+
+$$
 \begin{align}
-\hat{\mathcal{L}}_{VI} \leftarrow \frac{1}{L} \sum_{l=1}^{L} \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} |  x^{(t)}, \mathbf{z}_l \right) - \mathrm{KL} \left( p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{C} \right) \right).
+\log p_{\boldsymbol\theta}(y)
+&= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} , y \right)\mathrm{d}\mathbf{z} \\
+& = \log \int q_{\boldsymbol\phi} \left( \mathbf{z} | y \right) \frac{p_{\boldsymbol\theta} \left( \mathbf{z} , y \right)}{q_{\boldsymbol\phi} \left( \mathbf{z} | y \right)} \mathrm{d}\mathbf{z} \\
+& \geq \mathbb{\mathbf{z} \sim q_{\boldsymbol\phi} \left( \mathbf{z} | y \right)} \left[ \log p_{\boldsymbol\theta} \left( y | \mathbf{z} \right) \right] - \mathrm{KL} \left( q_{\boldsymbol\phi} \left( \mathbf{z} | y \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} \right) \right).
 \end{align}
-```
-4. Use the backpropagation algorithm to take a gradient step in $\boldsymbol\theta$ to maximize $\hat{\mathcal{L}}$.
+$$
 
+In the VI terminology, this lower bound is commonly known as the _evidence lower bound_ (ELBO).
+So maximising the ELBO with respect to $\boldsymbol\theta$ trains the model to optimise a proper lower bound on the log-marginal likelihood, which is a sensible thing to do.
+Moreover, it turns out that that maximising the ELBO with respect to $\boldsymbol\phi$ minimises the KL divergence between the resulting distributions and the true posterior, and so we can think of $q_{\boldsymbol\phi}$ as approximating the true posterior in a meaningful way.
 
-```{admonition} Proper derivations of the NPVI ELBO
----
-class: caution, dropdown
----
-There are several nuances with the derivation of the NPVI ELBO that we have glossed over for the sake of brevity.
-In fact, the original derivation of this procedure ({cite}`garnelo2018neural`) invokes slightly different modelling assumptions than what we have used, and ends up introducing an approximation which results in the resulting ELBO not being a proper lower bound on the log-marginal likelihood.
-In the {doc}`Theory <Theory>` chapter we discuss in detail the modelling assumptions associated with the derivations, provide a full derivation of the ELBO, and discuss the implications of the approximations that must be made along the way.
-```
+In the NPF, to approximate the desired posterior, we can introduce a network that maps datasets to distributions over the latent variable.
+We already know how to define such networks in the NPF -- they require the same form as our encoder $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$!
+In fact, NPVI proposes to use the encoder as the inference network when training LNPF members.
+VI then
 
-NPVI inherits several appealing properties from the VI framework:
+So we can view {numref}`npvi` as performing amortised VI for any member of the LNPF.
+The twist on standard amortised VI is that here, we are sharing $q_{\boldsymbol\phi}$ with a part of the model itself, which somewhat complicates our understanding of the procedure, and may lead to unintended consequences.
+
+As such, NPVI inherits several appealing properties from the VI framework:
 * It utilises _posterior sampling_ to reduce the variance of the Monte-Carlo estimator of the intractable expectation. This means that often we can get away with training models taking just a single sample, resulting in computationally and memory efficient training procedures.
 * If our approximate posterior can recover the true posterior, the inequality in the ELBO is tight, and we are exactly optimising the log-marginal likelihood.
 
@@ -183,30 +225,47 @@ In these settings:
 
 * Meaningful guarantees about the quality of the learned models are hard to come by.
 * The inequality holds, meaning that we are only optimising a lower-bound to the quantity we actually care about. Moreover, it is often quite difficult to know how tight this bound may be.
+```
 
-```{admonition} Biased estimators
+When both the encoder and inference network parameterise Gaussian distributions over $\mathbf{z}$ (as is standard), the KL-term can be computed analytically.
+Hence we can derive an unbiased estimator to {numref}`np_elbo` by taking samples from $q_{\boldsymbol\phi}$ to estimate the first term on the RHS.
+With that in mind, we can express a single training step for LNPF members with NPVI as follows:
+
+1. Sample a task $(\mathcal{C}, \mathcal{T})$ from the data.
+2. Take $L$ samples as $\mathbf{z}_l \sim p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{D} \right)$.
+3. Approximate the lower-bound as (assuming the KL has an analytical form)$$\begin{align}
+\hat{\mathcal{L}}_{VI} \leftarrow \frac{1}{L} \sum_{l=1}^{L} \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} |  x^{(t)}, \mathbf{z}_l \right) - \mathrm{KL} \left( p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{C} \right) \right).
+\end{align}$$
+4. Use the backpropagation algorithm to take a gradient step in $\boldsymbol\theta$ to maximize $\hat{\mathcal{L}}$.
+
+As we have discussed, the most appealing property of NPVI is that it utilises _posterior sampling_ to reduce the variance of the Monte-Carlo estimator of the intractable expectation.
+This means that often we can get away with training models taking just a single sample, resulting in computationally and memory efficient training procedures.
+However, it also comes with several drawbacks, which can be roughly summarised as follows:
+
+* NPVI is focused on approximating the posterior distribution, and diverts encoder capacity and attention of the optimiser to recovering the true posterior. However, in the NPF setting, we are typically only interested in the predictive distribution $p(\mathbf{y}_T | \mathbf{x}_T, \mathcal{C})$, and it is unclear whether focusing our efforts on $\mathbf{z}$ is beneficial to achieving higher quality predictive distributions.
+* In NPVI, the encoder plays a dual role: it is both part of the model, and used as an inference network. This fact introduces additional complexities in the training procedure, and it may be that using the encoder as an approximate posterior has a detrimental effect on the resulting predictive distributions.
+
+As we shall see below, it is often the case that models trained with NPML produce better fits than equivalent models trained with NPVI, at the cost of additional computational and memory costs of training.
+In pratice however, NPVI is the most commonly employed procedure for training LNPF members.
+
+```{admonition} Caution$\qquad$Biased estimators
 ---
 class: caution, dropdown
 ---
-Importantly, the second drawback means that NPVI is not actually avoiding the "biased estimator" issue of NPML.
+Importantly, it is not the case that NPVI avoids the "biased estimator" issue of NPML.
 Rather, NPML defines a biased (conservative) estimator of the desired quantity, and NPVI produces an unbiased estimator of a strict lower-bound of the same quantity.
 In both cases, sadly, we do not have unbiased estimators of the quantities we really care about.
+
+Another consequence of this is that it is challenging to exactly carry out quantitative experiments, since our performance metrics are only ever lower bounds to the true model performance, and quantifying how tight those bounds are is quite challenging.
 ```
 
-```{admonition} Quantitative evaluations
+```{admonition} Advanced$\qquad$Relationship betwee NPML and NPVI
 ---
-class: caution, dropdown
+class: attention, dropdown
 ---
-Another issue is that the bias in the estimator makes it challenging to exactly carry out quantitative experiments, since our performance metrics are only ever lower bounds to the true model performance, and quantifying how tight those bounds are is quite challenging.
+TODO
 ```
 
-Finally, NPVI adds further drawbacks that are unique to the LNPF.
-These can be roughly summarised as
-
-* VI is heavily focused on approximating the posterior distribution, and diverts encoder capacity and attention of the optimiser to recovering the true posterior. However, in the NPF setting, we are typically only interested in the predictive distribution $p(\mathbf{y}_T | \mathbf{x}_T, \mathcal{C})$, and it is unclear whether focusing our efforts on $\mathbf{z}$ is beneficial to achieving higher quality predictive distributions.
-* Sharing the encoder and inference network introduces additional complexities in the training procedure. In particular, it muddies the distinction between modelling and inference that is typical in probabilistic modelling. As a result, it is unclear what the effect of the dual roles of the encoder in the model are, and it may be that using the encoder as an approximate posterior has a detrimental effect on the resulting predictive distributions.
-
-Despite these (and other) drawbacks NPVI is the most commonly employed procedure for training LNPF members.
 Next, we turn our attention to several members of the LNPF.
 In particular, we will introduce the latent-variable variant of each of the conditional models introduced in the previous section, and we shall see that having addressed the training procedures, the extension to latent variables is quite straightforward from a practical perspective.
 After introducing the models, we will illustrate a brief comparison of the two described training procedures.
