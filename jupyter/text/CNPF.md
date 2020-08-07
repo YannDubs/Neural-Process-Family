@@ -534,18 +534,31 @@ The size of the effective receptive field can thus be incfreased by reducing the
 Notice that this is not really an issue with AttnCNP which both always has to attend to all the context points, i.e., it has ``infinite'' receptive field.
 ```
 
+Although the previous plots look good, you might wonder how such a model compares to standard interpolation baselines. 
+To answer to this question we will look at larger images to see the more fine grain details. 
+Specifically, let us consider a ConvCNP trained on $128 \times 128$ CelebA:
 
-Although the zero shot generalisation when performing on ZSMM are encouraging, the task is somewhat artificial.
-Let us consider more complex zero shot generalisation tasks.
-First, we will evaluate a ConvCNP trained on CelebA128 on an image with multiple faces of different scale and orientation.
+```{figure} ../gifs/ConvCNP_img_baselines.gif
+---
+width: 25em
+name: ConvCNP_img_baselines
+alt: ConvCNP and baselines on CelebA 128 
+---
+
+ConvCNP and Nearest neighbour, bilinear, bicubic interpolation on CelebA 128.
+```
+
+From {numref}`ConvCNP_img_baselines_text` shows that ConvCNP performs much better than standard interpolation methods. 
+These results are very encouraging.
+Having seen such encouraging results, as well as the descent zero shot generalization capacity of ConvCNP on an artificial dataset (ZSMM), it is natural to want to evaluate the model on actual images with multiple faces of different scale and orientation.
 
 ```{figure} ../images/ConvCNP_img_zeroshot.png
 ---
-width: 50em
+width: 20em
 name: ConvCNP_img_zeroshot_text
 alt: Zero shot generalization of ConvCNP to a real picture
 ---
-Zero shot generalization of a ConvCNP trained on CelebA and evaluated on Ellen's selfie
+Zero shot generalization of a ConvCNP trained on CelebA and evaluated on Ellen's selfie. We also show a baseline bilinear interpolator.
 ```
 
 From {numref}`ConvCNP_img_zeroshot_text` we see that the model is able to generalise reasonably well to real world data in a zero shot fashion.
@@ -553,17 +566,17 @@ Although the previous results look nice, the use-cases are not immediately obvio
 One possible application is increasing the resolution of an image.
 This can be achieved by querying positions "in between" pixels.
 
-```{figure} ../images/ConvCNP_superes.png
+```{figure} ../images/ConvCNP_superes_baseline.png
 ---
-width: 35em
-name: ConvCNP_superes_text
+width: 30em
+name: ConvCNP_superes_baseline_text
 alt: Increasing image resolution with ConvCNP
 ---
-Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP.
+Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP and a baselin bilinear interpolator.
 ```
 
-{numref}`ConvCNP_superes_text` demonstrates such an application.
-We see that CNPFs can indeed be used to increase the resolution of an image, even though it was not trained to do so!
+{numref}`ConvCNP_superes_baseline_text` demonstrates such an application.
+We see that CNPFs can indeed be used to increase the resolution of an image better than the standard bilinear interpolator, even though it was not trained to do so!
 
 
 ```{admonition} Note

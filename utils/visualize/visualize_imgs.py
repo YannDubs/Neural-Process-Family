@@ -225,6 +225,7 @@ def plot_posterior_samples(
     is_plot_std=False,
     interp_baselines=[],
     is_add_annot=True,
+    rotate_annot=None,
     is_mask_cntxt=True,
 ):
     """
@@ -287,6 +288,9 @@ def plot_posterior_samples(
 
     is_add_annot : bool, optional   
         Whether to add annotations *context, mean, ...).
+
+    rotate_annot : float or {'vertical', 'horizontal'} or str, optional
+        Rotation of annotation. If None automatic.
 
     is_mask_cntxt : bool, optional
         Whether to mask the context. If false plors the entire image, this is especially usefull 
@@ -432,14 +436,20 @@ def plot_posterior_samples(
         y_ticks = [middle_img * (2 * i + 1) for i in range(len(y_ticks_labels))]
 
         if is_hrztl_cat:
+            if rotate_annot is None:
+                rotate_annot = 20
+
             # to test
             ax.xaxis.set_major_locator(ticker.FixedLocator(y_ticks))
-            ax.set_xticklabels(y_ticks_labels, rotation=20, ha="right")
+            ax.set_xticklabels(y_ticks_labels, rotation=rotate_annot, ha="right")
             ax.set_yticks([])
 
         else:
+            if rotate_annot is None:
+                rotate_annot = "vertical"
+
             ax.yaxis.set_major_locator(ticker.FixedLocator(y_ticks))
-            ax.set_yticklabels(y_ticks_labels, rotation="vertical", va="center")
+            ax.set_yticklabels(y_ticks_labels, rotation=rotate_annot, va="center")
             ax.set_xticks([])
 
         remove_axis(ax)
