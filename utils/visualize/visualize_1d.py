@@ -314,6 +314,9 @@ def _plot_posterior_predefined_cntxt(
     title=None,
     figsize=DFLT_FIGSIZE,
     ax=None,
+    is_smooth=True,
+    scatter_kwargs={},
+    **kwargs,
 ):
     """
     Plot (samples from) the conditional posterior predictive estimated by a model.
@@ -358,6 +361,15 @@ def _plot_posterior_predefined_cntxt(
     figsize : tuple, optional
 
     ax : plt.axes.Axes, optional
+
+    is_smooth : bool, optional
+        Whether to plot a smooth function instead of a scatter plot.
+
+    scatter_kwargs : dict, optional
+        Kwargs for the scatter function.
+
+    kwargs : 
+        Additional arguments to plt.show
     """
 
     _check_input(X_cntxt, Y_cntxt, X_trgt)
@@ -394,14 +406,23 @@ def _plot_posterior_predefined_cntxt(
     for i, (mean_y, std_y) in enumerate(
         gen_p_y_pred(model, X_cntxt, Y_cntxt, X_trgt, n_samples)
     ):
+        if not is_smooth:
+            kwargs["linestyle"] = ""
+            if "marker" not in kwargs:
+                kwargs["marker"] = "."
 
         if i == 0:
             # only add single label
             ax.plot(
-                X_trgt_plot, mean_y, alpha=alpha, c=mean_color, label=f"{model_label}",
+                X_trgt_plot,
+                mean_y,
+                alpha=alpha,
+                c=mean_color,
+                label=f"{model_label}",
+                **kwargs,
             )
         else:
-            ax.plot(X_trgt_plot, mean_y, alpha=alpha, c=mean_color)
+            ax.plot(X_trgt_plot, mean_y, alpha=alpha, c=mean_color, **kwargs)
 
         if is_plot_std:
             if std_y is None:
@@ -409,13 +430,25 @@ def _plot_posterior_predefined_cntxt(
                     f"Cannot plot std when sampling (n_samples={n_samples}) from a CNPF."
                 )
 
-            ax.fill_between(
-                X_trgt_plot,
-                mean_y - std_y,
-                mean_y + std_y,
-                alpha=alpha / 7,
-                color=std_color,
-            )
+            if is_smooth:
+                # only when smooth, if not already plotted error bars
+                ax.fill_between(
+                    X_trgt_plot,
+                    mean_y - std_y,
+                    mean_y + std_y,
+                    alpha=alpha / 7,
+                    color=std_color,
+                )
+            else:
+                ax.errorbar(
+                    X_trgt_plot,
+                    mean_y,
+                    yerr=std_y,
+                    alpha=alpha / 7,
+                    ecolor=std_color,
+                    **kwargs,
+                )
+
             y_min = min(y_min, (mean_y - std_y)[X_interp].min())
             y_max = max(y_max, (mean_y + std_y)[X_interp].max())
         else:
@@ -432,7 +465,7 @@ def _plot_posterior_predefined_cntxt(
         y_max = max(y_max, Y_trgt.max())
 
     if is_conditioned:
-        ax.scatter(X_cntxt_plot, Y_cntxt[0, :, 0].numpy(), c="k")
+        ax.scatter(X_cntxt_plot, Y_cntxt[0, :, 0].numpy(), c="k", **scatter_kwargs)
         x_min = min(min(X_cntxt_plot), x_min)
         x_max = max(max(X_cntxt_plot), x_max)
 
