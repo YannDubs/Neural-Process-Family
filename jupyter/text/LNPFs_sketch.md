@@ -122,7 +122,7 @@ The central idea behind this objective function is to use _posterior sampling_ t
 For a better intuition regarding this, note that NPML is defined using an expectation against $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$.
 The idea in posterior sampling is to use all the data available during training to produce the distribution over $\mathbf{z}$, thus leading to more informative samples and lower variance objectives.
 
-In our case, the posterior distribution from which we would like to sample is $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable having observed _both_ the context and target sets.
+In our case, the posterior distribution from which we would like to sample is $p(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable having observed _both_ the context and target sets.
 Unfortunately, this posterior is intractable.
 To address this, {cite}`garnelo2018neural` propose to replace the true posterior with simply passing both the context and target sets through the encoder, i.e.
 
@@ -135,11 +135,13 @@ p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) \approx p_{\boldsymbol\th
 \end{align}
 ```
 
-```{admonition} Caution$\qquad$Intractable posterior
+```{admonition} Warning$\qquad$Posterior vs. $p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \cup \mathcal{T} \right)$
 ---
-class: warning, dropdown
+class: warning
 ---
-Using Bayes' rule and our model definition, we can see that the true posterior we desire is given as
+Note that these two distributions are different.
+We can compute $p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \cup \mathcal{T} \right)$ by simply passing both $\mathcal{C}$ and $\mathcal{T}$ through the model encoder.
+One the other hand, the posterior $p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right)$ is computed using Bayes' rule and our model definition:
 
 $$
 \begin{align}
@@ -186,7 +188,7 @@ Amortised VI is a method for performing approximate inference and learning in pr
 ---
 class: attention, dropdown
 ---
-There are many resources available on (amortised) VI (e.g., [Jaan Altosaar's VAE tutorial](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/), [The spectator's take](http://blog.shakirm.com/2015/01/variational-inference-tricks-of-the-trade/), or this [review paper on modern VI](https://arxiv.org/pdf/1711.05597.pdf)), and we encourage readers unfamiliar with the concept to take the time to go through some of these.
+There are many resources available on (amortised) VI (e.g., [Jaan Altosaar's VAE tutorial](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/), [The spectator's](http://blog.shakirm.com/2015/01/variational-inference-tricks-of-the-trade/) take, or this [review paper on modern VI](https://arxiv.org/pdf/1711.05597.pdf)), and we encourage readers unfamiliar with the concept to take the time to go through some of these.
 Many of the relevant ideas are widely applicable, and provide valuable insights for several sub-areas of ML.
 For our purposes, the following intuitions should suffice:
 
@@ -210,7 +212,6 @@ Moreover, it turns out that that maximising the ELBO with respect to $\boldsymbo
 In the NPF, to approximate the desired posterior, we can introduce a network that maps datasets to distributions over the latent variable.
 We already know how to define such networks in the NPF -- they require the same form as our encoder $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$!
 In fact, NPVI proposes to use the encoder as the inference network when training LNPF members.
-VI then
 
 So we can view {numref}`npvi` as performing amortised VI for any member of the LNPF.
 The twist on standard amortised VI is that here, we are sharing $q_{\boldsymbol\phi}$ with a part of the model itself, which somewhat complicates our understanding of the procedure, and may lead to unintended consequences.
