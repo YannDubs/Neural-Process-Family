@@ -10,6 +10,7 @@ import numpy as np
 import scipy
 import seaborn as sns
 import torch
+from scipy.interpolate import griddata
 from skorch.dataset import unpack_data
 from torchvision.utils import make_grid
 
@@ -128,7 +129,7 @@ def plot_img_marginal_pred(
     **kwargs,
 ):
     f, (ax0, ax1) = plt.subplots(
-        1, 2, gridspec_kw={"width_ratios": [1, 1], "wspace": wspace}, figsize=figsize,
+        1, 2, gridspec_kw={"width_ratios": [1, 1], "wspace": wspace}, figsize=figsize
     )
 
     predictive_all, mask_cntxt, X, mask_trgt = get_posterior_samples(
@@ -213,7 +214,7 @@ def plot_posterior_samples(
     is_uniform_grid=True,
     img_indcs=None,
     n_plots=4,
-    figsize=(18, 4),
+    imgsize=(7, 4),
     ax=None,
     seed=123,
     is_return=False,
@@ -222,7 +223,9 @@ def plot_posterior_samples(
     outs=None,
     is_select_different=False,
     is_plot_std=False,
+    interp_baselines=[],
     is_add_annot=True,
+    rotate_annot=None,
     is_mask_cntxt=True,
 ):
     """
@@ -253,7 +256,8 @@ def plot_posterior_samples(
         Number of images to samples. They will be plotted in different columns.
         Only used if `img_indcs` is `None`.
 
-    figsize : tuple, optional
+    imgsize : tuple, optional
+        Figsize for each subimage. Will be multiplied by the number of plotted images.
 
     ax : plt.axes.Axes, optional
 
@@ -279,8 +283,14 @@ def plot_posterior_samples(
         Whether to plot the standard deviation of the posterior predictive instead of only the mean.
         Note that the std is the average std across channels and is only shown for the last sample.
 
+    interp_baselines : list of {"linear","nearest","cubic"}, optional
+        List of interpolating baselines to plot in addition to the prediction from the model.
+
     is_add_annot : bool, optional   
         Whether to add annotations *context, mean, ...).
+
+    rotate_annot : float or {'vertical', 'horizontal'} or str, optional
+        Rotation of annotation. If None automatic.
 
     is_mask_cntxt : bool, optional
         Whether to mask the context. If false plors the entire image, this is especially usefull 
@@ -331,18 +341,20 @@ def plot_posterior_samples(
     # make sure uses 3 channels
     std_ys = y_pred.base_dist.scale.expand(*mean_ys.shape)
 
-    out_cntxt = plot_single_img(
+    out_cntxt, mask_cntxt = get_img_toplot(
         data,
         X,
-        mask_cntxt if is_mask_cntxt else torch.ones_like(mask_cntxt).bool(),
+        mask_cntxt,
         is_uniform_grid,
         downscale_factor=get_downscale_factor(get_cntxt_trgt),
+        is_mask=is_mask_cntxt,
     )
 
     outs = [out_cntxt]
+    y_ticks_labels = ["Context"]
 
     for i in range(n_samples):
-        out_pred = plot_single_img(
+        out_pred, _ = get_img_toplot(
             data,
             mean_ys[i],
             mask_trgt,
@@ -351,8 +363,13 @@ def plot_posterior_samples(
         )
         outs.append(out_pred)
 
+        if n_samples > 1:
+            y_ticks_labels += [f"Sample {i+1}"]
+        else:
+            y_ticks_labels += [f"Pred. Mean"]
+
     if is_plot_std:
-        out_std = plot_single_img(
+        out_std, _ = get_img_toplot(
             data,
             std_ys[n_samples - 1],  # only plot last std
             mask_trgt,
@@ -361,6 +378,34 @@ def plot_posterior_samples(
         )
         outs.append(out_std)
 
+        if n_samples > 1:
+            y_ticks_labels += [f"Std {n_samples}"]
+        else:
+            y_ticks_labels += [f"Pred. Std"]
+
+    for interp in interp_baselines:
+        # removing batch and channel from mask
+        out_interps = []
+
+        # loop over all context plots
+        for i in range(mask_cntxt.shape[0]):
+            single_mask_cntxt = mask_cntxt[i, :, :, 0]
+            coord_y, coord_x = single_mask_cntxt.nonzero().unbind(1)
+            grid_x, grid_y = np.meshgrid(
+                np.arange(0, out_cntxt.shape[2]), np.arange(0, out_cntxt.shape[1])
+            )
+            out_interp = griddata(
+                (coord_x, coord_y),
+                out_cntxt[i, coord_y, coord_x],
+                (grid_x, grid_y),
+                method=interp,
+            )
+            out_interps.append(torch.from_numpy(out_interp))
+        out_interp = torch.stack(out_interps, dim=0)
+        outs.append(out_interp)
+
+        y_ticks_labels += [f"{interp} Interp.".title()]
+
     outs = channels_to_2nd_dim(torch.cat(outs, dim=0)).detach()
     if is_hrztl_cat:
         tmp = []
@@ -368,48 +413,43 @@ def plot_posterior_samples(
             tmp.extend(outs[i::n_plots])
         outs = tmp
 
-    grid = make_grid(
-        outs,
-        nrow=(n_samples + 1 + int(is_plot_std)) if is_hrztl_cat else n_plots,
-        pad_value=1.0,
-    )
+    n_fig_per_row = n_plots
+    n_fig_per_col = len(y_ticks_labels)
+
+    if is_hrztl_cat:
+        n_fig_per_row, n_fig_per_col = n_fig_per_col, n_fig_per_row
+
+    grid = make_grid(outs, nrow=n_fig_per_row, pad_value=1.0)
 
     if is_return:
         return grid
 
     if ax is None:
+        figsize = (imgsize[0] * n_fig_per_row, imgsize[1] * n_fig_per_col)
         fig, ax = plt.subplots(figsize=figsize)
 
     ax.imshow(grid.permute(1, 2, 0).numpy())
 
     if is_add_annot:
-        middle_img = data.shape[1] // 2 + 1  # half height
-        y_ticks = [middle_img]
-        y_ticks_labels = ["Context"]
-
-        for i in range(1, n_samples + 1):
-            y_ticks += [middle_img * (2 * i + 1)]
-            if n_samples > 1:
-                y_ticks_labels += [f"Sample {i}"]
-            else:
-                y_ticks_labels += [f"Pred. Mean"]
-
-        if is_plot_std:
-            y_ticks += [middle_img * (2 * (n_samples + 1) + 1)]
-            if n_samples > 1:
-                y_ticks_labels += [f"Std {n_samples}"]
-            else:
-                y_ticks_labels += [f"Pred. Std"]
+        idx_text = 2 if is_hrztl_cat else 1
+        middle_img = data.shape[idx_text] // 2 + 1  # half height
+        y_ticks = [middle_img * (2 * i + 1) for i in range(len(y_ticks_labels))]
 
         if is_hrztl_cat:
+            if rotate_annot is None:
+                rotate_annot = 20
+
             # to test
             ax.xaxis.set_major_locator(ticker.FixedLocator(y_ticks))
-            ax.set_xticklabels(y_ticks_labels, rotation=20, ha="right")
+            ax.set_xticklabels(y_ticks_labels, rotation=rotate_annot, ha="right")
             ax.set_yticks([])
 
         else:
+            if rotate_annot is None:
+                rotate_annot = "vertical"
+
             ax.yaxis.set_major_locator(ticker.FixedLocator(y_ticks))
-            ax.set_yticklabels(y_ticks_labels, rotation="vertical", va="center")
+            ax.set_yticklabels(y_ticks_labels, rotation=rotate_annot, va="center")
             ax.set_xticks([])
 
         remove_axis(ax)
@@ -726,7 +766,10 @@ def plot_qualitative_with_kde(
 
 
 # HELPERS
-def plot_single_img(data, to_plot, mask, is_uniform_grid, downscale_factor=1):
+def get_img_toplot(
+    data, to_plot, mask, is_uniform_grid, downscale_factor=1, is_mask=True
+):
+    mask_toapply = mask if is_mask else torch.ones_like(mask).bool()
     dim_grid = 2 if is_uniform_grid else 1
 
     if is_uniform_grid:
@@ -736,20 +779,25 @@ def plot_single_img(data, to_plot, mask, is_uniform_grid, downscale_factor=1):
             .clone()
         )
         if mask.size(-1) == 1:
-            out = torch.where(mask, to_plot, background)
+            out = torch.where(mask_toapply, to_plot, background)
         else:
-            background[mask.squeeze(-1)] = to_plot.reshape(-1, 3)
+            background[mask_toapply.squeeze(-1)] = to_plot.reshape(-1, 3)
             out = background.clone()
 
     else:
         out, _ = points_to_grid(
-            mask,
+            mask_toapply,
             to_plot,
             data.shape[1:],
             background=data.missing_px_color,
             downscale_factor=downscale_factor,
         )
-    return out
+
+        # the second time is to get the mask (not the first one because in case not `is_mask`)
+        # you still want to return the actual mask
+        _, mask = points_to_grid(mask, to_plot, data.shape[1:])
+
+    return out, mask
 
 
 def keep_most_different_samples_(samples, n_samples, p=2):
