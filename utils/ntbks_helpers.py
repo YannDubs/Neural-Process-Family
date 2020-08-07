@@ -5,37 +5,22 @@ from functools import partial
 
 import matplotlib.pyplot as plt
 import skorch
-from sklearn.gaussian_process.kernels import (
-    RBF,
-    ConstantKernel,
-    DotProduct,
-    ExpSineSquared,
-    Matern,
-    WhiteKernel,
-)
+from sklearn.gaussian_process.kernels import (RBF, ConstantKernel, DotProduct,
+                                              ExpSineSquared, Matern,
+                                              WhiteKernel)
 from skorch import NeuralNet
 
 from npf import GridConvCNP
 from npf.architectures import MLP, merge_flat_input
-from npf.utils.datasplit import (
-    CntxtTrgtGetter,
-    GetRandomIndcs,
-    GridCntxtTrgtGetter,
-    RandomMasker,
-    SuperresolutionCntxtTrgtGetter,
-    get_all_indcs,
-    half_masker,
-    no_masker,
-)
+from npf.utils.datasplit import (CntxtTrgtGetter, GetRandomIndcs,
+                                 GridCntxtTrgtGetter, RandomMasker,
+                                 SuperresolutionCntxtTrgtGetter, get_all_indcs,
+                                 half_masker, no_masker)
 from utils.data import DIR_DATA, GPDataset, get_train_test_img_dataset
 from utils.data.helpers import DatasetMerger
 from utils.data.imgs import SingleImage, get_test_upscale_factor
-from utils.visualize import (
-    plot_config,
-    plot_posterior_samples,
-    plot_posterior_samples_1d,
-    plot_prior_samples_1d,
-)
+from utils.visualize import (plot_config, plot_posterior_samples,
+                             plot_posterior_samples_1d, plot_prior_samples_1d)
 
 
 # DATA
@@ -237,6 +222,12 @@ PRETTY_RENAMER = StrFormatter(
     },
     subtring_replace={
         "_": " ",
+        "Elbofalse": "MLE",
+        "Elbotrue": "ELBO"
+        "Latlbtrue": "LB_Z",
+        "Latlbfalse": "",
+        "Siglbtrue": "LB_P",
+        "Siglbfalse": "",
         "Vhalf": "Vert. Half",
         "hhalf": "Horiz. Half",
         "Attncnp": "AttnCNP",
@@ -366,12 +357,14 @@ def plot_multi_posterior_samples_1d(
     trainers,
     datasets,
     n_cntxt,
+    trainers_compare=None,
     plot_config_kwargs={},
     title="Model : {model_name} | Data : {data_name} | Num. Context : {n_cntxt}",
     left_extrap=0,
     right_extrap=0,
     pretty_renamer=PRETTY_RENAMER,
     is_plot_generator=True,
+    imgsize=(8, 3),
     **kwargs,
 ):
     """Plot posterior samples conditioned on `n_cntxt` context points for a set of trained trainers."""
@@ -379,43 +372,55 @@ def plot_multi_posterior_samples_1d(
     with plot_config(**plot_config_kwargs):
         n_trainers = len(trainers)
 
+        n_col = 1 if trainers_compare is None else 2
         fig, axes = plt.subplots(
-            n_trainers, 1, figsize=(8, 3 * n_trainers), sharex=True, squeeze=False
+            n_trainers,
+            n_col,
+            figsize=(imgsize[0] * n_col, imgsize[1] * n_trainers),
+            sharex=True,
+            sharey=True,
+            squeeze=False,
         )
 
-        for i, (k, trainer) in enumerate(trainers.items()):
-            data_name = k.split("/")[0]
-            model_name = k.split("/")[1]
-            dataset = datasets[data_name]
-            curr_title = title.format(
-                model_name=pretty_renamer[model_name],
-                n_cntxt=n_cntxt,
-                data_name=pretty_renamer[data_name],
-            )
+        for j, curr_trainers in enumerate([trainers, trainers_compare]):
+            if curr_trainers is None:
+                continue
 
-            test_min_max = dataset.min_max
-            if (left_extrap != 0) or (right_extrap != 0):
-                test_min_max = (
-                    dataset.min_max[0] - left_extrap,
-                    dataset.min_max[1] + right_extrap,
+            for i, (k, trainer) in enumerate(trainers.items()):
+                data_name = k.split("/")[0]
+                model_name = k.split("/")[1]
+                dataset = datasets[data_name]
+                curr_title = title.format(
+                    model_name=pretty_renamer[model_name],
+                    n_cntxt=n_cntxt,
+                    data_name=pretty_renamer[data_name],
                 )
-                trainer.module_.set_extrapolation(test_min_max)
 
-            X, Y = dataset.get_samples(
-                n_samples=1, n_points=3 * dataset.n_points, test_min_max=test_min_max
-            )  # use higher density for plotting
+                test_min_max = dataset.min_max
+                if (left_extrap != 0) or (right_extrap != 0):
+                    test_min_max = (
+                        dataset.min_max[0] - left_extrap,
+                        dataset.min_max[1] + right_extrap,
+                    )
+                    trainer.module_.set_extrapolation(test_min_max)
 
-            plot_posterior_samples_1d(
-                X,
-                Y,
-                get_n_cntxt(n_cntxt),
-                trainer.module_,
-                generator=dataset.generator if is_plot_generator else None,
-                train_min_max=dataset.min_max,
-                title=curr_title,
-                ax=axes.flatten()[i],
-                **kwargs,
-            )
+                X, Y = dataset.get_samples(
+                    n_samples=1,
+                    n_points=3 * dataset.n_points,
+                    test_min_max=test_min_max,
+                )  # use higher density for plotting
+
+                plot_posterior_samples_1d(
+                    X,
+                    Y,
+                    get_n_cntxt(n_cntxt),
+                    trainer.module_,
+                    generator=dataset.generator if is_plot_generator else None,
+                    train_min_max=dataset.min_max,
+                    title=curr_title,
+                    ax=axes[i, j],
+                    **kwargs,
+                )
 
         plt.tight_layout()
 

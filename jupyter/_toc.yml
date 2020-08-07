@@ -7,11 +7,6 @@
   - file: text/LNPF
     title: Latent NPF
 
-- chapter: Advanced
-  sections:
-    - file: text/Theory
-    - file: text/Format
-
 - chapter: Reproducibility
   sections:
   - file: reproducibility/Datasets
@@ -27,6 +22,8 @@
     title: AttnLNP
   - file: reproducibility/ConvLNP
     title: ConvLNP
+  - file: reproducibility/Losses
+    title: LNPF Losses
 
 - chapter: Reference
   sections:
