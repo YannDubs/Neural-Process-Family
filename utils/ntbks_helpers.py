@@ -1,27 +1,51 @@
 import copy
 import os
 import sys
+import types
 from functools import partial
 
+import imageio
 import matplotlib.pyplot as plt
 import skorch
-from sklearn.gaussian_process.kernels import (RBF, ConstantKernel, DotProduct,
-                                              ExpSineSquared, Matern,
-                                              WhiteKernel)
+from sklearn.gaussian_process.kernels import (
+    RBF,
+    ConstantKernel,
+    DotProduct,
+    ExpSineSquared,
+    Matern,
+    WhiteKernel,
+)
 from skorch import NeuralNet
 
 from npf import GridConvCNP
 from npf.architectures import MLP, merge_flat_input
-from npf.utils.datasplit import (CntxtTrgtGetter, GetRandomIndcs,
-                                 GridCntxtTrgtGetter, RandomMasker,
-                                 SuperresolutionCntxtTrgtGetter, get_all_indcs,
-                                 half_masker, no_masker)
+from npf.utils.datasplit import (
+    CntxtTrgtGetter,
+    GetRandomIndcs,
+    GridCntxtTrgtGetter,
+    RandomMasker,
+    SuperresolutionCntxtTrgtGetter,
+    get_all_indcs,
+    half_masker,
+    no_masker,
+)
 from utils.data import DIR_DATA, GPDataset, get_train_test_img_dataset
 from utils.data.helpers import DatasetMerger
 from utils.data.imgs import SingleImage, get_test_upscale_factor
-from utils.visualize import (plot_config, plot_posterior_samples,
-                             plot_posterior_samples_1d, plot_prior_samples_1d)
+from utils.helpers import set_seed
+from utils.visualize import (
+    plot_config,
+    plot_posterior_samples,
+    plot_posterior_samples_1d,
+    plot_prior_samples_1d,
+)
+from utils.visualize.helpers import fig2img, plot_config
+from utils.visualize.visualize_1d import _plot_posterior_predefined_cntxt
 
+try:
+    from pygifsicle import optimize
+except ImportError:
+    pass
 
 # DATA
 def get_img_datasets(datasets):
@@ -124,7 +148,7 @@ def sample_gp_dataset_like(dataset, **kwargs):
 
 
 def get_gp_datasets(
-    kernels, save_file=f"{os.path.join(DIR_DATA, 'gp_dataset.hdf5')}", **kwargs,
+    kernels, save_file=f"{os.path.join(DIR_DATA, 'gp_dataset.hdf5')}", **kwargs
 ):
     """
     Return a train, test and validation set for all the given kernels (dict).
@@ -223,7 +247,7 @@ PRETTY_RENAMER = StrFormatter(
     subtring_replace={
         "_": " ",
         "Elbofalse": "MLE",
-        "Elbotrue": "ELBO"
+        "Elbotrue": "ELBO",
         "Latlbtrue": "LB_Z",
         "Latlbfalse": "",
         "Siglbtrue": "LB_P",
@@ -330,7 +354,7 @@ def plot_multi_posterior_samples_imgs(
                 )
             elif is_superresolution:
                 cntxt_trgt_getter = SuperresolutionCntxtTrgtGetter(
-                    resolution_factor=n_cntxt, upscale_factor=upscale_factor,
+                    resolution_factor=n_cntxt, upscale_factor=upscale_factor
                 )
             else:
                 cntxt_trgt_getter = get_n_cntxt(
@@ -463,3 +487,794 @@ def select_labels(dataset, label):
     dataset.data = dataset.data[filt]
     dataset.targets = dataset.targets[filt]
     return dataset
+
+
+# EXPLAINING GIF
+
+
+def splitted_forward(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt=None):
+    self._validate_inputs(X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+
+    # size = [batch_size, *n_cntxt, x_transf_dim]
+    X_cntxt = self.x_encoder(X_cntxt)
+    # size = [batch_size, *n_trgt, x_transf_dim]
+    X_trgt = self.x_encoder(X_trgt)
+
+    batch_size, n_cntxt, _ = X_cntxt.shape
+
+    # size = [batch_size, n_induced, x_dim]
+    X_induced = self._get_X_induced(X_cntxt)
+
+    # don't resize because you want access to the density
+    resizer = self.cntxt_to_induced.resizer
+    self.cntxt_to_induced.resizer = torch.nn.Identity()
+
+    # size = [batch_size, n_induced, value_size+1]
+    R_induced = self.cntxt_to_induced(X_cntxt, X_induced, Y_cntxt)
+
+    # reset resizer
+    self.cntxt_to_induced.resizer = resizer
+
+    # size = [batch_size, n_induced, r_dim]
+    R = self.encode_globally(X_cntxt, Y_cntxt)
+
+    # size = [n_z_samples, batch_size, *n_trgt, r_dim]
+    R_trgt = self.trgt_dependent_representation(X_cntxt, None, R, X_trgt)
+
+    # p(y|cntxt,trgt)
+    # batch shape=[n_z_samples, batch_size, *n_trgt] ; event shape=[y_dim]
+    p_yCc = self.decode(X_trgt, R_trgt)
+
+    return R_induced, R, R_trgt, p_yCc
+
+
+def forward_Rinduced(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt=None):
+
+    R_induced, *_ = self.splitted_forward(X_cntxt, Y_cntxt, X_trgt, Y_trgt=Y_trgt)
+
+    n_induced = R_induced.size(1)
+    to_burn = self.density_induced // 2
+
+    # size = [1, batch_size, n_induced, y_dim]
+    R_induced = R_induced[..., to_burn:-to_burn, :-1].unsqueeze(0)
+
+    p_yCc = self.PredictiveDistribution(R_induced, torch.ones_like(R_induced))
+    return p_yCc, None, None, None
+
+
+def forward_density(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt=None):
+
+    R_induced, *_ = self.splitted_forward(X_cntxt, Y_cntxt, X_trgt, Y_trgt=Y_trgt)
+
+    n_induced = R_induced.size(1)
+    to_burn = self.density_induced // 2
+
+    # size = [1, batch_size, n_induced, 1]
+    density = R_induced[..., to_burn:-to_burn, -1:].unsqueeze(0)
+
+    p_yCc = self.PredictiveDistribution(density, torch.ones_like(density))
+    return p_yCc, None, None, None
+
+
+def get_forward_CNN(channel):
+    def forward_CNN(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt=None):
+        _, R_induced_post, *_ = self.splitted_forward(
+            X_cntxt, Y_cntxt, X_trgt, Y_trgt=Y_trgt
+        )
+
+        n_induced = R_induced_post.size(1)
+        to_burn = self.density_induced // 2
+
+        # size = [1, batch_size, n_induced, y_dim]
+        R_induced_post = R_induced_post[
+            ..., to_burn:-to_burn, channel : channel + 1
+        ].unsqueeze(0)
+
+        p_yCc = self.PredictiveDistribution(
+            R_induced_post, torch.ones_like(R_induced_post)
+        )
+        return p_yCc, None, None, None
+
+    return forward_CNN
+
+
+def get_forward_Rtrgt(channel):
+    def forward_Rtrgt(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt=None):
+        _, _, R_trgt, *_ = self.splitted_forward(
+            X_cntxt, Y_cntxt, X_trgt, Y_trgt=Y_trgt
+        )
+
+        # size = [1, batch_size, n_induced, y_dim]
+        R_trgt = R_trgt[..., channel : channel + 1]
+
+        p_yCc = self.PredictiveDistribution(R_trgt, torch.ones_like(R_trgt))
+        return p_yCc, None, None, None
+
+    return forward_Rtrgt
+
+
+def gif_explain(
+    save_filename,
+    dataset,
+    model,
+    plot_config_kwargs=dict(),
+    seed=123,
+    n_cntxt=10,
+    fps=0.5,
+):
+    figs = []
+
+    set_seed(seed)
+
+    X, Y = dataset.get_samples(n_samples=1, n_points=1 * dataset.n_points)
+
+    get_cntxt_trgt = get_n_cntxt(n_cntxt)
+    X_cntxt, Y_cntxt, X_trgt, Y_trgt = get_cntxt_trgt(X, Y)
+    model.splitted_forward = types.MethodType(splitted_forward, model)
+    base_forward = model.forward  # store because will be modified at each step
+
+    left, width = 0.25, 0.5
+    bottom, height = 0.25, 0.5
+    right = left + width
+    top = bottom + height
+
+    # Only points
+    with plot_config(plot_config_kwargs):
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+            linestyle="",
+        )
+        plt.gca().get_legend().remove()
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # Text : apply set conv
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+            linestyle="",
+            scatter_kwargs=dict(alpha=0.2),
+        )
+        plt.gca().get_legend().remove()
+        plt.gca().text(
+            0.5 * (left + right),
+            0.5 * (bottom + top),
+            "Apply SetConv / KDE",
+            ha="center",
+            va="center",
+            fontsize=40,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    #  set conv
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+        )
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # Text : concatenate density
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+            scatter_kwargs=dict(alpha=0.2),
+            alpha_init=0.2,
+        )
+
+        plt.gca().text(
+            0.5 * (left + right),
+            0.5 * (bottom + top),
+            "Concatenate Density",
+            ha="center",
+            va="center",
+            fontsize=40,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # Density
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+            scatter_kwargs=dict(alpha=0.0),
+        )
+
+        model.forward = types.MethodType(forward_density, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:orange", "tab:orange"),
+            is_plot_std=False,
+            ax=plt.gca(),
+            model_label="Density",
+            scatter_kwargs=dict(alpha=0.0),
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # Text : discretize
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+            scatter_kwargs=dict(alpha=0.0),
+            alpha_init=0.2,
+        )
+
+        model.forward = types.MethodType(forward_density, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:orange", "tab:orange"),
+            is_plot_std=False,
+            ax=plt.gca(),
+            model_label="Density",
+            scatter_kwargs=dict(alpha=0.0),
+            alpha_init=0.2,
+        )
+
+        plt.gca().text(
+            0.5 * (left + right),
+            0.5 * (bottom + top),
+            "Discretize",
+            ha="center",
+            va="center",
+            fontsize=40,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # discretize
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+            is_smooth=False,
+            marker=".",
+            scatter_kwargs=dict(alpha=0.0),
+        )
+
+        model.forward = types.MethodType(forward_density, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:orange", "tab:orange"),
+            is_plot_std=False,
+            ax=plt.gca(),
+            model_label="Density",
+            is_smooth=False,
+            marker=".",
+            scatter_kwargs=dict(alpha=0.0),
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # text : apply CNN
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(forward_Rinduced, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:purple", "tab:purple"),
+            is_plot_std=False,
+            model_label="SetConv",
+            is_smooth=False,
+            marker=".",
+            scatter_kwargs=dict(alpha=0.0),
+            alpha_init=0.2,
+        )
+
+        model.forward = types.MethodType(forward_density, model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:orange", "tab:orange"),
+            is_plot_std=False,
+            ax=plt.gca(),
+            model_label="Density",
+            is_smooth=False,
+            marker=".",
+            scatter_kwargs=dict(alpha=0.0),
+            alpha_init=0.2,
+        )
+        plt.gca().text(
+            0.5 * (left + right),
+            0.5 * (bottom + top),
+            "Apply CNN",
+            ha="center",
+            va="center",
+            fontsize=40,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # apply CNN
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(get_forward_CNN(1), model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:olive", ""),
+            is_plot_std=False,
+            model_label=f"Channel #{1}",
+            is_smooth=False,
+            marker=".",
+            scatter_kwargs=dict(alpha=0.0),
+        )
+
+        for i, c in enumerate(["tab:cyan", "tab:pink"]):
+            model.forward = types.MethodType(get_forward_CNN(i + 2), model)
+
+            _plot_posterior_predefined_cntxt(
+                model,
+                X_cntxt,
+                Y_cntxt,
+                torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+                train_min_max=dataset.min_max,
+                mean_std_colors=(c, ""),  # secind color unused
+                is_plot_std=False,
+                model_label=f"Channel #{i+2}",
+                is_smooth=False,
+                marker=".",
+                ax=plt.gca(),
+                scatter_kwargs=dict(alpha=0.0),
+            )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # text : SetConv
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(get_forward_CNN(1), model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:olive", ""),
+            is_plot_std=False,
+            model_label=f"Channel #{1}",
+            is_smooth=False,
+            marker=".",
+            scatter_kwargs=dict(alpha=0.0),
+            alpha_init=0.2,
+        )
+
+        for i, c in enumerate(["tab:cyan", "tab:pink"]):
+            model.forward = types.MethodType(get_forward_CNN(i + 2), model)
+
+            _plot_posterior_predefined_cntxt(
+                model,
+                X_cntxt,
+                Y_cntxt,
+                torch.linspace(-1, 1, model.density_induced * 2).view(1, -1, 1),
+                train_min_max=dataset.min_max,
+                mean_std_colors=(c, ""),  # secind color unused
+                is_plot_std=False,
+                model_label=f"Channel #{i+2}",
+                is_smooth=False,
+                marker=".",
+                ax=plt.gca(),
+                scatter_kwargs=dict(alpha=0.0),
+                alpha_init=0.2,
+            )
+
+        plt.gca().text(
+            0.5 * (left + right),
+            0.5 * (bottom + top),
+            "Apply SetConv",
+            ha="center",
+            va="center",
+            fontsize=40,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # SetConv
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(get_forward_Rtrgt(0), model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            X_trgt,
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:olive", ""),
+            is_plot_std=False,
+            model_label=f"Channel #{1}",
+            scatter_kwargs=dict(alpha=0.0),
+        )
+
+        for i, c in enumerate(["tab:cyan", "tab:pink"]):
+            model.forward = types.MethodType(get_forward_Rtrgt(i + 1), model)
+
+            _plot_posterior_predefined_cntxt(
+                model,
+                X_cntxt,
+                Y_cntxt,
+                X_trgt,
+                train_min_max=dataset.min_max,
+                mean_std_colors=(c, "tab:blue"),  # secind color unused
+                is_plot_std=False,
+                model_label=f"Channel #{i+2}",
+                ax=plt.gca(),
+                scatter_kwargs=dict(alpha=0.0),
+            )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # text : Query target
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(get_forward_Rtrgt(0), model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            X_trgt,
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:olive", ""),
+            is_plot_std=False,
+            model_label=f"Channel #{1}",
+            scatter_kwargs=dict(alpha=0.0),
+            alpha_init=0.2,
+        )
+
+        for i, c in enumerate(["tab:cyan", "tab:pink"]):
+            model.forward = types.MethodType(get_forward_Rtrgt(i + 1), model)
+
+            _plot_posterior_predefined_cntxt(
+                model,
+                X_cntxt,
+                Y_cntxt,
+                X_trgt,
+                train_min_max=dataset.min_max,
+                mean_std_colors=(c, "tab:blue"),  # secind color unused
+                is_plot_std=False,
+                model_label=f"Channel #{i+2}",
+                ax=plt.gca(),
+                scatter_kwargs=dict(alpha=0.0),
+                alpha_init=0.2,
+            )
+
+        plt.gca().text(
+            0.5 * (left + right),
+            0.5 * (bottom + top),
+            "Query Target Location",
+            ha="center",
+            va="center",
+            fontsize=40,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # Query target
+    set_seed(seed)
+    X_trgt, Y_trgt, _, _ = get_n_cntxt(5)(X, Y)
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(get_forward_Rtrgt(0), model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            X_trgt,
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:olive", ""),
+            is_plot_std=False,
+            model_label=f"Channel #{1}",
+            scatter_kwargs=dict(alpha=0.0),
+            is_smooth=False,
+            marker="s",
+        )
+
+        for i, c in enumerate(["tab:cyan", "tab:pink"]):
+            model.forward = types.MethodType(get_forward_Rtrgt(i + 1), model)
+
+            _plot_posterior_predefined_cntxt(
+                model,
+                X_cntxt,
+                Y_cntxt,
+                X_trgt,
+                train_min_max=dataset.min_max,
+                mean_std_colors=(c, "tab:blue"),  # secind color unused
+                is_plot_std=False,
+                model_label=f"Channel #{i+2}",
+                ax=plt.gca(),
+                scatter_kwargs=dict(alpha=0.0),
+                is_smooth=False,
+                marker="s",
+            )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # text : gaussian
+    set_seed(seed)
+    X_trgt, Y_trgt, _, _ = get_n_cntxt(5)(X, Y)
+    with plot_config(plot_config_kwargs):
+
+        model.forward = types.MethodType(get_forward_Rtrgt(0), model)
+
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            X_trgt,
+            train_min_max=dataset.min_max,
+            mean_std_colors=("tab:olive", ""),
+            is_plot_std=False,
+            model_label=f"Channel #{1}",
+            scatter_kwargs=dict(alpha=0.0),
+            is_smooth=False,
+            marker="s",
+            alpha_init=0.2,
+        )
+
+        for i, c in enumerate(["tab:cyan", "tab:pink"]):
+            model.forward = types.MethodType(get_forward_Rtrgt(i + 1), model)
+
+            _plot_posterior_predefined_cntxt(
+                model,
+                X_cntxt,
+                Y_cntxt,
+                X_trgt,
+                train_min_max=dataset.min_max,
+                mean_std_colors=(c, "tab:blue"),  # secind color unused
+                is_plot_std=False,
+                model_label=f"Channel #{i+2}",
+                ax=plt.gca(),
+                scatter_kwargs=dict(alpha=0.0),
+                is_smooth=False,
+                marker="s",
+                alpha_init=0.2,
+            )
+
+        plt.gca().text(
+            0.5 * (left + right),
+            0.5 * (bottom + top),
+            "Predict $\mu^{(t)},\sigma^{(t)}$ with a MLP",
+            ha="center",
+            va="center",
+            fontsize=40,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    # predict
+    for n in [5, 20, 50, 100]:
+        with plot_config(plot_config_kwargs):
+            model.forward = base_forward
+
+            set_seed(seed)
+            X_trgt, Y_trgt, _, _ = get_n_cntxt(n)(X, Y)
+            _plot_posterior_predefined_cntxt(
+                model,
+                X_cntxt,
+                Y_cntxt,
+                X_trgt,
+                train_min_max=dataset.min_max,
+                mean_std_colors=("b", "tab:blue"),
+                is_plot_std=True,
+                model_label=f"Prediction",
+                scatter_kwargs=dict(alpha=0.0),
+                is_smooth=False,
+            )
+
+            plt.gca().text(
+                0.5 * (left + right),
+                0.9 * (bottom + top),
+                f"# targets = {n}",
+                ha="center",
+                va="center",
+                fontsize=15,
+                color="black",
+                transform=plt.gca().transAxes,
+                wrap=True,
+            )
+
+            plt.xlim([-2, 2])
+
+        figs.append(fig2img(plt.gcf()))
+        plt.close()
+
+    # infinite predict
+    with plot_config(plot_config_kwargs):
+        model.forward = base_forward
+
+        set_seed(seed)
+        _, _, X_trgt, Y_trgt = get_n_cntxt(n)(X, Y)
+        _plot_posterior_predefined_cntxt(
+            model,
+            X_cntxt,
+            Y_cntxt,
+            X_trgt,
+            train_min_max=dataset.min_max,
+            mean_std_colors=("b", "tab:blue"),
+            is_plot_std=True,
+            model_label=f"Prediction",
+            scatter_kwargs=dict(alpha=0.0),
+            is_smooth=True,
+        )
+
+        plt.gca().text(
+            0.5 * (left + right),
+            0.9 * (bottom + top),
+            r"# targets = $\infty$",
+            ha="center",
+            va="center",
+            fontsize=15,
+            color="black",
+            transform=plt.gca().transAxes,
+            wrap=True,
+        )
+
+        plt.xlim([-2, 2])
+
+    figs.append(fig2img(plt.gcf()))
+    plt.close()
+
+    imageio.mimsave(save_filename, figs, fps=fps)
+    try:
+        optimize(save_filename)
+    except:
+        pass
