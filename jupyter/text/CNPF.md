@@ -57,7 +57,7 @@ $$
 ---
 class: hint, dropdown
 ---
-Recall that the consistency we require means consistency under _marginalisation_ and _permutation_. To see that the CNP predictive distribution satisfies consistency under permutation, let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
+We show that members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$. Recall that the consistency we require means consistency under _marginalisation_ and _permutation_. To see that the CNP predictive distribution satisfies consistency under permutation, let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
 
 $$
 \begin{align}
@@ -76,27 +76,8 @@ $$
 \end{align}
 $$
 
-which shows that the predictive distribution obtained by querying the CNP at $x^{(1)}$ is the same as that obtained by querying it at $x^{(1)}, x^{(2)}$ and then marginalising out the second target point. Of course, the same idea works with collections of any size, and marginalising any subset of the variables.
+which shows that the predictive distribution obtained by querying the CNPF member at $x^{(1)}$ is the same as that obtained by querying it at $x^{(1)}, x^{(2)}$ and then marginalising out the second target point. Of course, the same idea works with collections of any size, and marginalising any subset of the variables.
 
-<!-- It is easy to see that factorisation satisfies consistency under permutation, since for any collection of variables $\{ y_i | i=1,...,N \}$
-
-$$
-\begin{align}
-  p(y_1, ..., y_N) = \prod_{i=1}^N p(y_i),
-\end{align}
-$$
-
-and the product operation is commutative.
-To see that factorised distributions satisfy consistency under marginalisation, consider the case with two variables, $y_1$ and $y_2$.
-Without loss of generality, we have that
-
-$$
-\begin{align}
-  \int p(y_1, y_2) \mathrm{d}y_2 = \int p(y_1) p(y_2) \mathrm{d}y_2 = p(y_1) \int p(y_2) \mathrm{d} y_2 = p(y_1).
-\end{align}
-$$
-
-Of course, the same idea works with collections of any size, and marginalising any subset of the variables. -->
 ```
 
 CNPF members make an important tradeoff.

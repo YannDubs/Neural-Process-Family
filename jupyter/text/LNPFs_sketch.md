@@ -40,7 +40,7 @@ With the above components specified, we can now express the predictive distribut
 \begin{align}
 p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
 &= \int p_{\boldsymbol\theta} \left(\mathbf{y}_\mathcal{T} , \mathbf{z} | \mathbf{x}_\mathcal{T} , \mathcal{C} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation}  \\
-&= \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta}(y^{(t)} |  x^{(t)}, \mathbf{z}) \mathrm{d}\mathbf{z}  & \text{Factorisation}\\
+&= \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta}(y^{(t)} |  x^{(t)}, \mathbf{z}) \, \mathrm{d}\mathbf{z}  & \text{Factorisation}\\
 &= \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)  \prod_{t=1}^{T} \mathcal{N} \left( y^{(t)};  \mu^{(t)}, \sigma^{2(t)} \right) \mathrm{d}\mathbf{z} & \text{Gaussianity}
 \end{align}
 ```
@@ -49,7 +49,27 @@ p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{
 ---
 class: hint, dropdown
 ---
-[to do]
+We show that members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$. To see that the predictive distributions are consistent under permutation, , let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
+
+$$
+\begin{align}
+    p_\theta(y^{(1)}, ..., y^{(T)} | x^{(1)}, ..., x^{(T)}) &= \int p_{\boldsymbol\theta} ( \mathbf{z}) \prod_{t=1}^{T} p_{\boldsymbol\theta}(y^{(t)} |  x^{(t)}, \mathbf{z}) \, \mathrm{d}\mathbf{z} \\
+    &= p_\theta(y^{(\pi(1))}, ..., y^{(\pi(T))} | x^{(\pi(1))}, ..., x^{(\pi(T))}),
+\end{align}
+$$
+
+again because multiplication is commutative. To show consistency under marginalisation, we again consider a pair of target inputs, $x^{(1)}, x^{(2)}$. By marginalising out the second target output, we get:
+
+$$
+\begin{align}
+    \int p_\theta(y^{(1)}, y^{(2)}| x^{(1)}, x^{(2)}, \mathcal{C}) \, \mathrm{d}y^{(2)} &= \int \int p_\theta(y^{(1)}| x^{(1)}, \mathbf{z})p_\theta(y^{(2)}| x^{(2)}, \mathbf{z}) p_\theta(\mathbf{z}) \, \mathrm{d}\mathbf{z} \mathrm{d}y^{(2)} \\
+    &= \int  p_\theta(y^{(1)}| x^{(1)}, \mathbf{z}) p_\theta(\mathbf{z}) \int p_\theta(y^{(2)}| x^{(2)}, \mathbf{z})  \, \mathrm{d}y^{(2)} \mathrm{d}\mathbf{z}  \\
+    &= \int  p_\theta(y^{(1)}| x^{(1)}, \mathbf{z}) p_\theta(\mathbf{z}) \mathrm{d}\mathbf{z}  \\
+    &= p_\theta(y^{(1)}| x^{(1)} \mathcal{C}).
+\end{align}
+$$
+
+which shows that the predictive distribution obtained by querying an LNPF member at $x^{(1)}$ is the same as that obtained by querying it at $x^{(1)}, x^{(2)}$ and then marginalising out the second target point. Of course, the same idea works with collections of any size, and marginalising any subset of the variables.
 ```
 
 Now, you might be worried that we have still made both the factorisation and Gaussian assumptions!
