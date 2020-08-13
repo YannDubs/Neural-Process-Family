@@ -352,7 +352,7 @@ However, these advantages come at the cost of the following disadvantages:
 
 * &#10007; **Underfitting and smoothness issues**. The NPF predictive distribution has been known to underfit the context set, and also sometimes to provide unusually jagged predictions for regression tasks. The sharpness and diversity of the image samples for the LNPF could also be improved. However, improvements are being made on this front, with both the attentive and convolutional variants of the NPF providing significant advances.
 
-In summary, we've taken a bird's eye view of the Neural Process Family and seen some of their properties and use cases. We've also seen  Let's now dive into the architectures! In the next two pages we'll cover everything you need to know to get started with the models in the Conditional Neural Process Family and the  
+In summary, we've taken a bird's eye view of the Neural Process Family and seen how they specify a map from datasets to stochastic processes, and how this map can be trained via meta-learning. We've also seen some of their use-cases and properties. Let's now dive into the actual architectures! In the next two pages we'll cover everything you need to know to get started with the models in Conditional and Neural Process Families.
 
 
 [^objective]: Some Neural Processes also define the loss function to include the loss on the context set as well as the target set.
