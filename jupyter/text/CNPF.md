@@ -25,33 +25,6 @@ p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C}) = \prod_{t=1}^{
 \end{align}
 ```
 
-```{admonition} Advanced$\qquad$Factorisation $\implies$ consistency
----
-class: hint, dropdown
----
-Recall that the consistency we require means consistency under _marginalisation_ and _permutation_.
-It is easy to see that factorisation satisfies consistency under permutation, since for any collection of variables $\{ y_i | i=1,...,N \}$
-
-$$
-\begin{align}
-  p(y_1, ..., y_N) = \prod_{i=1}^N p(y_i),
-\end{align}
-$$
-
-and the product operation is commutative.
-To see that factorised distributions satisfy consistency under marginalisation, consider the case with two variables, $y_1$ and $y_2$.
-Without loss of generality, we have that
-
-$$
-\begin{align}
-  \int p(y_1, y_2) \mathrm{d}y_2 = \int p(y_1) p(y_2) \mathrm{d}y_2 = p(y_1) \int p(y_2) \mathrm{d} y_2 = p(y_1).
-\end{align}
-$$
-
-Of course, the same idea works with collections of any size, and marginalising any subset of the variables.
-```
-
-
 A typical (though not necessary) choice is to consider Gaussian distributions for these likelihoods.
 We collectively refer to members of the NPF that employ the factorisation assumption as _conditional_ NP models, and to this sub-family as the CNPF.
 Now, recall that one guiding principle of the NPF is to _locally_ encode each input-output pair in $\mathcal{C}$, and then _aggregate_ the encodings into a single representation of the context set, which we denote $R$.
@@ -79,6 +52,52 @@ R
 &:= \mathrm{Dec}_{\boldsymbol\theta}(x^{(t)},R) & \text{Decoding}  
 \end{align}
 $$
+
+```{admonition} Advanced$\qquad$Factorisation $\implies$ consistency
+---
+class: hint, dropdown
+---
+Recall that the consistency we require means consistency under _marginalisation_ and _permutation_. To see that the CNP predictive distribution satisfies consistency under permutation, let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
+
+$$
+\begin{align}
+    p_\theta(y^{(1)}, ..., y^{(T)} | x^{(1)}, ..., x^{(T)}) &= \prod_{t=1}^{T} p_\theta( y^{(t)} | x^{(t)}) \\
+    &= p_\theta(y^{(\pi(1))}, ..., y^{(\pi(T))} | x^{(\pi(1))}, ..., x^{(\pi(T))}),
+\end{align}
+$$
+
+since multiplication is commutative. To show consistency under marginalisation, consider two target inputs, $x^{(1)}, x^{(2)}$. Then by marginalising out the second target output, we get:
+
+$$
+\begin{align}
+    \int p_\theta(y^{(1)}, y^{(2)}| x^{(1)}, x^{(2)}, \mathcal{C}) \, \mathrm{d}y^{(2)} &= \int p_\theta(y^{(1)}| x^{(1)}, R)p_\theta(y^{(2)}| x^{(2)}, R) \, \mathrm{d}y^{(2)} \\
+    &= p_\theta(y^{(1)}| x^{(1)}, R) \int p_\theta(y^{(2)}| x^{(2)}, R) \, \mathrm{d}y^{(2)}\\
+    &= p_\theta(y^{(1)}| x^{(1)} \mathcal{C}).
+\end{align}
+$$
+
+which shows that the predictive distribution obtained by querying the CNP at $x^{(1)}$ is the same as that obtained by querying it at $x^{(1)}, x^{(2)}$ and then marginalising out the second target point. Of course, the same idea works with collections of any size, and marginalising any subset of the variables.
+
+<!-- It is easy to see that factorisation satisfies consistency under permutation, since for any collection of variables $\{ y_i | i=1,...,N \}$
+
+$$
+\begin{align}
+  p(y_1, ..., y_N) = \prod_{i=1}^N p(y_i),
+\end{align}
+$$
+
+and the product operation is commutative.
+To see that factorised distributions satisfy consistency under marginalisation, consider the case with two variables, $y_1$ and $y_2$.
+Without loss of generality, we have that
+
+$$
+\begin{align}
+  \int p(y_1, y_2) \mathrm{d}y_2 = \int p(y_1) p(y_2) \mathrm{d}y_2 = p(y_1) \int p(y_2) \mathrm{d} y_2 = p(y_1).
+\end{align}
+$$
+
+Of course, the same idea works with collections of any size, and marginalising any subset of the variables. -->
+```
 
 CNPF members make an important tradeoff.
 On one hand, we have placed a severe restriction on the class of models that we can fit.
