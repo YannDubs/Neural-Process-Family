@@ -221,7 +221,7 @@ $$
 \log p_{\boldsymbol\theta}(y)
 &= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} , y \right)\mathrm{d}\mathbf{z} \\
 & = \log \int q_{\boldsymbol\phi} \left( \mathbf{z} | y \right) \frac{p_{\boldsymbol\theta} \left( \mathbf{z} , y \right)}{q_{\boldsymbol\phi} \left( \mathbf{z} | y \right)} \mathrm{d}\mathbf{z} \\
-& \geq \mathbb{\mathbf{z} \sim q_{\boldsymbol\phi} \left( \mathbf{z} | y \right)} \left[ \log p_{\boldsymbol\theta} \left( y | \mathbf{z} \right) \right] - \mathrm{KL} \left( q_{\boldsymbol\phi} \left( \mathbf{z} | y \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} \right) \right).
+& \geq \mathbb{E}_{\mathbf{z} \sim q_{\boldsymbol\phi} \left( \mathbf{z} | y \right)} \left[ \log p_{\boldsymbol\theta} \left( y | \mathbf{z} \right) \right] - \mathrm{KL} \left( q_{\boldsymbol\phi} \left( \mathbf{z} | y \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} \right) \right).
 \end{align}
 $$
 
@@ -280,16 +280,41 @@ In both cases, sadly, we do not have unbiased estimators of the quantities we re
 Another consequence of this is that it is challenging to exactly carry out quantitative experiments, since our performance metrics are only ever lower bounds to the true model performance, and quantifying how tight those bounds are is quite challenging.
 ```
 
-```{admonition} Advanced$\qquad$Relationship betwee NPML and NPVI
+```{admonition} Advanced$\qquad$Relationship between NPML and NPVI
 ---
 class: attention, dropdown
 ---
-TODO
+In fact, there is a close relationship between the NPML and NPVI objectives.
+To see this, we denote
+
+$$
+\begin{align}
+  Z = \int p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \mathrm{d}\mathbf{z},
+\end{align}
+$$
+
+and note that $Z$ is the appropriate _normalising constant_ for the distribution $p_{\boldsymbol\theta} \left( \mathbf{y}_{T}, \mathbf{z} | \mathbf{x}_{T}, \mathcal{C} \right)$.
+Now, we can rewrite the NPVI objective as
+
+$$
+\begin{align}
+\mathcal{L}_{VI} & (\boldsymbol\theta ; D) = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \right] - \mathrm{KL} \left( p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} | \mathcal{C} \right) \right) \\
+& = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) + \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) - \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \right] \\
+& = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log Z + \log \frac{1}{Z} p_{\boldsymbol\theta} \left( \mathbf{y}_{T}, \mathbf{z} | \mathbf{x}_{T}, \mathcal{C} \right) - \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \right] \\
+& = \mathcal{L}_{ML}(\boldsymbol\theta; D) - \mathrm{KL} \left( p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \| \frac{1}{Z} p_{\boldsymbol\theta} \left( \mathbf{y}_{T}, \mathbf{z} | \mathbf{x}_{T}, \mathcal{C} \right) \right).
+\end{align}
+$$
+
+Thus, we can see that $\mathcal{L}_{VI}$ is equal to $\mathcal{L}_{ML}$ up to an additional KL term.
+This KL term has a nice interpretation as encouraging consistency among predictions with different context sets, which is the kind of consistency _not_ achieved by the NPF.
+
+However, this term can also be a _distractor_.
+When dealing with NPF members, we are typically not interested in the latent variable $\mathbf{z}$, and most considered tasks require only a "good" approximation to the predictive distribution.
+Therefore, given only finite capacity of our models, and finite data, it may be preferable to focus all the model capacity on achieving the best possible predictive distribution (which is what $\mathcal{L}_{ML}$ focuses on), rather than focusing on additional properties of $\mathbf{z}$, as encouraged by the KL term introduced by $\mathcal{L}_{VI}$.
 ```
 
-Next, we turn our attention to several members of the LNPF.
-In particular, we will introduce the latent-variable variant of each of the conditional models introduced in the previous section, and we shall see that having addressed the training procedures, the extension to latent variables is quite straightforward from a practical perspective.
-After introducing the models, we will illustrate a brief comparison of the two described training procedures.
+Armed with procedures for training LNPF-members, we turn our attention to the models themselves.
+In particular, we next introduce the latent-variable variant of each of the conditional models introduced in the previous section, and we shall see that having addressed the training procedures, the extension to latent variables is quite straightforward from a practical perspective.
 
 
 

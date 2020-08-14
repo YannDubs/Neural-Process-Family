@@ -4,7 +4,7 @@
   sections:
   - file: text/CNPF
     title: Conditional NPF
-  - file: text/LNPF
+  - file: text/LNPFs_sketch
     title: Latent NPF
 
 - chapter: Reproducibility
@@ -32,4 +32,3 @@
   - file: zbibliography # need to add z because has to be processed last
   - url: https://github.com/YannDubs/Neural-Process-Family
     title: GitHub Repo
-
