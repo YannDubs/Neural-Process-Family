@@ -57,7 +57,7 @@ $$
 ---
 class: hint, dropdown
 ---
-We show that members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$. Recall that the consistency we require means consistency under _marginalisation_ and _permutation_. To see that the CNP predictive distribution satisfies consistency under permutation, let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
+We show that members of the CNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$. Recall that the consistency we require means consistency under _marginalisation_ and _permutation_. To see that the CNP predictive distribution satisfies consistency under permutation, let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
 
 $$
 \begin{align}
@@ -135,20 +135,24 @@ Computational graph for CNPs.
 class: dropdown, tip
 ---
 There is a strong relationship between this encoder+aggregator and a class of models known as DeepSets networks introduced by Zaheer et al.{cite}`zaheer2017deep`.
-In particular, Zaheer et al. show that _any_ continuous function operating on sets ($X$) has a representation of the following form:
+In particular, Zaheer et al. show that (subject to certain conditions) _any_ continuous function operating on sets ($S$) can be expressed as:
 
 $$
 \begin{align}
-  f(X) = \rho \left( \sum_{x \in X} \phi(x) \right),
+  f(S) = \rho \left( \sum_{s \in S} \phi(s) \right),
 \end{align}
 $$
 
 for appropriate functions $\rho$ and $\phi$.
+This is known as a 'sum decomposition' or 'Deep Sets encoding'.
+his result tells us that, as long as $\rho$ and $\phi$ are universal function approximators, this sum-decomposition can be done without loss of generality in terms of the class of permutation-invariant maps that can be expressed.
+
+CNPs make heavy use this type of architecture.
 To highlight the similarities, we can express each of the mean and standard deviation functions of the CNP as
 
 $$
 \begin{align}
-  f_\mu \left( x^{(t)}; \mathcal{C} \right) $= \rho_\mu \left( \left[x^{(t)}; \frac{1}{|\mathcal{C}|} \sum_{(x, y) \in \mathcal{C}} \phi(x)\right] \right), \\
+  f_\mu \left( x^{(t)}; \mathcal{C} \right) &= \rho_\mu \left( \left[x^{(t)}; \frac{1}{|\mathcal{C}|} \sum_{(x, y) \in \mathcal{C}} \phi(x)\right] \right), \\
   f_\sigma \left( x^{(t)}; \mathcal{C} \right) &= \rho_\sigma \left( \left[x^{(t)}; \frac{1}{|\mathcal{C}|} \sum_{(x, y) \in \mathcal{C}} \phi(x)\right] \right)
 \end{align}
 $$
@@ -434,7 +438,7 @@ Here, we are using a GP with a particular kernel that maintains translation equi
 We can see that as the context set is _translated_, i.e., all the data points in $\mathcal{C}$ are shifted by the same amount, so is the resulting predictive distribution.
 Intuitively, this property is what we desire when we think about translation equivariant NPF-members.
 
-```{figure} ../gifs/translation_equivariance.gif
+```{figure} ../images/te_vis_complete.png
 :width: 35em
 :name: translation_equivariance_text
 :alt: Translation equivariant mapping from dataset to predictive
@@ -473,15 +477,24 @@ We can express these "local" functions as
 ```{math}
 :label: local_functional_encoding
 \begin{align}
-  g(x'; x^{(c)}, y^{(c)}) = \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} \psi \left( x^{(c)} - x' \right).
+  R^{(c)}(x'; x^{(c)}, y^{(c)}) = \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} \psi \left( x^{(c)} - x' \right).
 \end{align}
 ```
 
-Here, $\psi$ is a function that maps the _distance between_ $x^{(c)}$ and $x'$ to some real value, which we can think of as similar to a _kernel_.
+Here, $\psi$ is a function that maps the _distance between_ $x^{(c)}$ and $x'$ to some real value.
+For example, Gordon et al. use Gaussian bump functions with learned lengthscales for $\psi$, and we use these in our experiments in this post.
 Note that this encoding of $x^{(c)}, y^{(c)}$ is a function, since it returns a different value for every $x'$.
-You may note that the above function is _vector valued_, as it first appends a constant 1 to the output $y^{(c)}$, which results in an additional _channel_.
-Intuitively, we can think of this additional channel -- referred to as the _density channel_ -- as keeping track of where data was observed in $\mathcal{C}$ --without this additional constant, the model would be unable to distinguish between not having observed data at a particular location $x$, and having observed the point $(x, 0) \in \mathcal{C}$.
+You may note that the above function is _vector valued_, as it first appends a constant 1 to the output $y^{(c)}$, which results in an additional _channel_, which Gordon et al. refer to as a _density channel_.
+
+```{admonition} Note$\qquad$Density channel
+---
+class: note, dropdown
+---
+
+Intuitively, we can think of the density channel as keeping track of where data was observed in $\mathcal{C}$.
+Without this additional constant, the model would be unable to distinguish between not having observed data at a particular location $x$, and having observed the point $(x, 0) \in \mathcal{C}$.
 This turns out to be important both in practice, as well as in the theoretical understanding of the ConvCNP!
+```
 
 Now, the aggregation function is simply the sum of all of the local embeddings, which results in yet another function!
 So, the final form of the functional representation of the ConvCNP can be written simply as
@@ -489,7 +502,7 @@ So, the final form of the functional representation of the ConvCNP can be writte
 ```{math}
 :label: functional_encoding
 \begin{align}
-   R(\cdot; \mathcal{C}) = \sum_{(x^{(c)}, y^{(c)} \in \mathcal{C})} \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} \psi(x^{(c)} - x').
+   R(x'; \mathcal{C}) = \sum_{(x^{(c)}, y^{(c)} \in \mathcal{C})} \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} \psi(x^{(c)} - x').
 \end{align}
 ```
 
@@ -501,7 +514,7 @@ The functional representation of the ConvCNP is very similar to these methods in
 ---
 class: attention
 ---
-Although the output of a SetConv is an actual function, only the values of the functional representation at a finite number of locations $\{x^{(u)}\}_{u=1}^{U}$ can be stored on your computer for dowstream processing.
+Although the output of {numref}`functional_encoding` is an actual function, only the values of the functional representation at a finite number of locations $\{x^{(u)}\}_{u=1}^{U}$ can be stored on your computer for dowstream processing.
 We say the resulting function is *discretised* as it is represented by a finite set $\{(x^{(u)}, R(x^{(u)}))\}_{u=1}^{U}$.
 
 This discretisation means that the resulting ConvCNP can only be approximately TE, where the quality of the approximation is controlled by the number of points $U$.
@@ -509,44 +522,33 @@ In practice this turns out to not have a detrimental effect on performance.
 The upside is that the resulting (discrete) function can be processed by standard CNNs, as these operate on _discrete_ inputs.
 ```
 
-```{admonition} Advanced$\qquad$ConvDeepSets
----
-class: dropdown, hint
----
-Before proposing the ConvCNP, Gordon et al. introduce the _ConvDeepSet_ model, which extends DeepSets {cite}`zaheer2017deep` to translation equivariant functions.
-ConvDeepSets map sets of the form $Z = \{(x_n, y_n) | n=1,...,N \}$ for some $n \in \mathbb{N}$ to function spaces, and have the following form
-
-$$
-\begin{align}
-f(Z) = \rho(E (Z)); \qquad E(Z) = \sum_{(x,y) \in Z} \phi(y) \psi(\cdot - x) \in \mathcal{H},
-\end{align}
-$$
-
-for appropriate functions $\rho$, $\phi$, and $\psi$.
-ConvCNPs specify $\phi \colon y \mapsto (1, y)^T$, $\rho$ as a CNN, and $\psi$ as a kernel function, and use ConvDeepSets to parameterise the mean and standard deviation functions for predictive processes.
-
-The key result of Gordon et al. is to demonstrate that not only are functions of this form translation equivariant, but under mild conditions, any continuous and translation equivariant function on sets $Z$ has a representation of this form.
-Similar to how DeepSets can be used to provide justification of the CNP architecture, ConvDeepSets motivate the architectural choices of the ConvCNP.
-```
-
-After the discretisation, ConvCNPs employ CNNs as decoders, that are applied to the resulting discrete signal.
-Finally, following the final layer of the CNN, an additional smoothing channel is used, similar to the functional form of the encoder (but without the density channel), to evaluate the mean and variance functions at any target location $x^{(t)}$.
+The discretised functional representation is then passed through a CNN.
+Finally, the discrete output of the CNN ($f_\mu(x_u)$ and $f_\sigma(x_u)$ for the mean and variance functions, respectively) is again smoothed using a Gaussian bump function ($\psi_\rho$).
+Thus the mean and variance functions ($\mu$ and $\log \sigma$, respectively) can be evaluated at _any_ target location $x^{(t)}$.
 We can express this final layer as
 
 ```{math}
 :label: final_decoder_layer
 \begin{align}
-   \mu^{(t)} = \sum_{i=1}^T f_\mu(t_i) \psi_\rho(x^{(t)} - t_i);
+   \mu^{(t)} = \sum_{u=1}^U f_\mu(x_u) \psi_\rho(x^{(t)} - x_u);
    \quad
-   \log \sigma^{(t)} = \sum_{i=1}^T f_\sigma(t_i) \psi_\rho(x^{(t)} - t_i),
+   \log \sigma^{(t)} = \sum_{u=1}^U f_\sigma(x_u) \psi_\rho(x^{(t)} - x_u),
 \end{align}
 ```
 
-where $\{t_i\}_{i=1}^T$ are the discretisation locations, $\psi_\rho$ is another "kernel" function employed in this layer, and $f_\mu, f_\sigma$ are the output channels of the CNN for the mean and variance functions, respectively.
 Putting everything together, we can define the ConvCNP with the following design choices (illustrated in {numref}`computational_graph_ConvCNPs_text`):
 * The local encoding maps context set points to functions via {numref}`local_functional_encoding`.
 * The aggregation function is simply the sum of the local functional encodings ({numref}`functional_encoding`), followed by a discretisation to evaluate the resulting function at a fixed grid of locations.
 * Finally, the decoder is a CNN, followed by an additional layer to evaluate the means and standard deviations at the target locations ({numref}`final_decoder_layer`).
+
+```{admonition} Note$\qquad$Point-wise MLP decoders
+---
+class: note, dropdown
+---
+In practice, it is also possible to add a point-wise MLP to the decoder, after evaluating the CNN output at a target location $x^{(t)}$.
+In this case, the MLP maps the "smoothed" CNN channels $f(x^{(t)})$ to the mean and variance functions.
+Gordon et al. did not employ such an MLP, but we do so in our experiments in this post.
+```
 
 <!---
 Putting everything together, the ConvCNP computes a target-dependent representation $R^{(t)}$ as follows (illustrated in {numref}`computational_graph_ConvCNPs_text`):
@@ -579,17 +581,41 @@ In the {doc}`Theory<Theory>` chapter, we provide a sketch of this proof.
 ```
 -->
 
+```{admonition} Advanced$\qquad$ConvDeepSets
+---
+class: dropdown, hint
+---
+Similar to how CNPs make heavy use of "DeepSet" networks, ConvCNPs rely on the _ConvDeepSet_ architecture which was also proposed by Gordon et al. {cite}`gordon2019convolutional`.
+ConvDeepSets map sets of the form $Z = \{(x_n, y_n) | n=1,...,N \}$ for some $n \in \mathbb{N}$ to function spaces, and have the following form
+
+$$
+\begin{align}
+f(Z) = \rho(E (Z)); \qquad E(Z) = \sum_{(x,y) \in Z} \phi(y) \psi(\cdot - x) \in \mathcal{H},
+\end{align}
+$$
+
+for appropriate functions $\rho$, $\phi$, and $\psi$.
+The key result of Gordon et al. is to demonstrate that not only are functions of this form translation equivariant, but under mild conditions, _any_ continuous and translation equivariant function on sets $Z$ has a representation of this form.
+Gordon et al. rely on the universal approximators for $phi$, the notion of _interpolating kernels_ for $\psi$, and specify $\rho$ as universal approximators of continuous _and_ translation equivariant functions between function spaces.
+This result is analagous to that of Zaheer et al., but extended to translation equivariant functions on sets.
+
+ConvCNPs then define the parameterisations of the mean and variance functions using ConvDeepSets.
+In particular, ConvCNPs specify $\phi \colon y \mapsto (1, y)^T$, $\rho$ as a CNN, and $\psi$ as a kernel function, and use ConvDeepSets to parameterise the mean and standard deviation functions for predictive processes.
+Thus, ConvDeepSets motivate the architectural choices of the ConvCNP analagously to how DeepSets can be used to provide justification for the CNP architecture.
+```
+
+
 ```{admonition} Note$\qquad$Computational Complexity
 ---
 class: dropdown, note
 ---
-Computing the discrete functional representation amounts in considering $K$ points in the context set for each discrete location which scales in $\mathcal{O}(U*K)$.
-Similarly, computing the target location scales in $\mathcal{O}(T*K).
-The computational complexity of inference in a ConvCNP is thus $\mathcal{O}(K(U+T))$.
+Computing the discrete functional representation amounts in considering $| \mathcal{C} |$ points in the context set for each discrete location which scales in $\mathcal{O}(U*| \mathcal{C} |)$.
+Similarly, computing the target location scales in $\mathcal{O}(T* | \mathcal{C} |).
+The computational complexity of inference in a ConvCNP is thus $\mathcal{O}(|\mathcal{C}|(U+T))$.
 
 This shows that there is a trade-off: if the number of discrete points $U$ is too large then the computational cost will not be manageable, but if it is too small then ConvCNP will only be approximately TE.
 
-In typical CNNs, $K$ is very small, in which case ConvCNP usually scales better than AttnCNP (with self-attnetion $\mathcal{O}(C(C+T))$) as long as $U$ is not too large
+In typical CNNs, $|\mathcal{C}|$ is very small, in which case ConvCNP usually scales better than AttnCNP (with self-attnetion $\mathcal{O}(|\mathcal{C}|(|\mathcal{C}|+T))$) as long as $U$ is not too large
 ```
 
 Now that we have constructed a translation equivariant CNPF, we can test it in the more challenging extrapolation regime.
@@ -632,7 +658,10 @@ alt: ConvCNP on single images
 Large extrapolation (red dashes) of posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with periodic kernel.
 ```
 
-In fact, this is true for any of the GPs above, all of which have infinite receptive fields, meaning that no model with a bounded field (such as the ConvCNP) can ever exactly recover them.
+In fact, this is true for any of the GPs above, all of which have "infinite receptive fields", meaning that no model with a bounded field (such as the ConvCNP) can ever exactly recover them.
+In practice however, most GPs (e.g., RBF and Matern kernels) have a finite length-scale, and points much further apart than the length-scale are, for all practical purposes, independent.
+For such kernels this should thus not pose practical issues for a finite receptive field model (such as the ConvCNP).
+
 This discussion alludes to one of the key design choices of the ConvCNP, which is the size of its receptive field.
 Note that, unlike standard CNNs, the resulting receptive field does not only depend on the CNN architecture, but also on the granularity of the discretisation employed on the functional representation.
 Thus, when designing ConvCNP architectures, some consideration should be given to the interplay between the discretisation and the architecture of the decoder.
