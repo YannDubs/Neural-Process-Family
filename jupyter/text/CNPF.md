@@ -458,7 +458,7 @@ T' \colon \mathcal{X} \times \mathcal{H} \to \mathcal{H}; & \qquad T'_\tau h(x) 
 \end{align}
 $$
 
-Then, a mapping $f \colon \mathcal{Z} \to \mathcal{H}$ is translation equivariant if $f(T_\tau Z) = T'_\tau h$ for all $\tau \in \mathcal{X}$ and $Z \in \mathcal{Z}$.
+Then, a mapping $f \colon \mathcal{Z} \to \mathcal{H}$ is translation equivariant if $f(T_\tau Z) = T'_\tau f(Z)$ for all $\tau \in \mathcal{X}$ and $Z \in \mathcal{Z}$.
 ```
 
 This provides the central motivation behind the ConvCNP {cite}`gordon2019convolutional`: how to bake translation equivariance into CNPF members, while preserving other desirable aspects of the models.
