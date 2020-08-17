@@ -442,7 +442,7 @@ Here, we show stationary GP regression, which leads to translation equivariant p
 We can see that as the context set is _translated_, i.e., all the data points in $\mathcal{C}$ are shifted in input space by the same amount, so is the resulting predictive distribution.
 To achieve spatial generalisation, we would like this property also to hold for neural processes.
 
-```{figure} ../gifs/translation_equivariance.gif
+```{figure} ../images/te_vis_complete.png
 :width: 35em
 :name: translation_equivariance_text
 :alt: Translation equivariant mapping from dataset to predictive
