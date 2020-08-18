@@ -220,19 +220,19 @@ However, this has computational complexity $\mathcal{O}(N^3)$ in the dataset siz
 Many accessible introductions to GPs are available online.
 Some prime examples are [Distill's visual exploration](https://distill.pub/2019/visual-exploration-gaussian-processes/), [Neil Lawrence's post](http://inverseprobability.com/talks/notes/gaussian-processes.html), or [David Mackay's video lecture](https://www.youtube.com/watch?v=NegVuuHwa8Q).
 
-Here we note that there is a close relationship between GPs and the NPF.
+We note that there is a close relationship between GPs and the NPF.
 Recall that given an appropriate kernel function $k$, $\mathcal{C}$, and any collection of target inputs $\mathbf{x}_{\mathcal{T}}$, a GP defines the following posterior predictive distribution:
 
 $$
 \begin{align}
 p (\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) &=
 \mathcal{N} \left( \mathbf{y}_{\mathcal{T}}; \mu_{\text{post}}, \Sigma_{\text{post}} \right), \\
-\mu_{\text{post}} & = K_{\mathcal{T}, \mathcal{T}}^T K_{\mathcal{C}, \mathcal{C}}^{-1} \mathbf{y}_{\mathcal{C}}, \\
-\Sigma_{\text{post}} & = K_{\mathcal{T}, \mathcal{T}} - K_{\mathcal{T}, \mathcal{C}}^T K_{\mathcal{C}, \mathcal{C}}^{-1} K_{\mathcal{T}, \mathcal{C}},
+\mu_{\text{post}} & = K_{\mathcal{T}, \mathcal{C}} K_{\mathcal{C}, \mathcal{C}}^{-1} \mathbf{y}_{\mathcal{C}}, \\
+\Sigma_{\text{post}} & = K_{\mathcal{T}, \mathcal{T}} - K_{\mathcal{T}, \mathcal{C}} K_{\mathcal{C}, \mathcal{C}}^{-1} K_{\mathcal{C}, \mathcal{T}},
 \end{align}
 $$
 
-where we denote $K_{\mathcal{T}, \mathcal{C}}$ as the matrix constructed by evaluating the kernel at the inputs of the target set with those of the context set, and similarly for $K_{\mathcal{C}, \mathcal{C}}$ and $K_{\mathcal{T}, \mathcal{T}}$.
+where we denote $K_{\mathcal{T}, \mathcal{C}}$ as the matrix constructed by evaluating the kernel at the inputs of the target set with those of the context set, and similarly for $K_{\mathcal{C}, \mathcal{C}}$, $K_{\mathcal{C}, \mathcal{T}}$, and $K_{\mathcal{T}, \mathcal{T}}$.
 Thus, we can think of posterior inference in GPs as a map from context sets $\mathcal{C}$ to distribution over predictive functions, just as we are considering for the NPF.
 
 In this tutorial, we mainly use GPs to specify simple synthetic stochastic processes for benchmarking.

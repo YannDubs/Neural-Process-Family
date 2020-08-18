@@ -119,10 +119,16 @@ While this quantity is no longer tractable (as it was with members of the CNPF),
 \end{align}
 ```
 
-{numref}`npml` provides a simple-to-compute objective function for training LNPF-members, which we can then use with standard optimisers to train the model parameters $\boldsymbol\theta$:
-1. Take $L$ samples from the encoder: $\mathbf{z}_l \sim p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)$.
-2. For each sample, compute the log-likelihood of the target set: $\log p_l \leftarrow \sum_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z}_l  \right)$.
-3. Compute the LogSumExp over the sampling dimension: $\hat{\mathcal{L}}_{ML}(\boldsymbol\theta; \mathcal{C}, \mathcal{T}) \leftarrow \text{LogSumExp}_{l=1}^{L} \log p_l$
+{numref}`npml` provides a simple-to-compute objective function for training LNPF-members, which we can then use with standard optimisers to train the model parameters $\boldsymbol\theta$.
+Pseudo-code for such a training step is given in {numref}`npml_pseudocode`.
+
+```{figure} ../images/alg_npml.png
+---
+width: 35em
+name: npml_pseudocode
+alt: Pseudo-code for a single training step of a LNPF member with NPML.
+---
+```
 
 NPML is conceptually very simple.
 It also links nicely with the procedure of the CNPF, in the sense that it targets the same predictive likelihood during training.
@@ -154,6 +160,7 @@ label: approximate_posterior
 p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) \approx p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \cup \mathcal{T} \right).
 \end{align}
 ```
+
 
 ```{admonition} Warning$\qquad$Posterior vs. $p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \cup \mathcal{T} \right)$
 ---
@@ -250,14 +257,15 @@ In these settings:
 
 When both the encoder and inference network parameterise Gaussian distributions over $\mathbf{z}$ (as is standard), the KL-term can be computed analytically.
 Hence we can derive an unbiased estimator to {numref}`np_elbo` by taking samples from $q_{\boldsymbol\phi}$ to estimate the first term on the RHS.
-With that in mind, we can express a single training step for LNPF members with NPVI as follows:
+{numref}`npvi_pseudocode` provides the pseudo-code for a single training iteration for a LNPF member, using NPVI as the target objective.
 
-1. Sample a task $(\mathcal{C}, \mathcal{T})$ from the data.
-2. Take $L$ samples as $\mathbf{z}_l \sim p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{D} \right)$.
-3. Approximate the lower-bound as (assuming the KL has an analytical form)$$\begin{align}
-\hat{\mathcal{L}}_{VI} \leftarrow \frac{1}{L} \sum_{l=1}^{L} \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} |  x^{(t)}, \mathbf{z}_l \right) - \mathrm{KL} \left( p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol\theta} \left(\mathbf{z} | \mathcal{C} \right) \right).
-\end{align}$$
-4. Use the backpropagation algorithm to take a gradient step in $\boldsymbol\theta$ to maximize $\hat{\mathcal{L}}$.
+```{figure} ../images/alg_npvi.png
+---
+width: 35em
+name: npvi_pseudocode
+alt: Pseudo-code for a single training step of a LNPF member with NPML.
+---
+```
 
 As we have discussed, the most appealing property of NPVI is that it utilises _posterior sampling_ to reduce the variance of the Monte-Carlo estimator of the intractable expectation.
 This means that often we can get away with training models taking just a single sample, resulting in computationally and memory efficient training procedures.
