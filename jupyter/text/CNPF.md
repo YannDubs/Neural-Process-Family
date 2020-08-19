@@ -471,7 +471,114 @@ Then, a mapping $f \colon \mathcal{Z} \to \mathcal{H}$ is said to be _translatio
 
 This provides the central motivation behind the ConvCNP {cite}`gordon2019convolutional`: _baking translation equivariance (TE) into the CNPF_, whilst preserving its other desirable properties.
 
-To accomplish this, the ConvCNP designs the encoder and decoder to each be translation equivariant. Recall that the encoder maps the context set to a representation $R$. For the CNP and AttnCNP, $R$ was a finite-dimensional vector. However, it is unclear what it means to 'translate' this abstract representation vector. Hence, the ConvCNP instead represents each context set $\mathcal{C}$ with a _continuous function_ $R(\cdot) : \mathcal{X} \to \mathbb{R}^{d_r}$, where $\mathcal{X}$ is the input domain (i.e., the $x$-axis, or pixel location). We will refer to representations of this form as _functional representations_ or _functional encodings_.
+To accomplish this, the ConvCNP maps datasets into a space of _continuous functions_ instead of a finite-dimensional vector space, as with the CNP and AttnCNP. These representations are known as _functional representations_ or _functional encodings_. To do this, the ConvCNP begins by performing a local functional encoding of each datapoint in the context set:
+
+```{math}
+:label: local_functional_encoding
+\begin{align}
+  R^{(c)}(x') = \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} \psi \left( x^{(c)} - x' \right).
+\end{align}
+```
+Here, $\psi$ is a function that maps the _distance between_ $x^{(c)}$ and $x'$ to a real number. $\psi$ is most often chosen to be an RBF: $\psi(r) = \exp(-\|r\|^2_2/ \ell^2)$, where $\ell$ is a learnable lengthscale parameter. You can think of this operation as simply placing Gaussian bumps down at every datapoint, similar to [Kernel Density Estimation](https://en.wikipedia.org/wiki/Kernel_density_estimation) or [Nadaraya–Watson kernel regression](https://en.wikipedia.org/wiki/Kernel_regression#Nadaraya%E2%80%93Watson_kernel_regression).
+
+Note that the local encoding $R^{(c)}(x')$ is a _vector valued function_, since for each $x' \in \mathcal{X}$, it returns a vector in $\mathbb{R}^2$ --- it appends a constant 1 to the output $y^{(c)}$, which results in an additional _channel_. [^densityChannel] Intuitively, we can think of this additional channel -- referred to as the _density channel_ -- as keeping track of where data was observed in $\mathcal{C}$.
+
+```{admonition} Note$\qquad$Density Channel
+---
+class: note, dropdown
+---
+To better understand the role of the density channel, consider a context point $(x^{(c)}, y^{(c)})$, with $y^{(c)} = 0$. Without the density channel, the local functional encoding for this point would be $R^{(c)}(x') = y^{(c)} \psi \left( x^{(c)} - x' \right)$, which is just the zero function. Hence, without a density channel, the encoder would be unable to distinguish between observing a context point with $y^{(c)} = 0$, and not observing a context point at all! With the density channel, the local functional encoding becomes $\begin{bmatrix} 1 \\ 0 \end{bmatrix} \psi \left( x^{(c)} - x' \right)$, which is no longer the zero function, and will hence contribute to the predictions. This turns out to be important in practice, as well as in the theoretical proofs regarding the expressivity of the ConvCNP.
+
+```
+
+We next describe the aggregator of the ConvCNP. In order to preserve translation equivariance, we want the aggregator to also be translation equivariant. A prime candidate for this in the family of deep learning architectures is the Convolutional Neural Network (CNN), which satisfies TE. There is however one issue: CNNs act on functions on a _discrete_ input space, but our local functional encodings are functions on a _continuous_ input space. To address this, we will _discretise_ the input to the CNN, and then smooth the output of the CNN to obtain a continuous function again. We first begin by adding up the local functional encodings:
+
+```{math}
+:label: sum
+\begin{align}
+   \mathrm{sum}(x') = \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} R^{(c)}(x') = \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} \psi(x^{(c)} - x').
+\end{align}
+```
+
+```{admonition} Note$\qquad$Normalisation
+---
+class: note, dropdown
+---
+It is common practice to use the density channel to _normalise_ the output of the non-density channels (also called the _signal_ channels), so that the functional encoding becomes:
+
+$$
+\begin{align}
+    \mathrm{density}(x') &= \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} \psi(x^{(c)} - x') \\
+    \mathrm{signal}(x') &= \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} y^{(c)}\psi(x^{(c)} - x') \\
+    \mathrm{sum}(x') &=  \begin{bmatrix} \mathrm{density}(x') \\ \mathrm{signal}(x') / \mathrm{density}(x') \end{bmatrix}
+\end{align}
+$$
+
+Intuitively, what this does is ensure that the magnitude of the signal channel doesn't blow up if there are a large number of context points at the same spot. The density channel of the ConvCNP encoder can be seen as (a scaled version of) a kernel density estimate, and the normalised signal channel can be seen as Nadaraya-Watson kernel regression.
+```
+
+Next, we discretise the sum on an evenly spaced grid of input locations $\{ x^{(u)} \}_{u=1}^U$:
+
+```{math}
+:label: discretisation
+\begin{align}
+   \mathrm{sum}(x') \to \{ \mathrm{sum}(x^{(u)}) \}_{u=1}^U
+\end{align}
+```
+
+
+```{admonition} Important
+---
+class: attention
+---
+This discretisation means that the resulting ConvCNP can only be approximately TE, where the quality of the approximation is controlled by the number of points $U$.
+If the spacing between the grid points is $\Delta$, the ConvCNP would not be expected to be equivariant to shifts of the input that are smaller than $\Delta$.
+```
+
+Next, we can pass the discretised sum through a CNN, and smooth the output to obtain our functional encoding for the entire context set, $R(x')$:
+
+```{math}
+:label: CNN
+\begin{align}
+\{f(x^{(u)})\}_{u=1}^U &= \mathrm{CNN}(\{ \mathrm{sum}(x^{(u)}) \}_{u=1}^U) \\
+R(x') &= \sum_{u=1}^U f(x^{(u)}) \psi(x^{(u)} - x'),
+\end{align}
+```
+
+where $\psi$ is another Gaussian RBF. Note that $R(x')$ is a function on a _continuous_ input domain: it can be evaluated at any input location (e.g. any time or spatial position). Finally, to obtain the predictive mean and variance at a target input $x^{(t)}$, we evaluate the functional encoding at $x^{(t)}$, and pass the result into the decoder, which is an MLP:
+
+```{math}
+:label: final_decoder_layer
+\mu^{(t)}, \log \sigma^{2(t)} = \mathrm{MLP}(R(x^{(t)}))
+```
+
+```{admonition} Note$\qquad$MLP Decoder
+---
+class: note, dropdown
+---
+In the original ConvCNP paper, the MLP decoder is sometimes omitted, with $R(x')$ directly parameterising the predictive mean and variance.
+```
+
+Putting everything together, we can define the ConvCNP using the following design choices (illustrated in {numref}`computational_graph_ConvCNPs_text`):
+* The local encoding maps context set points to functions via {numref}`local_functional_encoding`.
+* The aggregation function is a sum, followed by a discretisation, CNN, and smoothing ({numref}`sum`, {numref}`discretisation`, {numref}`CNN`).
+* Finally, the decoder is a pointwise MLP ({numref}`final_decoder_layer`).
+
+Note that the separation of the ConvCNP into local encoding, aggregator and decoder is somewhat arbitrary. You could also view summation as the aggregator, and the CNN as part of the decoder, which is the view presented in the original ConvCNP paper.
+
+```{admonition} Note$\qquad$On-the-grid ConvCNP
+---
+class: note, dropdown
+---
+The architecture described so far is referred to as the 'off-the-grid' ConvCNP in the original paper, since it can handle input observations at any point on the $x$-axis. However, we sometimes have situations where inputs end up regularly spaced on the $x$-axis. A prime example of this is in image data, where the input image lives on a regularly-spaced 2D grid. For this case, the authors propose the 'on-the-grid' ConvCNP, which is a simplified version that is easier to implement.
+
+In the on-the-grid ConvCNP, the input data already lives on a discretised grid. Hence, after appending a density channel, this can immediately be fed into a CNN, without the need for RBF smoothing or discretisation. Suppose we have an image, represented as an $H \times W$ matrix. Within this image, we have $C$ observed pixels and $HW - C$ unobserved pixels. We represent an observed pixel with the vector $[1, y^{(c)}]^T$, and an unobserved pixel with the vector $[0, 0]^T$. As before, the first element of this vector is the density channel, and indicates that a datapoint has been observed.
+
+To implement this, let the input image be $I \in \mathbb{R}^{H \times W}$. Let $M \in \mathbb{R}^{H \times W}$ be a mask matrix, with $M_{i,j} = 1$ if the pixel at location $(i,j)$ is in the context set, and $0$ otherwise. Then we can compute the density channel as $\mathrm{density} = M$ and the signal channel as $\mathrm{signal} = I \odot M$, where $\odot$ denotes element-wise multiplication. We then stack these matrices as $[\mathrm{density}, \mathrm{signal}]^T$. This can then be passed into a CNN, and the CNN can output one channel for the predictive mean, and another for the log predictive variance.
+
+```
+
+<!-- To accomplish this, the ConvCNP designs the encoder and decoder to each be translation equivariant. Recall that the encoder maps the context set to a representation $R$. For the CNP and AttnCNP, $R$ was a finite-dimensional vector. However, it is unclear what it means to 'translate' this abstract representation vector. Hence, the ConvCNP instead represents each context set $\mathcal{C}$ with a _continuous function_ $R(\cdot) : \mathcal{X} \to \mathbb{R}^{d_r}$, where $\mathcal{X}$ is the input domain (i.e., the $x$-axis, or pixel location). We will refer to representations of this form as _functional representations_ or _functional encodings_.
 
 The encoder will be designed with the property that if the context set is shifted in input space, the functional encoding $R(\cdot)$ will be shifted by the same amount. To obtain the predictive mean and variance functions $\mu(\cdot), \sigma^2(\cdot)$, the functional encoding $R(\cdot)$ is passed through a CNN. Since CNNs are also translation equivariant, the entire ConvCNP is translation equivariant.
 
@@ -489,7 +596,7 @@ We can express these _local_ functional encodings as
 
 Here, $\psi$ is a function that maps the _distance between_ $x^{(c)}$ and $x'$ to a real number. $\psi$ is most often chosen to be an RBF kernel: $\psi(r) = \exp(-r^2/ \ell^2)$, where $\ell$ is a learnable lengthscale parameter. Note that the local encoding $R^{(c)}(\cdot)$ is a _vector valued function_, since for each $x' \in \mathcal{X}$, it returns a vector in $\mathbb{R}^2$ --- it appends a constant 1 to the output $y^{(c)}$, which results in an additional _channel_. [^densityChannel] Intuitively, we can think of this additional channel -- referred to as the _density channel_ -- as keeping track of where data was observed in $\mathcal{C}$.
 
-Now, the aggregation function is simply the sum of all of the local embeddings, which results in yet another function!
+Now, the aggregation function consists of two parts: begins by simply summing of all of the local embeddings, which results in yet another function!
 So, the functional encoding for the entire context set $\mathcal{C}$ can be written as
 
 ```{math}
@@ -497,28 +604,6 @@ So, the functional encoding for the entire context set $\mathcal{C}$ can be writ
 \begin{align}
    R(x') = \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} R^{(c)}(x') = \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} \psi(x^{(c)} - x').
 \end{align}
-```
-
-```{admonition} Note$\qquad$Density Channel and Normalisation
----
-class: note, dropdown
----
-To better understand the role of the density channel, consider a context point $(x^{(c)}, y^{(c)})$, with $y^{(c)} = 0$. Without the density channel, the local functional encoding for this point would be $R^{(c)}(x') = y^{(c)} \psi \left( x^{(c)} - x' \right)$, which is just the zero function. Hence, without a density channel, the encoder would be unable to distinguish between observing a context point with $y^{(c)} = 0$, and not observing a context point at all! With the density channel, the local functional encoding becomes $\begin{bmatrix} 1 \\ 0 \end{bmatrix} \psi \left( x^{(c)} - x' \right)$, which is no longer the zero function, and will hence contribute to the predictions. This turns out to be important in practice, as well as in the theoretical proofs regarding the expressivity of the ConvCNP.
-
-Furthermore, it is common practice to use the density channel to _normalise_ the output of the non-density channels (also called the _signal_ channels), so that the functional encoding becomes:
-
-$$
-\begin{align}
-    \mathrm{density}(x') &= \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} \psi(x^{(c)} - x') \\
-    \mathrm{signal}(x') &= \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} y^{(c)}\psi(x^{(c)} - x') \\
-    R(x') &=  \begin{bmatrix} \mathrm{density}(x') \\ \mathrm{signal}(x') / \mathrm{density}(x') \end{bmatrix}
-\end{align}
-$$
-
-Intuitively, what this does is ensure that the magnitude of the signal channel doesn't blow up if there are a large number of context points at the same spot.
-
-If you've ever plotted a smooth curve (continuous function) to interpolate a set of datapoints, chances are you have probably already heard of either [Kernel Density Estimation](https://en.wikipedia.org/wiki/Kernel_density_estimation) or [Nadaraya–Watson kernel regression](https://en.wikipedia.org/wiki/Kernel_regression#Nadaraya%E2%80%93Watson_kernel_regression), where you smooth the datapoints by convolving them with a kernel, i.e., taking a local weighted average of each datapoint. The density channel of the ConvCNP encoder can be seen as (a scaled version of) a kernel density estimate, and the normalised signal channel can be seen as Nadaraya-Watson kernel regression.
-
 ```
 
 
@@ -559,7 +644,7 @@ class: note, dropdown
 In practice, it is also possible to add a point-wise MLP to the decoder, after evaluating the CNN output at a target location $x^{(t)}$.
 In this case, the MLP maps the "smoothed" CNN channels $f(x^{(t)})$ to the mean and variance functions.
 Gordon et al. did not employ such an MLP, but we do so in our experiments in this post.
-```
+``` -->
 
 <!---
 Putting everything together, the ConvCNP computes a target-dependent representation $R^{(t)}$ as follows (illustrated in {numref}`computational_graph_ConvCNPs_text`):
@@ -621,12 +706,9 @@ In the {doc}`Theory<Theory>` chapter, we provide a sketch of this proof.
 class: dropdown, note
 ---
 Computing the discrete functional representation requires considering $C$ points in the context set for each discretised function location which scales as $\mathcal{O}(U*C)$.
-Similarly, computing the predictive at the target inputs scales as $\mathcal{O}(U*T).
-The computational complexity of inference in a ConvCNP is thus $\mathcal{O}(U(C+T))$.
+Similarly, computing the predictive at the target inputs scales as $\mathcal{O}(U*T)$. Finally, if the convolutional kernel has width $K$, each convolution scales as $\mathcal{O}(U*K)$ (here we are ignoring the added complexity due to multiple channels). Hence the computational complexity of inference in a ConvCNP is thus $\mathcal{O}(U(C+K+T))$. In the off-the-grid ConvCNP, the computational complexity is simply $\mathcal{O}(U*K)$, where $U$ is the number of pixels for image data.
 
 This shows that there is a trade-off: if the number of discretisation points $U$ is too large then the computational cost will not be manageable, but if it is too small then ConvCNP will be only very 'coarsely' TE.
-
-<!-- In typical CNNs, $|\mathcal{C}|$ is very small, in which case ConvCNP usually scales better than AttnCNP (with self-attnetion $\mathcal{O}(|\mathcal{C}|(|\mathcal{C}|+T))$) as long as $U$ is not too large. -->
 ```
 
 Now that we have constructed a translation equivariant member of the CNPF, we can test it in the more challenging extrapolation regime.
@@ -654,11 +736,11 @@ We can see this by noting that it produces periodic predictions, even "far" away
 ---
 class: dropdown, warning
 ---
-The periodic kernel example is a little misleading, indeed the ConvCNP does not recover the underlying GP.
+The periodic kernel example is a little misleading, as the ConvCNP does not recover the underlying GP predictions everywhere.
 In fact, we know that it cannot exactly recover the underlying process.
-Indeed, it can only model local periodicity because it has a _bounded receptive field_ --- the
-size of the region of input that affect a particular output.
-This is best seen when considering a much larger target interval ($[-2,14]$ instead of $[0,4]$), as below.
+Indeed, it can only model _local_ periodicity because it has a bounded _receptive field_ --- the
+size of the input region that can affect a particular output. See [this Distill article](https://distill.pub/2019/computing-receptive-fields/) for a further explanation of CNN receptive fields.
+This is best seen when considering a much larger target interval ($[-2,14]$ instead of $[0,4]$):
 
 ```{figure} ../gifs/ConvCNP_periodic_large_extrap.gif
 ---
@@ -669,18 +751,16 @@ alt: ConvCNP on single images
 Large extrapolation (red dashes) of posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with periodic kernel.
 ```
 
-In fact, this is true for any of the GPs above, all of which have "infinite receptive fields", meaning that no model with a bounded field (such as the ConvCNP) can ever exactly recover them.
-In practice however, most GPs (e.g., RBF and Matern kernels) have a finite length-scale, and points much further apart than the length-scale are, for all practical purposes, independent.
-For such kernels this should thus not pose practical issues for a finite receptive field model (such as the ConvCNP).
+In fact, this is true for any of the GPs above, all of which have "infinite receptive fields" --- in principle, an observation at one point affects the predictions along the entire $x$-axis. This means that no model with a bounded receptive field can _exactly_ recover the GP predictive distribution everywhere.
+In practice however, most GPs (e.g., with RBF and Matern kernels) have a finite length-scale, and points much further apart than the length-scale are, for all practical purposes, independent.
 
 This discussion alludes to one of the key design choices of the ConvCNP, which is the size of its receptive field.
 Note that, unlike standard CNNs, the resulting receptive field does not only depend on the CNN architecture, but also on the granularity of the discretisation employed on the functional representation.
-Thus, when designing ConvCNP architectures, some consideration should be given to the interplay between the discretisation and the architecture of the decoder.
 ````
 
 
-Let us also examine the performance of the ConvCNP on the more challenging image experiments.
-As with the AttnCNP, we consider CelebA and MNIST reconstruction experiments, but also unclude the ZSMM experiments that evaluate the model's ability to generalise beyond the training data.
+Let's now examine the performance of the ConvCNP on more challenging image experiments.
+As with the AttnCNP, we consider CelebA and MNIST reconstruction experiments, but also include the Zero-Shot Multi-MNIST (ZSMM) experiments that evaluate the model's ability to generalise beyond the training data.
 
 ```{figure} ../gifs/ConvCNP_img.gif
 ---
@@ -694,7 +774,7 @@ Posterior predictive of an ConvCNP for CelebA, MNIST, and ZSMM.
 
 From {numref}`ConvCNP_img_text` we see that the ConvCNP performs quite well on all datasets when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM).
 However, performance is less impressive when the context set is very small or when it is structured, e.g., half images.
-In our experiments we find that this is more of an issue for the ConvCNP than the AttnCNP ({numref}`AttnCNP_img`), we hypothesize that this happen because the effective receptive field of the former is too small.
+In our experiments we find that this is more of an issue for the ConvCNP than the AttnCNP ({numref}`AttnCNP_img`); we hypothesize that this happens because the effective receptive field of the former is too small.
 
 ```{admonition} Note$\qquad$Effective Receptive Field
 ---
@@ -702,14 +782,14 @@ class: dropdown, note
 ---
 We call the *effective* receptive field, the empirical receptive field of a *trained* model rather than the theoretical receptive field for a given architecture.
 For example if a ConvCNP always observes many context points during training, then every target point will be close to some to context points and the ConvCNP will thus not need to learn to depend on context points that are far from target points.
-The size of the effective receptive field can thus be incfreased by reducing the size of the context set seen during training, but this solution is somewhat dissatisfying in that it requires tinkering with the training procedure.
+The size of the effective receptive field can thus be increased by reducing the size of the context set seen during training, but this solution is somewhat dissatisfying in that it requires tinkering with the training procedure.
 
-Notice that this is not really an issue with AttnCNP which both always has to attend to all the context points, i.e., it has ``infinite'' receptive field.
+In contrast, this is not really an issue with AttnCNP which both always has to attend to all the context points, i.e., it has an ``infinite'' receptive field.
 ```
 
 Although the previous plots look good, you might wonder how such a model compares to standard interpolation baselines.
-To answer to this question we will look at larger images to see the more fine grain details.
-Specifically, let us consider a ConvCNP trained on $128 \times 128$ CelebA:
+To answer this question we will look at larger images to see the more fine grained details.
+Specifically, let's consider a ConvCNP trained on $128 \times 128$ CelebA:
 
 ```{figure} ../gifs/ConvCNP_img_baselines.gif
 ---
@@ -721,9 +801,7 @@ alt: ConvCNP and baselines on CelebA 128
 ConvCNP and Nearest neighbour, bilinear, bicubic interpolation on CelebA 128.
 ```
 
-From {numref}`ConvCNP_img_baselines_text` shows that ConvCNP performs much better than standard interpolation methods.
-These results are very encouraging.
-Having seen such encouraging results, as well as the descent zero shot generalization capacity of ConvCNP on an artificial dataset (ZSMM), it is natural to want to evaluate the model on actual images with multiple faces of different scale and orientation.
+{numref}`ConvCNP_img_baselines` shows that the ConvCNP performs much better than baseline interpolation methods. Having seen such encouraging results, as well as the decent zero shot generalisation capability of the ConvCNP on ZSMM, it is natural to want to evaluate the model on actual images with multiple faces with different scales and orientations:
 
 ```{figure} ../images/ConvCNP_img_zeroshot.png
 ---
@@ -734,9 +812,7 @@ alt: Zero shot generalization of ConvCNP to a real picture
 Zero shot generalization of a ConvCNP trained on CelebA and evaluated on Ellen's selfie. We also show a baseline bilinear interpolator.
 ```
 
-From {numref}`ConvCNP_img_zeroshot_text` we see that the model is able to generalise reasonably well to real world data in a zero shot fashion.
-Although the previous results look nice, the use-cases are not immediately obvious, as it is not very to have missing pixels.
-One possible application is increasing the resolution of an image.
+From {numref}`ConvCNP_img_zeroshot_text` we see that the model trained on single faces is able to generalise reasonably well to real world data in a zero shot fashion. One possible application of the ConvCNP is increasing the resolution of an image.
 This can be achieved by querying positions "in between" pixels.
 
 ```{figure} ../images/ConvCNP_superes_baseline.png
@@ -745,11 +821,11 @@ width: 30em
 name: ConvCNP_superes_baseline_text
 alt: Increasing image resolution with ConvCNP
 ---
-Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP and a baselin bilinear interpolator.
+Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP and a baseline bilinear interpolator.
 ```
 
 {numref}`ConvCNP_superes_baseline_text` demonstrates such an application.
-We see that CNPFs can indeed be used to increase the resolution of an image better than the standard bilinear interpolator, even though it was not trained to do so!
+We see that the ConvCNP can indeed be used to increase the resolution of an image better than the baseline bilinear interpolator, even though it was not explicitly trained to do so!
 
 
 ```{admonition} Note
@@ -760,19 +836,18 @@ Model details, training and many more plots are available in the {doc}`ConvCNP N
 ```
 
 (issues-cnpfs)=
-## Issues With CNPFs
+## Issues With the CNPF
 
 Let's take a step back.
-So far, we have seen that we can use the factorisation assumption to construct simple members of the CNPF, perhaps the simplest of these being the CNP.
-Our first observation was that while the CNP can track underlying processes, it tends to underfit when the processes are more complicated.
-We saw that this tendency can be addressed by adding appropriate inductive biases into the paramterisation of the model.
+So far, we have seen that we can use the factorisation assumption to construct members of the CNPF, perhaps the simplest of these being the CNP.
+Our first observation was that while the CNP can predict simple stochatic processes, it tends to underfit when the processes are more complicated.
+We saw that this tendency can be addressed by adding appropriate inductive biases to the model.
 Specifically, the AttnCNP significantly improves upon the CNP by adding an attention mechanism to generate target-specific representations of the context set.
-We further saw that the AttnCNP also scales nicely to image-settings.
-However, both the CNP and AttnCNP fail to make meaningful predictions when data is observed outside the training range (or when the test distribution is different from training, i.e., in the ZSMM example).
-Finally, we saw how including TE as an inductive bias led to well-fitting functions that generalised elegantly to observations outside the training range.
+However, both the CNP and AttnCNP fail to make meaningful predictions when data is observed outside the training range.
+Finally, we saw how including translation equivariance as an inductive bias led to accurate predictions that generalised elegantly to observations outside the training range.
 
-Let us now consider more closely the implications of the factorisation assumption, along with the Gaussian form of predictive distributions.
-One immediate consequence of using the Gaussian likelihood is that we cannot recover multi-modal distributions.
+Let's now consider more closely the implications of the factorisation assumption, along with the Gaussian form of predictive distributions.
+One immediate consequence of using a Gaussian likelihood is that we cannot model multi-modal predictive distributions.
 To see why this might be an issue, consider making predictions for the MNIST reconstruction experiments.
 
 ```{figure} ../images/ConvCNP_marginal.png
@@ -782,28 +857,25 @@ name: ConvCNP_marginal_text
 alt: Samples from ConvCNP on MNIST and posterior of different pixels
 ---
 
-Posterior predictive of ConvCNPs on an entire MNIST image (left) and posterior predictive of some pixels (right).
+Predictive distribution of a ConvCNP on an entire MNIST image (left) and marginal predictive distributions of some pixels (right).
 ```
 
-Looking at {numref}`ConvCNP_marginal_text`, we might expect that sampling from the predictive distribution of an unobserved pixels sometimes yield completely white values, and sometimes completely black, depending on whether the sample represents, for example, a 3 or a 5.
-However, a Gaussian distribution, which is uni-modal (see {numref}`ConvCNP_marginal_text` right), cannot achieve this type of multi-modal behaviour.
+Looking at {numref}`ConvCNP_marginal_text`, we might expect that sampling from the predictive distribution for an unobserved pixel would sometimes yield completely white values, and sometimes completely black --- depending on whether the sample represents, for example, a 3 or a 5.
+However, a Gaussian distribution, which is unimodal (see {numref}`ConvCNP_marginal_text` right), cannot model this multimodality.
 
-```{admonition} Note
----
-class: note, dropdown
----
-One solution to this particular problem might be to employ some other parametric distribution that enables multimodality, for example, a mixture of Gaussians.
+<!--- 
+One possible solution to this problem might be to employ some other parametric distribution that enables multimodality, for example, a mixture of Gaussians.
 While this may solve some issues, we can generalise this point to say that the CNPF requires specifying _some parametric form of distribution_.
 Ideally, what we would like is some parametrisation of the NPF that enables us to recover _any_ form of marginal distribution.
-```
+-->
 
-The other major restriction is the factorisation assumption itself, which has several important implications.
-First, it means that the model can not leverage any correlation structure that might exist in the predictive distribution over multiple target sets.
-For example imagine that we are modelling samples from an underlying GP.
-If the model is making predictions at two target locations that are "close" in $X$-space, it seems reasonable that whenever it predicts the first be "high", it predict something similar for the second, and vice versa.
-Yet the factorisation assumption means that the model cannot learn this type of structure.
-Another implication is that we can not produce _coherent_ samples from the predictive distribution.
-In fact, sampling from the posterior corresponds to adding independent noise to the mean at each target location, resulting in samples that are discontinuous and look nothing like the underlying process.
+The other major restriction is the factorisation assumption itself.
+First, the model cannot model any dependencies in the predictive distribution over multiple target points.
+For example imagine that we are modelling samples from a GP.
+If the model is making predictions at two target locations that are "close" on the $x$-axis, it seems reasonable that whenever it predicts the first output to be "high", it would predict something similar for the second, and vice versa.
+Yet the factorisation assumption prevents this type of correlation from occurring.
+Another way to view this is that the CNPF cannot produce _coherent_ samples from its predictive distribution.
+In fact, sampling from the posterior corresponds to adding independent noise to the mean at each target location, resulting in samples that are discontinuous and look nothing like the underlying process:
 
 ```{figure} ../images/ConvCNP_rbf_samples.png
 ---
@@ -811,10 +883,10 @@ width: 35em
 name: ConvCNP_rbf_samples_text
 alt: Sampling from ConvCNP on GP with RBF kernel
 ---
-Samples form the posterior predictive of ConvCNPs (Blue) and the oracle GP (Green) with RBF kernel.
+Samples form the posterior predictive of a ConvCNP (Blue), and the predictive distribution of the oracle GP (Green) with RBF kernel.
 ```
 
-Similary, sampled images from a member of the CPNF are not coherent and look like arbitrary noise added to a picture.
+Similarly, sampled images from a member of the CPNF are not coherent and look like random noise added to a picture:
 
 ```{figure} ../images/ConvCNP_img_sampling.png
 ---
@@ -827,7 +899,7 @@ Samples from the posterior predictive of an ConvCNP for CelebA, MNIST, and ZSMM.
 ```
 
 
-```{admonition} Note
+```{admonition} Note$\qquad$Thompson Sampling
 ---
 class: note, dropdown
 ---
@@ -835,7 +907,7 @@ This inability to sample from the predictive may inhibit the deployment of CNPF 
 One such example is the use of Thompson sampling algorithms for e.g., contextual bandits or Bayesian optimisation, which require a model to produce samples.
 ```
 
-In the next chapter, we will see one approach to solving both these issues by treating the representation as a latent variable in the latent Neural Process sub-family.
+In the next chapter, we will see one approach to solving both these issues by treating the representation as a latent variable. This leads us to the _latent_ Neural Process family (LNPF).
 
 [^densityChannel]: Alernatively, these would be vectors in $\mathbb{R}^4$ if we were modelling RGB images.
 
