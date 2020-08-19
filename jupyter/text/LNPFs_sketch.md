@@ -380,7 +380,28 @@ Nevertheless, here too we see that the LNP suffers from the same underfitting is
 We again see the tendency to overestimate the uncertainty, and often not pass through all the context points with the mean functions.
 Moreover, we can observe that beyond the $(-1, 1)$, the model seems to "give up" on the context points and uncertainty, despite having been trained on the range $(-2, 2)$.
 
+````{admonition} Note$\qquad$Comparing the Objectives
+---
+class: dropdown, note
+---
+We can also examine the performance of the LNP on additional kernels, and when trained with both objectives.
+The results for all combinations are displayed below.
 
+```{figure} ../gifs/singlegp_LNP_LatLBTrue_SigLBTrue.gif
+---
+width: 35em
+name: LNP_all_both_objectives_text
+alt: LNP on all kernels with both objectives
+---
+Predictive distributions of LNPs (Blue) and the oracle GP (Green) with (top) RBF, (center) periodic, and (bottom) Noisy Matern kernels. Models were trained with (left) NPML and (right) NPVI.
+```
+
+{numref}`LNP_all_both_objectives_text` illustrates several interesting points that we tend to see in our experiments.
+First, as with the CNP, the model tends to underfit, and in particular fails catastrophically with the periodic kernel.
+In some cases, e.g., when trained on the RBF kernel with NPVI, the model seems to collapse the uncertainty arising from the latent variable in certain regions, and rely entirely on the observation noise.
+In our experiments, we observe that this tends to occur when training with NPVI, but not with NPML.
+Finally, we can see that NPML tends to produce predictive distributions that fit the data better, and tend to have lower uncertainty near the context set points.
+````
 
 ```{admonition} Details
 ---
@@ -388,7 +409,6 @@ class: tip
 ---
 Model details, training and many more plots in {doc}`LNP Notebook <../reproducibility/LNP>`
 ```
-
 
 
 ## Attentive Latent Neural Process (AttnLNP)
@@ -419,7 +439,7 @@ Computational graph for AttnLNPS. [drop?]
 ```
 
 Below, we show the predictive distribution of an AttnLNP trained on samples from RBF, periodic, and noisy Matern kernel GPs, again viewing the predictive as the number of observed context points is increased.
-Here too, the model is trained with NPVI. (SHOULD WE PUT THESE SIDE BY SIDE WITH A MODEL TRAINED WITH NPML? MIGHT BE A LITTLE MUCH HERE, BUT I THINK IT COULD BE HELPFUL TO HAVE THESE COMPARISONS.)
+Here too, the model is trained with NPVI.
 
 ```{figure} ../gifs/AttnLNP_single_gp.gif
 ---
@@ -436,6 +456,43 @@ On the one hand, we see that it is able to do a significantly better job in mode
 However, on closer inspection, we can see several issues with the resulting distributions:
 1. The samples do not seem to be smooth, and we see "kinks" that are similar (though even more pronounced) than in {numref}`AttnCNP_single_gp_text`.
 2. Moreover, in many places the AttnLNP seems to collpase the distribution around the latent variable, and express all its uncertainty via the observation noise. We coin this behaviour "collapsing onto its conditional variant", and note that this tends to occur more often for the AttnLNP when trained with NPVI rather than NPML.
+
+````{admonition} Note$\qquad$AttnLNP and "lower bounding" standard deviations
+---
+class: dropdown, note
+---
+As with the LNP, we compare the performance of the AttnLNP when trained with NPVI and NPML.
+
+```{figure} ../gifs/singlegp_AttnLNP_LatLBTrue_SigLBTrue.gif
+---
+width: 35em
+name: AttnLNP_all_both_objectives_text
+alt: AttnLNP on all kernels with both objectives
+---
+Predictive distributions of AttnLNPs (Blue) and the oracle GP (Green) with (top) RBF, (center) periodic, and (bottom) Noisy Matern kernels. Models were trained with (left) NPML and (right) NPVI.
+```
+
+Here we see that the AttnLNP tends to "collapse" for both the RBF and noisy Matern kernels when trained with NPVI.
+In contrast, when trained with NPML it tends to avoid this behaviour.
+This is consistent with what we observe more generally in our experiments.
+
+This leads to an important point regarding the LNPF, which we have so far not discussed.
+In the LNPF literature, it is common to "lower bound" the standard deviations of distributions output by models.
+This is often achieved by parameterising the standard deviation as
+
+$$
+\begin{align}
+	\sigma = \epsilon + (1 - \epsilon) \ln (1 + \exp (f_\sigma)),
+\end{align}
+$$
+
+where $\epsilon$ is a small real number (e.g. 0.001), and $f_\sigma$ is the log standard deviation output by the model.
+This "lower bounding" is often used in practice for the standard deviations of both the latent and predictive distributions.
+In fact Le et al.{cite}`le2018empirical` find that this consistently improves performance of the AttnLNP, and recommend it as best practice.
+Following the literature, the results displayed in this tutorial all employ such lower bounds.
+However, we note that, in our opinion, there is no conceptual justification for this trick, and it is indicative of flaws in the models and or training procedures.
+To highlight this point, we demonstrate that ....
+````
 
 Let us now consider the image experiments as we did with the AttnCNP.
 
