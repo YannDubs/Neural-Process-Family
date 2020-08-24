@@ -49,7 +49,7 @@ R^{(c)}
 R
 &:= \mathrm{Agg}\left(\{R^{(c)}\}_{c=1}^{C} \right) & \text{Aggregation} \\
 (\mu^{(t)},\sigma^{2(t)})
-&:= \mathrm{Dec}_{\boldsymbol\theta}(x^{(t)},R) & \text{Decoding}  
+&:= \mathrm{Dec}_{\boldsymbol\theta}(x^{(t)},R) & \text{Decoding}
 \end{align}
 $$
 
@@ -97,6 +97,7 @@ Now that we've given an overview of the entire CNPF, we'll discuss three particu
 * the encoder $\mathrm{Enc}_{\boldsymbol\theta}$,
 * the aggregator $\mathrm{Agg}$, and
 * the decoder $\mathrm{Dec}_{\boldsymbol\theta}$.
+
 We begin by describing the Conditional Neural Process, arguably the simplest member of the CNPF, and the first considered in the literature.
 
 (cnp)=
@@ -143,7 +144,7 @@ $$
 
 for appropriate functions $\rho$ and $\phi$.
 This is known as a 'sum decomposition' or 'Deep Sets encoding'.
-his result tells us that, as long as $\rho$ and $\phi$ are universal function approximators, this sum-decomposition can be done without loss of generality in terms of the class of permutation-invariant maps that can be expressed.
+This result tells us that, as long as $\rho$ and $\phi$ are universal function approximators, this sum-decomposition can be done without loss of generality in terms of the class of permutation-invariant maps that can be expressed.
 
 CNPs make heavy use this type of architecture.
 To highlight the similarities, we can express each of the mean and standard deviation functions of the CNP as
@@ -195,7 +196,7 @@ Posterior predictive of a CNP (Blue line for the mean with shaded area for $[\mu
 ```
 
 In contrast, we see that the CNP completely fails to model the predictive distribution: the mean function is overly smooth and hardly passes through the context points.
-Moreover, we might hope that a CNP trained on periodic the sample functions from this GP might learn to leverage this structure, but it seems that no notion of periodicity has been learned in the predictions.
+Moreover, we might hope that a CNP trained on the sample functions from this GP might learn to leverage this periodic structure, but it seems that no notion of periodicity has been learned in the predictions.
 Finally, the uncertainty seems constant, and is significantly overestimated everywhere.
 It seems that the CNP is has failed to learn the more complex structure of the optimal predictive distribution for this kernel.
 
@@ -210,7 +211,7 @@ alt: AttnCNP on CelebA and MNIST
 Posterior predictive of a CNP on CelebA $32\times32$ and MNIST.
 ```
 
-These results are quite impressive, however there are still some signs of underfitting. In particular, the interpolations are not very sharp, and do not totally resemble the ground truth image even when there are many context points. Nevertheless, this experiment demonstrates the power of neural processes: they can be applied out-of-the-box to learn this complicated structure directly from data, something that would be very difficult with a Gaussian process.  
+These results are quite impressive, however there are still some signs of underfitting. In particular, the interpolations are not very sharp, and do not totally resemble the ground truth image even when there are many context points. Nevertheless, this experiment demonstrates the power of neural processes: they can be applied out-of-the-box to learn this complicated structure directly from data, something that would be very difficult with a Gaussian process.
 
 One potential solution to the overfitting problem, motivated by the fact that we know CNPs should be able to approximate _any_ mean and variance functions, might be to simply increase the capacity of the networks $\mathrm{Enc}_{\boldsymbol\theta}$ and $\mathrm{Dec}_{\boldsymbol\theta}$.
 Unfortunately, it turns out that the CNP's modelling power scales quite poorly with the capacity of its networks.
@@ -455,7 +456,7 @@ Example of a translation equivariant mapping from a dataset to a predictive stoc
 class: hint, dropdown
 ---
 
-More precisely, translation equivariance is a property of a _map_ between two spaces, where each space has a notion of translation defined on it (more precisely, there is a _group action_ of the translation group on each space). In the CNPF case, the input space $\mathcal{Z}$ is the space of finite datasets, such that each $Z \in \mathcal{Z}$ can be written as $Z = \{(x_n, y_n)\}_{n=1}^N$ for some $N \in \mathbb{N}$. The output space $\mathcal{H}$ is a space of continuous functions on $\mathcal{X}$, where $\mathcal{X}$ is the input domain of the regression problem (e.g., time, spatial position). Think of $\mathcal{H}$ as the set of all possible predictive mean and variance functions. The map acting from $\mathcal{Z}$ to $\mathcal{H}$ is then the CNPF member itself.  
+More precisely, translation equivariance is a property of a _map_ between two spaces, where each space has a notion of translation defined on it (more precisely, there is a _group action_ of the translation group on each space). In the CNPF case, the input space $\mathcal{Z}$ is the space of finite datasets, such that each $Z \in \mathcal{Z}$ can be written as $Z = \{(x_n, y_n)\}_{n=1}^N$ for some $N \in \mathbb{N}$. The output space $\mathcal{H}$ is a space of continuous functions on $\mathcal{X}$, where $\mathcal{X}$ is the input domain of the regression problem (e.g., time, spatial position). Think of $\mathcal{H}$ as the set of all possible predictive mean and variance functions. The map acting from $\mathcal{Z}$ to $\mathcal{H}$ is then the CNPF member itself.
 
 Let $\tau \in \mathcal{X}$ be a translation vector. We define _translations_ on each of these spaces as:
 
