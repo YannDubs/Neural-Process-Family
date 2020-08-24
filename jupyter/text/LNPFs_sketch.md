@@ -145,7 +145,7 @@ However, we next describe an alternative training procedure, inspired by _variat
 Next, we discuss a training procedure proposed by {cite}`garnelo2018neural`, which takes inspiration from the literature on variational inference (VI).
 The central idea behind this objective function is to use _posterior sampling_ to reduce the sample complexity associated with NPML.
 For a better intuition regarding this, note that NPML is defined using an expectation against $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$.
-The idea in posterior sampling is to use the whole dataset available during training, $\mathcal{D} = \mathcal{C} \cup \mathcal{T}$ to produce the distribution over $\mathbf{z}$, thus leading to more informative samples and lower variance objectives.
+The idea in posterior sampling is to use the whole task, including the target set, $\mathcal{D} = \mathcal{C} \cup \mathcal{T}$ to produce the distribution over $\mathbf{z}$, thus leading to more informative samples and lower variance objectives.
 
 In our case, the posterior distribution from which we would like to sample is $p(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable having observed _both_ the context and target sets.
 Unfortunately, this posterior is intractable.
@@ -186,36 +186,36 @@ Denoting $\mathcal{D} = \mathcal{C} \cup \mathcal{T}$, we have that
 :label: npvi
 \begin{align}
 \log p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
-&= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)  p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation} \\
-& = \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \frac{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)} p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Approximate posterior} \\
-& \geq \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \left( \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) + \log \frac{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)} \right) & \text{Jensen's inequality} \\
-& = \mathbb{E}_{\mathbf{z} \sim q_{\boldsymbol\phi}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \right] - \mathrm{KL} \left( q_{\boldsymbol\phi} \left( \mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} | \mathcal{C} \right) \right),
+&= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)  p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation} \\
+& = \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \frac{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)} p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Approximate posterior} \\
+& \geq \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \left( \log p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) + \log \frac{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)} \right) & \text{Jensen's inequality} \\
+& = \mathbb{E}_{\mathbf{z} \sim p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \right] - \mathrm{KL} \left( p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} | \mathcal{C} \right) \right),
 \end{align}
 ```
 
-where $\mathrm{KL}(p \| q)$ is the Kullback-Liebler (KL) divergence between two distributions $p$ and $q$, and we have used the shorthand $p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) = \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right)$ to ease notation.
+where $\mathrm{KL}(p \| q)$ is the Kullback-Liebler (KL) divergence between two distributions $p$ and $q$, and we have used the shorthand $p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) = \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right)$ to ease notation.
 Let's consider what we have achieved in {numref}`npvi`.
-We have taken our original objective, and re-expressed it as an expectation with respect to an approximate posterior distribution.
+We have taken our original objective, and re-expressed it as an expectation with respect to $p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)$, which now has access to all of $\mathcal{D}$, as opposed to the NPML objective, where the expectation was only with respect to $p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)$.
 The hope is that, by sampling from this more informative distribution, we can produce more meaningful samples and thus reduce the number of samples we need to properly estimate this objective.
 
 ```{admonition} Important
 ---
 class: attention
 ---
-Of course, we can only sample from this approximate posterior during training, when we assume access to both the context _and_ target sets.
+Of course, we can only sample from this approximate posterior during _training_, when we have access to both the context _and_ target sets.
 At test time, we will only have access to the context set, and so the forward pass through the model will be equivalent to that of the model when trained with NPML, i.e., we will only pass the context set through the encoder.
 This is an important detail of NPVI: forward passes at meta-train time look different than they do at meta-test time!
 ```
 
-There is an important connection between the above procedure and _amortised_ VI.
-Amortised VI is a method for performing approximate inference and learning in probabilistic latent variable models, which uses a similar trick to train an _inference_ network to approximate the true posterior distribution under the model.
+The above procedure can be seen as a form of _amortised_ VI.
+Amortised VI is a method for performing approximate inference and learning in probabilistic latent variable models, where an _inference_ network is trained to approximate the true posterior distributions.
 
-```{admonition} Advanced$\qquad$LNPF and Amortised VI
+```{admonition} Advanced$\qquad$LNPF as Amortised VI
 ---
 class: attention, dropdown
 ---
-There are many resources available on (amortised) VI (e.g., [Jaan Altosaar's VAE tutorial](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/), [The spectator's](http://blog.shakirm.com/2015/01/variational-inference-tricks-of-the-trade/) take, or this [review paper on modern VI](https://arxiv.org/pdf/1711.05597.pdf)), and we encourage readers unfamiliar with the concept to take the time to go through some of these.
-Many of the relevant ideas are widely applicable, and provide valuable insights for several sub-areas of ML.
+There are many resources available on (amortised) VI (e.g., [Jaan Altosaar's VAE tutorial](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/), [the Spectator's](http://blog.shakirm.com/2015/01/variational-inference-tricks-of-the-trade/) take, or this [review paper on modern VI](https://arxiv.org/pdf/1711.05597.pdf)), and we encourage readers unfamiliar with the concept to take the time to go through some of these.
+Many of the relevant ideas are widely applicable, and provide valuable insights in several sub-areas of ML.
 For our purposes, the following intuitions should suffice:
 
 Assume that we have a latent variable model with a prior $p(\mathbf{z})$, and a conditional likelihood for observations $y$, written $p_{\boldsymbol\theta} \left(y | \mathbf{z} \right)$.
@@ -232,18 +232,18 @@ $$
 $$
 
 In the VI terminology, this lower bound is commonly known as the _evidence lower bound_ (ELBO).
-So maximising the ELBO with respect to $\boldsymbol\theta$ trains the model to optimise a proper lower bound on the log-marginal likelihood, which is a sensible thing to do.
-Moreover, it turns out that that maximising the ELBO with respect to $\boldsymbol\phi$ minimises the KL divergence between the resulting distributions and the true posterior, and so we can think of $q_{\boldsymbol\phi}$ as approximating the true posterior in a meaningful way.
+So maximising the ELBO with respect to $\boldsymbol\theta$ trains the model to optimise a lower bound on the log-marginal likelihood, which is a sensible thing to do.
+Moreover, it turns out that maximising the ELBO with respect to $\boldsymbol\phi$ minimises the KL divergence between $q_{\boldsymbol\phi} \left( \mathbf{z} | y \right)$ and the true posterior $p_\theta(\mathbf{z} | y) = p_\theta(y | \mathbf{z}) p_\theta(\mathbf{z}) / p_\theta(y)$, so we can think of $q_{\boldsymbol\phi}$ as approximating the true posterior in a meaningful way.
 
 In the NPF, to approximate the desired posterior, we can introduce a network that maps datasets to distributions over the latent variable.
-We already know how to define such networks in the NPF -- they require the same form as our encoder $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$!
+We already know how to define such networks in the NPF -- that's exactly what the encoder $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$ does!
 In fact, NPVI proposes to use the encoder as the inference network when training LNPF members.
 
 So we can view {numref}`npvi` as performing amortised VI for any member of the LNPF.
-The twist on standard amortised VI is that here, we are sharing $q_{\boldsymbol\phi}$ with a part of the model itself, which somewhat complicates our understanding of the procedure, and may lead to unintended consequences.
+The twist on standard amortised VI is that here, we are sharing $q_{\boldsymbol\phi}$ with a part of the model itself, since $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})$ plays the dual role of being an approximate posterior $q_{\boldsymbol\phi}$, and also defining the _conditional prior_ having observed $\mathcal{D}$. This somewhat complicates our understanding of the procedure, and could lead to unintended consequences.
 
-As such, NPVI inherits several appealing properties from the VI framework:
-* It utilises _posterior sampling_ to reduce the variance of the Monte-Carlo estimator of the intractable expectation. This means that often we can get away with training models taking just a single sample, resulting in computationally and memory efficient training procedures.
+NPVI inherits several appealing properties from the VI framework:
+* It utilises _posterior sampling_ to reduce the variance of the Monte-Carlo estimator of the intractable expectation. This means that often we can get away with training models taking just a _single_ sample (in contrast with NPML), resulting in computationally and memory efficient training procedures.
 * If our approximate posterior can recover the true posterior, the inequality in the ELBO is tight, and we are exactly optimising the log-marginal likelihood.
 
 However, it also inherits the main drawbacks of VI.
@@ -255,7 +255,7 @@ In these settings:
 ```
 
 When both the encoder and inference network parameterise Gaussian distributions over $\mathbf{z}$ (as is standard), the KL-term can be computed analytically.
-Hence we can derive an unbiased estimator to {numref}`np_elbo` by taking samples from $q_{\boldsymbol\phi}$ to estimate the first term on the RHS.
+Hence we can derive an unbiased estimator to {numref}`np_elbo` by taking samples from $p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right)$ to estimate the first term on the RHS.
 {numref}`npvi_pseudocode` provides the pseudo-code for a single training iteration for a LNPF member, using NPVI as the target objective.
 
 ```{figure} ../images/alg_npvi.png
@@ -282,9 +282,9 @@ class: caution, dropdown
 ---
 Importantly, it is not the case that NPVI avoids the "biased estimator" issue of NPML.
 Rather, NPML defines a biased (conservative) estimator of the desired quantity, and NPVI produces an unbiased estimator of a strict lower-bound of the same quantity.
-In both cases, sadly, we do not have unbiased estimators of the quantities we really care about.
+In both cases, unfortunately, we do not have unbiased estimators of the quantity we really care about --- $\log p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$.
 
-Another consequence of this is that it is challenging to exactly carry out quantitative experiments, since our performance metrics are only ever lower bounds to the true model performance, and quantifying how tight those bounds are is quite challenging.
+Another consequence of this is that it is challenging to evaluate the models quantitatively, since our performance metrics are only ever lower bounds to the true model performance, and quantifying how tight those bounds are is quite challenging.
 ```
 
 ```{admonition} Advanced$\qquad$Relationship between NPML and NPVI
@@ -296,28 +296,28 @@ To see this, we denote
 
 $$
 \begin{align}
-  Z = \int p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \mathrm{d}\mathbf{z},
+  Z = \int p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \mathrm{d}\mathbf{z},
 \end{align}
 $$
 
-and note that $Z$ is the appropriate _normalising constant_ for the distribution $p_{\boldsymbol\theta} \left( \mathbf{y}_{T}, \mathbf{z} | \mathbf{x}_{T}, \mathcal{C} \right)$.
+and note that $Z$ is the appropriate _normalising constant_ for the distribution $p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}}, \mathbf{z} | \mathbf{x}_{\mathcal{T}}, \mathcal{C} \right)$.
 Now, we can rewrite the NPVI objective as
 
 $$
 \begin{align}
-\mathcal{L}_{VI} & (\boldsymbol\theta ; D) = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) \right] - \mathrm{KL} \left( p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} | \mathcal{C} \right) \right) \\
-& = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{T} | \mathbf{x}_{T}, \mathbf{z} \right) + \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) - \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \right] \\
-& = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log Z + \log \frac{1}{Z} p_{\boldsymbol\theta} \left( \mathbf{y}_{T}, \mathbf{z} | \mathbf{x}_{T}, \mathcal{C} \right) - \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \right] \\
-& = \mathcal{L}_{ML}(\boldsymbol\theta; D) - \mathrm{KL} \left( p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \| \frac{1}{Z} p_{\boldsymbol\theta} \left( \mathbf{y}_{T}, \mathbf{z} | \mathbf{x}_{T}, \mathcal{C} \right) \right).
+\mathcal{L}_{VI} & (\boldsymbol\theta ; D) = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \right] - \mathrm{KL} \left( p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p_{\boldsymbol \theta} \left( \mathbf{z} | \mathcal{C} \right) \right) \\
+& = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) + \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) - \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \right] \\
+& = \mathbb{E}_{p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{D})} \left[ \log Z + \log \frac{1}{Z} p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}}, \mathbf{z} | \mathbf{x}_{\mathcal{T}}, \mathcal{C} \right) - \log p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \right] \\
+& = \mathcal{L}_{ML}(\boldsymbol\theta; \mathcal{D}) - \mathrm{KL} \left( p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \| \frac{1}{Z} p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}}, \mathbf{z} | \mathbf{x}_{\mathcal{T}}, \mathcal{C} \right) \right).
 \end{align}
 $$
 
-Thus, we can see that $\mathcal{L}_{VI}$ is equal to $\mathcal{L}_{ML}$ up to an additional KL term.
-This KL term has a nice interpretation as encouraging consistency among predictions with different context sets, which is the kind of consistency _not_ achieved by the NPF.
+Thus, we can see that $\mathcal{L}_{VI}$ is equal to $\mathcal{L}_{ML}$ (with infinitely many samples) up to an additional KL term.
+This KL term has a nice interpretation as encouraging consistency among predictions with different context sets, which is the kind of consistency _not_ baked into the NPF.
 
 However, this term can also be a _distractor_.
-When dealing with NPF members, we are typically not interested in the latent variable $\mathbf{z}$, and most considered tasks require only a "good" approximation to the predictive distribution.
-Therefore, given only finite capacity of our models, and finite data, it may be preferable to focus all the model capacity on achieving the best possible predictive distribution (which is what $\mathcal{L}_{ML}$ focuses on), rather than focusing on additional properties of $\mathbf{z}$, as encouraged by the KL term introduced by $\mathcal{L}_{VI}$.
+When dealing with NPF members, we are typically not interested in the latent variable $\mathbf{z}$, and most considered tasks require only a "good" approximation to the predictive distribution over $\mathbf{y}_{\mathcal{T}$.
+Therefore, given only finite model capacity, and finite data, it may be preferable to focus all the model capacity on achieving the best possible predictive distribution (which is what $\mathcal{L}_{ML}$ focuses on), rather than focusing on the distribution over $\mathbf{z}$, as encouraged by the KL term introduced by $\mathcal{L}_{VI}$.
 ```
 
 Armed with procedures for training LNPF-members, we turn our attention to the models themselves.
@@ -333,29 +333,28 @@ width: 300em
 name: computational_graph_LNPs_text
 alt: Computational graph LNP
 ---
-Computational graph for LNPS. [drop?]
+Computational graph for LNPS.
 ```
 
 The latent neural process {cite}`garnelo2018neural` is the latent counterpart of the CNP, and the first member of the LNPF proposed in the literature.
 Given the vector $R$, which is computed as in the CNP, we simply pass it through an additional MLP to predict the mean and variance of the latent representation $\mathbf{z}$, from which we can produce samples.
 We call the computational graph that produces the distribution over $\mathbf{z}$ the _latent path_, to distinguish from a computation graph for a deterministic representation, which we refer to as a _deterministic path_.
 The decoder then has the same architecture as that of the CNP, and we can simply pass samples of $\mathbf{z}$, together with desired target locations, to produce our predictive distributions.
-We typically treat samples from the predictive as the mean functions produced by passing one sample of $\mathbf{z}$ through the decoder.
 {numref}`computational_graph_LNPs_text` illustrates the computational graph of the LNP.
 
-```{note} Parameterising the observation noise
+```{admonition} Note$\qquad$Parameterising the Observation Noise
 ---
-class: tip, dropdown
+class: note, dropdown
 ---
-A particularly important detail in the parameterisation of LNPF-members is how the predictive standard deviation is handled.
+A particularly important detail in the parameterisation of LNPF members is how the predictive standard deviation is handled.
 Recall that for CNPF members, our decoder parameterised both a mean and (log) standard deviation for each target location.
 However, now we have an additional source of uncertainty, which arises from the uncertainty in the latent variable.
 For example, consider taking $L$ samples from the latent variable, and using each to make a prediction for a particular target location $x^{(t)}$.
-The uncertainty in the prediction of $y^{(t)}$ would also be influenced by the variance in the _means_ $\mu^{(t)_l}, which would be different for every target location.
+The uncertainty in the prediction of $y^{(t)}$ would also be influenced by the variance in the _means_ $\mu^{(t)}$, which would be different for every target location.
 
-Thus, we could model _heteroskedastic_ noise via the latent variable, and employ a global (learned) observation noise parameter, with the decoder only outputting the mean for each prediction.
+Thus, we could model _heteroskedastic_ uncertainty via the latent variable, and employ a global (learned) observation noise parameter, with the decoder only outputting the mean for each prediction.
 However, in practice we find (as have several other papers dealing with the LNPF) that continuing to model the observation noise as an output of the decoder tends to lead to better performance in most cases.
-Thus, throughout our experiments we employ what we call _heteroskedastic observation noise_, which is just a fancy way of saying that the decoder outputs both a mean and (log) standard deviation.
+Thus, throughout our experiments we employ what we call _heteroskedastic observation noise_, which is just a fancy way of saying that the decoder outputs both a mean and (log) standard deviation, both of which depend on $x^{(t)}$.
 
 YANN: DO YOU WANT TO ADD A NOTE HERE ABOUT HOW THIS INTERACTS WITH LOWER BOUNDING CERTAIN QUANTITIES?
 ```
@@ -548,9 +547,9 @@ However, as they note, the ConvLNP tends to perform significantly better in most
 Below, we show similar plots for the ConvLNP on the GP experiments.
 However, here we are illustrating the performance of a ConvLNP trained with NPML, not NPVI. (SAME QUESTION: SHOULD WE PUT THESE SIDE BY SIDE WITH A MODEL TRAINED WITH NPML?.)
 
-```{note} Global representation ConvLNPs
+```{admonition} Note$\qquad$Global Latent Representations
 ---
-class: tip, dropdown
+class: note, dropdown
 ---
 In this tutorial, we consider a simple extension to the ConvLNP proposed by {cite}`foong2020convnp`, which includes a _global latent representation_ as well.
 The global representation is computed by average-pooling half of the channels in the latent function, resulting in a translation _invariant_ latent representation (further details regarding this can be found in the ConvLNP notebook).
@@ -572,8 +571,8 @@ Further, as in the case of the ConvCNP, we see that the ConvLNP elegantly genera
 
 Next, we consider the more challenging problem of having the ConvLNP model a stochastic process whose posterior predictive is non Gaussian.
 We do so by having the following underlying generative process: first, sample one of the 3 kernels discussed above, and second, sample a function from the sampled kernel.
-Importantly, the data generating process is a mixture of GPs, and the true posterior predictive process (achieved by marginalising over the different kernels) does not have a closed form representation.
-Theoretically, this could still be modelled by a LNPF as the latent variables could represent the both the current kernel and its functions, but adding the global representation corresponds (intuitively) to allowing the ConvLNP to "switch" between kernels.
+Importantly, the data generating process is a mixture of GPs, and the true posterior predictive process (achieved by marginalising over the different kernels) is non-Gaussian.
+<!-- Theoretically, this could still be modelled by a LNPF as the latent variables could represent the both the current kernel and its functions, but adding the global representation corresponds (intuitively) to allowing the ConvLNP to "switch" between kernels. -->
 
 
 ```{figure} ../gifs/ConvLNP_kernel_gp.gif
@@ -586,14 +585,15 @@ Similar to {numref}`ConvLNP_single_gp_extrap_text` but the training was performe
 ```
 
 {numref}`ConvLNP_kernel_gp_text` demonstrates that ConvLNP performs quite well in this harder setting.
-Indeed, it seems to model process using the periodic kernel when the number of context points is small but quickly (around 10 context points) recovers the correct underlying kernel.
+Indeed, it seems to model the predictive process using the periodic kernel when the number of context points is small but quickly (around 10 context points) recovers the correct underlying kernel.
+Note how in the middle plot, the ConvLNP becomes progressively more and more 'confident' that the process is periodic as more data is observed.
 Note that in {numref}`ConvLNP_kernel_gp_text` we are plotting the posterior predictive for the sampled GP, rather than the actual, non-GP posterior predictive process.
 
 [should we also add the results of {numref}`ConvLNP_vary_gp` to show that not great when large/ uncountable number of kernels?]
 
 Again, we consider the performance of the ConvLNP in the image setting.
 In {numref}`ConvLNP_img_text` we see that the ConvLNP does a reasonable job producing samples when the context sets are uniformly subsampled from images, but struggles with the "structured" context sets, e.g. when the left or bottom halves of the image are missing.
-Moreover, the ConvLNP is able to produce samples in the generalisation setting (ZSMM), bit these are not always coherent, and include some strange artifacts that seem more similar to sampling the MNIST "texture" than coherent digits.
+Moreover, the ConvLNP is able to produce samples in the generalisation setting (ZSMM), but these are not always coherent, and include some strange artifacts that seem more similar to sampling the MNIST "texture" than coherent digits.
 
 ```{figure} ../gifs/ConvLNP_img.gif
 ---
@@ -604,8 +604,8 @@ alt: ConvLNP on CelebA, MNIST, ZSMM
 Samples from posterior predictive of an ConvCNP for CelebA $32\times32$, MNIST, ZSMM.
 ```
 
-As discussed in  {ref}`the "CNPG" issue section <issues-cnpfs>`, members of the CNPF could not be used to generate coherent samples, nor model non-Gaussian posterior predictive distributions.
-{numref}`ConvLNP_marginal_text` (right) demonstrates that, as expected, ConvLNP is able to produce non-Gaussian predictives for pixels, with interesting bi-modal and heavy-tailed behaviours.
+As discussed in  {ref}`the 'Issues with the CNPF' section <issues-cnpfs>`, members of the CNPF could not be used to generate coherent samples, nor model non-Gaussian posterior predictive distributions.
+In contrast, {numref}`ConvLNP_marginal_text` (right) demonstrates that, as expected, ConvLNP is able to produce non-Gaussian predictives for pixels, with interesting bi-modal and heavy-tailed behaviours.
 
 ```{figure} ../images/ConvLNP_marginal.png
 ---
@@ -624,19 +624,19 @@ Samples form the posterior predictive of ConvCNPs on MNIST (left) and posterior 
 We have seen how members of the LNPF utilise a latent variable to define a predictive distribution, thus achieving structured and expressive predictive distributions over target sets.
 Despite these advantages, the LNPF suffers from important drawbacks:
 
-* Training procedures require several approximations, often resulting in sub-par models.
-* Evaluating objective functions relies on sampling procedures, which often leads to high variance during training.
-* They are more memory and computationally demanding, often requiring many samples to estimate desired quantities.
-* Since our performance objectives are lower-bounds (or conservative estimates), it is often difficult to rigorously evaluate and compare different models.
+* The training procedure only optimises a biased objective or a lower bound to the true objective.
+* Approximating the objective function requires sampling, which can lead to high variance during training.
+* They are more memory and computationally demanding, requiring many samples to estimate the objective for NPML.
+* It is difficult to quantitatively evaluate and compare different models, since only lower bounds to the log predictive likelihood can be estimated.
 
-Despite these challenges, the LNPF defines a useful and powerful class of models, that can be deployed in several important settings.
-Thus, it is not always clear whether it would be better to deploy a member of the CNPF or LNPF.
+Despite these challenges, the LNPF defines a useful and powerful class of models.
+Whether to deploy a member of the CNPF or LNPF depends on the task at hand.
 For example, if samples are not required for a particular application, and we have reason to believe a parametric distribution may be a good description of the likelihood, it may well be that a CNPF would be preferable.
-Conversely, LNPF members are particularly useful when sampling, thus being well-suited to applications such as Thompson sampling (e.g. for contextual bandits) and Bayesian optimisation.
+Conversely, it is crucial to use the LNPF if sampling or dependencies in the predictive are required, for example in Thompson sampling.
 
-Finally, we believe there is an exciting area of research in developing NPF members that enjoy the best of both worlds.
+<!-- Finally, we believe there is an exciting area of research in developing NPF members that enjoy the best of both worlds.
 Some examples of potential avenues for investigation are:
 1. Improving training procedures for the LNPF using ideas from importance sampling and unbiased estimators of the marginal likelihood.
-2. Considering flow-based parameterisations that admit closed form likelihood computations, while potentially maintaining structure in the predictive distribution for the target set.
+2. Considering flow-based parameterisations that admit closed form likelihood computations, while potentially maintaining structure in the predictive distribution for the target set. -->
 
 [^LNPs]: In the literature the latent neural processes are just called neural processes. I use "latent" to distinguish them with the neural process family as a whole.
