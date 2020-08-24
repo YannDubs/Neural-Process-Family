@@ -491,7 +491,7 @@ To better understand the role of the density channel, consider a context point $
 
 ```
 
-We next describe the aggregator of the ConvCNP. In order to preserve translation equivariance, we want the aggregator to also be translation equivariant. A prime candidate for this in the family of deep learning architectures is the Convolutional Neural Network (CNN), which satisfies TE. There is however one issue: CNNs act on functions on a _discrete_ input space, but our local functional encodings are functions on a _continuous_ input space. To address this, we will _discretise_ the input to the CNN, and then smooth the output of the CNN to obtain a continuous function again. We first begin by adding up the local functional encodings:
+We next describe the aggregator of the ConvCNP. In order to preserve translation equivariance, we want the aggregator to also be translation equivariant. A prime candidate for this in the family of deep learning architectures is the Convolutional Neural Network (CNN), which satisfies TE. There is however one issue: CNNs act on functions on a _discrete_ input space, but our local functional encodings are functions on a _continuous_ input space. To address this, we will _discretise_ the input to the CNN, and then smooth the output of the CNN to obtain a continuous function again. We first begin by adding up the local functional encodings, which is a _permutation invariant_ operation:
 
 ```{math}
 :label: sum
@@ -863,7 +863,7 @@ Predictive distribution of a ConvCNP on an entire MNIST image (left) and margina
 Looking at {numref}`ConvCNP_marginal_text`, we might expect that sampling from the predictive distribution for an unobserved pixel would sometimes yield completely white values, and sometimes completely black --- depending on whether the sample represents, for example, a 3 or a 5.
 However, a Gaussian distribution, which is unimodal (see {numref}`ConvCNP_marginal_text` right), cannot model this multimodality.
 
-<!--- 
+<!---
 One possible solution to this problem might be to employ some other parametric distribution that enables multimodality, for example, a mixture of Gaussians.
 While this may solve some issues, we can generalise this point to say that the CNPF requires specifying _some parametric form of distribution_.
 Ideally, what we would like is some parametrisation of the NPF that enables us to recover _any_ form of marginal distribution.

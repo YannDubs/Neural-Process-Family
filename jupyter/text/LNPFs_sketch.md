@@ -4,10 +4,10 @@
 
 We concluded the previous section by noting two important drawbacks of the CNPF:
 
-* The marginal predictive distribution is factorised, and thus can neither account for correlations in the predictive nor (as a result) produce "coherent" samples from the predictive distribution.
-* The marginal predictive distributions require specification of a particular parametric form.
+* The predictive distribution is factorised across target points, and thus can neither account for correlations in the predictive nor (as a result) produce "coherent" samples from the predictive distribution.
+* The predictive distribution requires specification of a particular parametric form (e.g. Gaussian).
 
-In this section we discuss an alternative parametrisation of $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$ that still enforces consistency in the predictive, and addresses both of these issues.
+In this section we discuss an alternative parametrisation of $p_\theta( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$ that still specifies a consistent stochastic process, and addresses both of these issues.
 The main idea is to introduce a latent variable $\mathbf{z}$ into the definition of the predictive distribution.
 This leads us to the second major branch of the NPF, which we refer to as the Latent Neural Process Sub-family, or LNPF for short.
 A graphical representation of the LNPF  is given in {numref}`graph_model_LNPs_text`.
@@ -18,28 +18,28 @@ width: 200em
 name: graph_model_LNPs_text
 alt: graphical model LNP
 ---
-Graphical model for LNPs.
+Probabilistic graphical model for LNPs.
 ```
 
 To specify this family of models, we must define a few components:
 
 * An encoder: $p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)$, which provides a _distribution_ over the latent variable $\mathbf{z}$ having observed the context set $\mathcal{C}$.
-* A decoder: $p_{\boldsymbol\theta} \left( y | x, \mathbf{z} \right)$, which provides predictive distributions conditioned on $\mathbf{z}$ and a target location $x$.
+* A decoder: $p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right)$, which provides predictive distributions conditioned on $\mathbf{z}$ and a target location $x$.
 
 The design of the encoder will follow the principles of the NPF, i.e., using local encodings and a permutation invariant aggregation function.
-However, here we will use these principles to model a conditional distribution over the latent variable, rather than a deterministic representation.
+However, here we will use these principles to model a _distribution_ over the latent variable, rather than a deterministic representation.
 A typical example is to have our encoder output the mean and (log) standard deviations of a Gaussian distribution over $\mathbf{z}$.
 
-Our decoder accepts as inputs instantiations (typically _samples_) of $\mathbf{z}$ and target locations $x$, and outputs a predictive distribution over target values.
+Our decoder then receives _samples_ of $\mathbf{z}$ and target locations $\mathbf{x}_{\mathcal{T}}$, and outputs a predictive distribution.
 Here too, a typical choice for the decoder is as a Gaussian distribution.
 However, as we discuss below, choosing the decoder to have a Gaussian form in this case is far less restrictive than with the CNPF.
-With the above components specified, we can now express the predictive distribution as
+We can now express the LNPF predictive distribution as
 
 ```{math}
 :label: latent_likelihood
 \begin{align}
 p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
-&= \int p_{\boldsymbol\theta} \left(\mathbf{y}_\mathcal{T} , \mathbf{z} | \mathbf{x}_\mathcal{T} , \mathcal{C} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation}  \\
+&= \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation}  \\
 &= \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta}(y^{(t)} |  x^{(t)}, \mathbf{z}) \, \mathrm{d}\mathbf{z}  & \text{Factorisation}\\
 &= \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)  \prod_{t=1}^{T} \mathcal{N} \left( y^{(t)};  \mu^{(t)}, \sigma^{2(t)} \right) \mathrm{d}\mathbf{z} & \text{Gaussianity}
 \end{align}
@@ -49,7 +49,7 @@ p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{
 ---
 class: hint, dropdown
 ---
-We show that members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$. To see that the predictive distributions are consistent under permutation, , let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
+We show that like the CNPF, members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$. To see that the predictive distributions are consistent under permutation, let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be target inputs. Let $\pi$ be a permutation of $\{1, ..., T\}$. Then the predictive density is (suppressing the $\mathcal{C}$-dependence):
 
 $$
 \begin{align}
@@ -73,33 +73,32 @@ which shows that the predictive distribution obtained by querying an LNPF member
 ```
 
 Now, you might be worried that we have still made both the factorisation and Gaussian assumptions!
-However, while the decoder likelihood $p_{\boldsymbol\theta}(\mathbf{y} | \mathbf{x}, \mathbf{z})$ is still factorised, the predictive distribution we are actually interested in --- $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$ --- which is defined by _marginalising_ the latent variable $\mathbf{z}$, is no longer factorised, thus addressing the first problem we associated with the CNPF.
-Moreover, that distribution, which we refer to as the _marginal predictive_, is no longer Gaussian either.
-In fact, by noting that the marginal predictive now has the form of an _infinite mixture of Gaussians_, we can conclude that _any_ predictive distribution can be represented (i.e. learned) by this form.
-This is great news, as it (conceptually) relieves us of the burden of choosing / designing an appropriate likelihood when deploying the NPF for a new application!
+However, while the decoder likelihood $p_{\boldsymbol\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right)$ is still factorised, the predictive distribution we are actually interested in --- $p_\theta( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})$ --- which is defined by _marginalising_ the latent variable $\mathbf{z}$, is no longer factorised, thus addressing the first problem we associated with the CNPF.
+Moreover, the predictive distribution is no longer Gaussian either.
+In fact, since the predictive now has the form of an _infinite mixture of Gaussians_, potentially _any_ predictive density can be represented (i.e. learned) by this form.
+This is great news, as it (conceptually) relieves us of the burden of choosing / designing a bespoke likelihood function when deploying the NPF for a new application!
 
-While this parameterisation seems to solve the major problems associated with the CNPF, it introduces an important drawback.
-In particular, the key difficulty with the LNPF is that the likelihood we defined in {numref}`latent_likelihood` is no longer _tractable_.
-This has several severe implications, and in particular means that we can longer use simple maximum-likelihood training for the parameters of the model.
-In the remainder of this section, we first discuss the  question of training members of the LNPF, without having any particular member in mind.
-After discussing several training procedures, we introduce extensions of each of the CNPF members discussed in the previous section to their corresponding member of the LNPF.
+However, there is an important drawback. The key difficulty with the LNPF is that the likelihood we defined in {numref}`latent_likelihood` is no longer _analytically tractable_.
+This has several severe implications, and in particular means that we cannot use simple maximum-likelihood training for the parameters of the model.
+We now discuss how to train members of the LNPF in general.
+After discussing several training procedures, we'll introduce extensions of each of the CNPF members discussed in the previous chapter to their corresponding member of the LNPF.
 
 ## Training LNPF members
 
 Ideally, what we would like to do is use the likelihood defined in {numref}`latent_likelihood` to optimise the parameters of the model.
-However, this quantity is not tractable, and so we must consider alternative procedures.
-In fact, this story is not new, and the same issues arise when considering many latent variable models, such as variational auto-encoders (VAEs).
+However, the integral over $\mathbf{z}$ renders this quantity intractable, so we must consider alternatives.
+In fact, this story is not new, and the same issues arise when considering other latent variable models, such as variational auto-encoders (VAEs).
 
-The question of training LNPF members is still open, and there is ongoing research in this area.
-In this section, we will cover two methods for training LNPF models, but we emphasise that both have their flaws, and deciding on an appropriate training method is an open question that must often be answered empirically.
+The question of how best to train LNPF members is still open, and there is ongoing research in this area.
+In this section, we will cover two methods for training LNPF models, but each have their flaws, and deciding which is the preferred training method must often be answered empirically.
 
-```{admonition} A note on chronology
+```{admonition} A Note on Chronology
 ---
-class: caution, dropdown
+class: note, dropdown
 ---
-In this tutorial, the chronology with which we introduce the objective functions does not follow the order in which they were originally introduced in the literature.
-We begin with an approximate maximum-likelihood based procedure, which was recently introduced by {cite}`foong2020convnp` due to its simplicity, and how it relates to the training procedure used for the CNPF.
-Following this, we introduce the variational inference inspired approach, which was proposed earlier by {cite}`garnelo2018neural` to train members of the LNPF.
+In this tutorial, the order in which we introduce the objective functions does not follow the chronology in which they were originally introduced in the literature.
+We begin by describing an approximate maximum-likelihood procedure, which was recently introduced by {cite}`foong2020convnp` due to its simplicity, and its relation to the CNPF training procedure.
+Following this, we introduce a variational inference-inspired approach, which was proposed earlier by {cite}`garnelo2018neural` to train members of the LNPF.
 ```
 
 
@@ -113,14 +112,14 @@ While this quantity is no longer tractable (as it was with members of the CNPF),
 \begin{align}
 \log p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C})
 &= \log \int p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation} \\
-& \approx \log \left( \frac{1}{L} \sum_{l=1}^{L} \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) & \text{Monte-Carlo approximation} \\
-& = \log \left( \sum_{l=1}^{L} \exp \left(  \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) \right) - \log L & \text{LogSumExp trick}\\
-& = \text{LogSumExp}_{l=1}^{L} \left( \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \right) - \log L.
+& \approx \log \left( \frac{1}{L} \sum_{l=1}^{L} \prod_{t=1}^{T} p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z}_l \right) \right) & \text{Monte-Carlo approximation} \\
+& = \log \left( \sum_{l=1}^{L} \exp \left(  \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z}_l \right) \right) \right) - \log L & \text{LogSumExp trick}\\
+& = \text{LogSumExp}_{l=1}^{L} \left( \sum_{t=1}^{T} \log p_{\boldsymbol\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z}_l \right) \right) - \log L,
 \end{align}
 ```
 
-{numref}`npml` provides a simple-to-compute objective function for training LNPF-members, which we can then use with standard optimisers to train the model parameters $\boldsymbol\theta$.
-Pseudo-code for such a training step is given in {numref}`npml_pseudocode`.
+where each $\mathbf{z}_l \sim p_{\boldsymbol\theta} \left( \mathbf{z} | \mathcal{C} \right)$. {numref}`npml` provides a simple-to-compute objective function for training LNPF-members, which we can then use with standard optimisers to learn the model parameters $\boldsymbol\theta$.
+Pseudo-code for is given in {numref}`npml_pseudocode`:
 
 ```{figure} ../images/alg_npml.png
 ---
@@ -134,19 +133,19 @@ NPML is conceptually very simple.
 It also links nicely with the procedure of the CNPF, in the sense that it targets the same predictive likelihood during training.
 Moreover, it tends to work well in practice, typically leading to models achieving good performance.
 However, it suffers from two important drawbacks:
-1. *Bias*: When applying the Monte-Carlo approximation, we have employed an unbiased estimator to the predictive likelihood. However, in practice we are interested in the _log_ likelihood. Unfortunately, the log of an unbiased estimator is not itself unbiased. As a result, NPML is a _biased_ (conservative) estimator of the quantity we would actually like to optimise.
-2. *Sample-complexity*: In practice it turns out that NPML is quite sensitive to the number of samples $L$ used to approximate it. In both our GP and image experiments, we find that on the order of 20 samples are required to achieve "good" performance. Of course, the computational and memory costs of training scale with $L$, often limiting the number of samples that can be used in practice.
+1. *Bias*: When applying the Monte-Carlo approximation, we have employed an unbiased estimator to the predictive likelihood. However, in practice we are interested in the _log_ likelihood. Unfortunately, the log of an unbiased estimator is not itself unbiased. As a result, NPML is a _biased_ (conservative) estimator of the true log-likelihood.
+2. *Sample-complexity*: In practice it turns out that NPML is quite sensitive to the number of samples $L$ used to approximate it. In both our GP and image experiments, we find that on the order of 20 samples are required to achieve "good" performance. Of course, the computational and memory costs of training scale linearly with $L$, often limiting the number of samples that can be used in practice.
 
-Unfortunately, addressing the first issue turns out to be quite difficult, and is an open question in training latent variable models in general.
+Unfortunately, addressing this turns out to be quite difficult, and is an open question in training latent variable models in general.
 However, we next describe an alternative training procedure, inspired by _variational inference_ that typically works well with fewer samples, often even allowing us to employ single sample estimators in practice.
 
 
 ### Neural Process Variational Inference (NPVI)
 
 Next, we discuss a training procedure proposed by {cite}`garnelo2018neural`, which takes inspiration from the literature on variational inference (VI).
-The central idea behind this objective function is to use _posterior sampling_ to reduce the sample complexity issue associated with NPML.
+The central idea behind this objective function is to use _posterior sampling_ to reduce the sample complexity associated with NPML.
 For a better intuition regarding this, note that NPML is defined using an expectation against $p_{\boldsymbol\theta}(\mathbf{z} | \mathcal{C})$.
-The idea in posterior sampling is to use all the data available during training to produce the distribution over $\mathbf{z}$, thus leading to more informative samples and lower variance objectives.
+The idea in posterior sampling is to use the whole dataset available during training, $\mathcal{D} = \mathcal{C} \cup \mathcal{T}$ to produce the distribution over $\mathbf{z}$, thus leading to more informative samples and lower variance objectives.
 
 In our case, the posterior distribution from which we would like to sample is $p(\mathbf{z} | \mathcal{C}, \mathcal{T})$, i.e., the distribution of the latent variable having observed _both_ the context and target sets.
 Unfortunately, this posterior is intractable.
