@@ -1,4 +1,4 @@
-skorch
+skorch==0.8
 torch
 torchvision
 matplotlib

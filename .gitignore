@@ -16,6 +16,9 @@ __MACOSX/
 _build/
 jupyter/text/_build/
 
+# Personal
+HELP.md
+
 # Results
 results/
 !results/pretrained/*
