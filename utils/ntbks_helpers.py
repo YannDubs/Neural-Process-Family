@@ -6,7 +6,6 @@ from functools import partial
 
 import imageio
 import matplotlib.pyplot as plt
-import skorch
 from sklearn.gaussian_process.kernels import (
     RBF,
     ConstantKernel,
@@ -15,8 +14,9 @@ from sklearn.gaussian_process.kernels import (
     Matern,
     WhiteKernel,
 )
-from skorch import NeuralNet
 
+import skorch
+import torch
 from npf import GridConvCNP
 from npf.architectures import MLP, merge_flat_input
 from npf.utils.datasplit import (
@@ -29,6 +29,7 @@ from npf.utils.datasplit import (
     half_masker,
     no_masker,
 )
+from skorch import NeuralNet
 from utils.data import DIR_DATA, GPDataset, get_train_test_img_dataset
 from utils.data.helpers import DatasetMerger
 from utils.data.imgs import SingleImage, get_test_upscale_factor
@@ -39,7 +40,7 @@ from utils.visualize import (
     plot_posterior_samples_1d,
     plot_prior_samples_1d,
 )
-from utils.visualize.helpers import fig2img, plot_config
+from utils.visualize.helpers import fig2img
 from utils.visualize.visualize_1d import _plot_posterior_predefined_cntxt
 
 try:
@@ -198,9 +199,9 @@ class StrFormatter:
         Dictionary of substring that will be replaced if no exact_match. Order matters.
         Everything is title case at this point. None gets mapped to "".
 
-    to_upper : list, optional   
+    to_upper : list, optional
         Words to upper case.
-    
+
     """
 
     def __init__(self, exact_match={}, subtring_replace={}, to_upper=[]):
@@ -601,6 +602,7 @@ def gif_explain(
     seed=123,
     n_cntxt=10,
     fps=0.5,
+    length_scale_delta=0 # increases length scale to make it clearer that smoothing out
 ):
     figs = []
 
@@ -618,8 +620,12 @@ def gif_explain(
     right = left + width
     top = bottom + height
 
+    length_scale_param = model.cntxt_to_induced.radial_basis_func.length_scale_param
+    model.cntxt_to_induced.radial_basis_func.length_scale_param = torch.nn.Parameter(length_scale_param + length_scale_delta)
+
     # Only points
     with plot_config(plot_config_kwargs):
+
         model.forward = types.MethodType(forward_Rinduced, model)
 
         _plot_posterior_predefined_cntxt(
@@ -660,7 +666,7 @@ def gif_explain(
         plt.gca().text(
             0.5 * (left + right),
             0.5 * (bottom + top),
-            "Apply SetConv / KDE",
+            "Apply SetConv",
             ha="center",
             va="center",
             fontsize=40,
@@ -909,6 +915,7 @@ def gif_explain(
 
     figs.append(fig2img(plt.gcf()))
     plt.close()
+    model.cntxt_to_induced.radial_basis_func.length_scale_param = torch.nn.Parameter(length_scale_param)
 
     # apply CNN
     with plot_config(plot_config_kwargs):

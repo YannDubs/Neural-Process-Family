@@ -84,7 +84,7 @@ def plot_config(
             for i, ax in enumerate(last_fig.axes):
                 ax.set(**set_kwargs)
 
-            sns.despine(**despine_kwargs)
+        sns.despine(**despine_kwargs)
 
     finally:
         with warnings.catch_warnings():

@@ -2,24 +2,22 @@ import math
 
 import torch
 import torch.nn as nn
-from torch.nn import functional as F
-
-from npf.utils.helpers import (ProbabilityConverter, backward_pdb,
-                               mask_and_apply)
+from npf.utils.helpers import ProbabilityConverter, backward_pdb, mask_and_apply
 from npf.utils.initialization import init_param_, weights_init
+from torch.nn import functional as F
 
 from .mlp import MLP
 
-__all__ = ["SetConv", "MlpRBF", "GaussianRBF"]
+__all__ = ["SetConv", "MlpRBF", "ExpRBF", "UnsharedExpRBF"]
 
 
-class GaussianRBF(nn.Module):
+class UnsharedExpRBF(nn.Module):
     """Gaussian radial basis function.
 
     Parameters
     ----------
     x_dim : int
-        Dimensionality of input.
+        Dimensionality of input. Placeholder (not used)
 
     max_dist : float, optional
         Max distance between the closest query and target, used for intialisation.
@@ -27,22 +25,100 @@ class GaussianRBF(nn.Module):
     max_dist_weight : float, optional
         Weight that should be given to a maximum distance. Note that min_dist_weight
         is 1, so can also be seen as a ratio.
+
+    p : int, optional
+        p-norm to use, If p=2, exponential quadratic => Gaussian.
+
+    is_share_sigma : bool, optional
+        Whether to share sigma between the density channel and the weight.
     """
 
-    def __init__(self, x_dim, max_dist=1 / 256, max_dist_weight=0.9, **kwargs):
+    def __init__(
+        self,
+        x_dim,
+        max_dist=1 / 256,
+        max_dist_weight=0.99,
+        p=2,
+        **kwargs
+    ):
         super().__init__()
 
         self.max_dist = max_dist
         self.max_dist_weight = max_dist_weight
-        self.length_scale_param = nn.Parameter(torch.tensor([0.0]))
+        self.length_scale_param = nn.Parameter(torch.tensor([0.0]*2))
+        self.p = p
         self.reset_parameters()
 
     def reset_parameters(self):
         weights_init(self)
         # set the parameter depending on the weight to give to a maxmum distance
-        # query. i.e. exp(- (max_dist / sigma).pow(2)) = max_dist_weight
-        # => sigma = max_dist / sqrt(- log(max_dist_weight))
-        max_dist_sigma = self.max_dist / math.sqrt(-math.log(self.max_dist_weight))
+        # query. i.e. exp(- (max_dist / sigma).pow(p)) = max_dist_weight
+        # => sigma = max_dist / ((- log(max_dist_weight))**(1/p))
+        max_dist_sigma = self.max_dist / (
+            (-math.log(self.max_dist_weight)) ** (1 / self.p)
+        )
+        # inverse_softplus : log(exp(y) - 1)
+        max_dist_param = math.log(math.exp(max_dist_sigma) - 1)
+        self.length_scale_param = nn.Parameter(torch.tensor([max_dist_param]*2))
+
+    def forward(self, diff):
+
+        # size=[batch_size, n_keys, n_queries, 1]
+        dist = torch.norm(diff, p=self.p, dim=-1, keepdim=True)
+
+        # compute exponent making sure no division by 0
+        sigma = 1e-5 + F.softplus(self.length_scale_param)
+
+        inp = -(dist / sigma).pow(self.p)
+
+        # size=[batch_size, n_keys, n_queries, 1]
+        out = torch.exp(inp)
+        
+        # size=[batch_size, n_keys, 1]
+        density = out[...,1:].sum(dim=-2)
+
+        # size=[batch_size, n_keys, n_queries, 1]
+        out = out[...,0:1] / (density.unsqueeze(2) + 1e-8)
+
+        return out, density
+
+
+class ExpRBF(nn.Module):
+    """Exponential radial basis function.
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimensionality of input. Placeholder (not used)
+
+    max_dist : float, optional
+        Max distance between the closest query and target, used for intialisation.
+
+    max_dist_weight : float, optional
+        Weight that should be given to a maximum distance. Note that min_dist_weight
+        is 1, so can also be seen as a ratio.
+
+    p : int, optional
+        p-norm to use, If p=2, exponential quadratic => Gaussian.
+    """
+
+    def __init__(self, x_dim, max_dist=1 / 256, max_dist_weight=0.9, p=2, **kwargs):
+        super().__init__()
+
+        self.max_dist = max_dist
+        self.max_dist_weight = max_dist_weight
+        self.length_scale_param = nn.Parameter(torch.tensor([0.0]))
+        self.p = p
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        weights_init(self)
+        # set the parameter depending on the weight to give to a maxmum distance
+        # query. i.e. exp(- (max_dist / sigma).pow(p)) = max_dist_weight
+        # => sigma = max_dist / ((- log(max_dist_weight))**(1/p))
+        max_dist_sigma = self.max_dist / (
+            (-math.log(self.max_dist_weight)) ** (1 / self.p)
+        )
         # inverse_softplus : log(exp(y) - 1)
         max_dist_param = math.log(math.exp(max_dist_sigma) - 1)
         self.length_scale_param = nn.Parameter(torch.tensor([max_dist_param]))
@@ -50,12 +126,12 @@ class GaussianRBF(nn.Module):
     def forward(self, diff):
 
         # size=[batch_size, n_keys, n_queries, kq_size]
-        dist = torch.norm(diff, p=2, dim=-1, keepdim=True)
+        dist = torch.norm(diff, p=self.p, dim=-1, keepdim=True)
 
         # compute exponent making sure no division by 0
         sigma = 1e-5 + F.softplus(self.length_scale_param)
 
-        inp = -(dist / sigma).pow(2)
+        inp = -(dist / sigma).pow(self.p)
         out = torch.softmax(
             inp, dim=-2
         )  # numerically stable normalization of the weights by density
@@ -139,14 +215,15 @@ class SetConv(nn.Module):
 
     References
     ----------
-    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint 
+    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint
     arXiv:1910.13556 (2019).
     """
 
     def __init__(
-        self, x_dim, in_channels, out_channels, RadialBasisFunc=GaussianRBF, **kwargs
+        self, x_dim, in_channels, out_channels, RadialBasisFunc=ExpRBF, **kwargs
     ):
         super().__init__()
+        assert x_dim == 1, "Currently only supports single spatial dimension `x_dim==1`"
         self.radial_basis_func = RadialBasisFunc(x_dim, **kwargs)
         self.resizer = nn.Linear(in_channels + 1, out_channels)
         self.reset_parameters()

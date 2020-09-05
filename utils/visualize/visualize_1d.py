@@ -316,6 +316,7 @@ def _plot_posterior_predefined_cntxt(
     ax=None,
     is_smooth=True,
     scatter_kwargs={},
+    kwargs_std={},
     **kwargs,
 ):
     """
@@ -367,6 +368,9 @@ def _plot_posterior_predefined_cntxt(
 
     scatter_kwargs : dict, optional
         Kwargs for the scatter function.
+
+    kwargs_std : dict, optional
+        Kwargs for plot std function (`fill_between` if smooth else `errorbar`).
 
     kwargs : 
         Additional arguments to plt.show
@@ -431,22 +435,26 @@ def _plot_posterior_predefined_cntxt(
                 )
 
             if is_smooth:
+                kwargs_new = dict(alpha=alpha / 7)
+                kwargs_new.update(kwargs_std)
                 # only when smooth, if not already plotted error bars
                 ax.fill_between(
                     X_trgt_plot,
                     mean_y - std_y,
                     mean_y + std_y,
-                    alpha=alpha / 7,
                     color=std_color,
+                    **kwargs_new
                 )
             else:
+                kwargs_new = dict(alpha=alpha / 7, capsize=3, fmt="none", **kwargs)
+                kwargs_new.update(kwargs_std)
                 ax.errorbar(
                     X_trgt_plot,
                     mean_y,
                     yerr=std_y,
-                    alpha=alpha / 7,
                     ecolor=std_color,
-                    **kwargs,
+                    color=mean_color,
+                    **kwargs_new,
                 )
 
             y_min = min(y_min, (mean_y - std_y)[X_interp].min())
