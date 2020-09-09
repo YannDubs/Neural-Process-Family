@@ -175,7 +175,7 @@ It is especially crucial in the small context-set setting, which is often the ca
 What we need is not single predictions $f(x^{(t)}; \mathcal{C})$ at a desired target location $f(x; \mathcal{C})$, but rather a _distribution over predictions_ $p(y^{(t)} |x^{(t)} ; \mathcal{C})$.
 Previously, we thought of the predictor as mapping any target inputs $\mathbf{x}_{\mathcal{T}}$ to $f(\mathbf{x}_{\mathcal{T}}; \mathcal{C})$.
 Now, for any $\mathcal{C}$, and any choice of target inputs $\mathbf{x}_{\mathcal{T}}$, we want to return a _probability distribution_ $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})$. 
-As long as these distributions are consistent with each other for any choices of $\mathbf{x}_{\mathcal{T}}$, specifying $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}, \mathcal{C})$ for all finite sets of target inputs $\mathbf{x}_{\mathcal{T}}$ is actually equivalent to specifying a distribution of predictors $f(\cdot; \mathcal{C}) \sim p(\cdot |\cdot ; \mathcal{C})$.
+As long as these distributions are consistent with each other for any choices of $\mathbf{x}_{\mathcal{T}}$, specifying $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})$ for all finite sets of target inputs $\mathbf{x}_{\mathcal{T}}$ is actually equivalent to specifying a distribution of predictors $f(\cdot; \mathcal{C}) \sim p(\cdot |\cdot ; \mathcal{C})$.
 Each predictor sampled from this distribution would represent a plausible interpolation of the data, and the diversity of the samples would reflect the _uncertainty_ in our predictions --- think back to {numref}`ConvLNP`.
 Since each predictor $f(\cdot; \mathcal{C})$ is a function, this is a _distribution over functions_.
 In mathematics, this is known as a _stochastic process_ (SP).
@@ -303,10 +303,9 @@ for some suitable functions $\rho$ and $\phi$. This is known as a 'sum decomposi
 -->
 ```
 
-To satisfy these requirements, members of the NPF first encode each point in the context set $\mathcal{C}$ separately: $R^{(c)} = e_{\theta}(x^{(c)}, y^{(c)})$ for each $(x^{(c)}, y^{(c)}) \in \mathcal{C}$.
-Here $R^{(c)}$ can be thought of as a _local encoding_ of the datapoint --- one for each point in the context set.
-We refer to $e_{\theta}$ as a _local encoder_, which can be represented with a neural network (we use $\theta$ to denote all the parameters in the Neural Process).
-These local encodings are then combined into a single global encoding $R(\mathcal{C})$ using an aggregation function, $\mathrm{Agg}$.
+To satisfy these requirements, members of the NPF first encode each point in the context set separately: $R^{(c)} = \mathrm{Enc}_{\theta}(x^{(c)}, y^{(c)})$ for each $(x^{(c)}, y^{(c)}) \in \mathcal{C}$.
+We refer to $\mathrm{Enc}_{\theta}$ as a _local encoder_, which can be represented with a neural network (we use $\theta$ to denote all the parameters in the Neural Process).
+These local encodings are then combined into a global representation of the context set, $R$, using an aggregation function, $\mathrm{Agg}$.
 Importantly, $\mathrm{Agg}$ is chosen to be _permutation invariant_: for any permutation $\pi$ of $\{ 1, 2, ..., C \}$,
 
 $$
@@ -326,26 +325,13 @@ $$
 which is easily seen to be permutation invariant as the summation is commutative.
 ```
 
-The global encoding $R = \mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)$ can be thought of as a representation of the entire context set.
-The information in this encoding will then be used by the Neural Process to make predictions at the target set.
-At this point, depending on what we do next, the NPF splits into two sub-families: the _conditional_ Neural Process family (CNPF), and the _latent_ Neural Process family (LNPF):
+The global encoding $R$ will then be used with the target input $x^{(t)}$ by a decoder $\mathrm{Dec}_{\theta}$ to parametrise the predictive distribution $p_{\theta}(\cdot | x^{(t)}; R)$.
 
-* In the CNPF, the predictive distribution at any set of target inputs $\mathbf{x}_{\mathcal{T}}$ is defined to be _factorised_ conditioned on $R$. That is, $p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, R)$. Furthermore, each term $p_{\theta}(y^{(t)} | x^{(t)}, R)$ in the product is typically chosen to be a simple distribution over $y^{(t)}$, usually a Gaussian.
+The NPF splits into two sub-families depending on whether or not the global representation is (used to define) a latent variable: the _conditional_ Neural Process family (CNPF), and the _latent_ Neural Process family (LNPF):
 
-* In the LNPF, the encoding $R$ is used to define a _latent variable_ $\mathbf{z} \sim p_{\theta}(\mathbf{z} | R)$. The predictive distribution is then defined to be factorised _conditioned on_ $\mathbf{z}$. That is, $p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \int \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, \mathbf{z}) p_{\theta}(\mathbf{z} | R) \, \mathrm{d}\mathbf{z}$.
+* In the CNPF, the predictive distribution at any set of target inputs $\mathbf{x}_{\mathcal{T}}$ is _factorised_ conditioned on $R$. That is, $p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, R)$. 
 
-The forward pass for members of both the CNPF and LNPF is represented schematically in {numref}`computational_graph_NPFs`.
-Here $e$ is often referred to as the _encoder_ and $d$, the operation which maps the representation $R$ together with the target input to produce the prediction at the target output, is called the _decoder_.
-For the LNPF there would be an extra step of sampling the latent variable $\mathbf{z}$ in between $R$ and $d$.
-
-```{figure} ../images/computational_graph_NPFs.svg
----
-width: 300em
-name: computational_graph_NPFs
-alt: high level computational graph of NPF
----
-High level computational graph of the Neural Process Family.
-```
+* In the LNPF, the encoding $R$ is used to define a _latent variable_ $\mathbf{z} \sim p_{\theta}(\mathbf{z} | R)$. The predictive distribution is then factorised _conditioned on_ $\mathbf{z}$. That is, $p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \int \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, \mathbf{z}) p_{\theta}(\mathbf{z} | R) \, \mathrm{d}\mathbf{z}$.
 
 ```{admonition} Note$\qquad$CNPF as Deterministic LNPF
 ---
@@ -354,18 +340,23 @@ class: note, dropdown
 The CNPF may be thought of as the LNPF in the case when the latent variable $\mathbf{z}$ is constrained to be deterministic ($p_{\theta}(\mathbf{z} | R)$ is a Dirac delta function).
 ```
 
-```{admonition} Note$\qquad$Permutation-invariant Predictions
----
-class: note, dropdown
----
-Assuming that $\mathrm{Agg}$ is permutation-invariant, convince yourself that the predictive distributions of both the CNPF and LNPF are invariant to permutations of the context set --- that is, our predictions at the target set don't change if the context set is simply shuffled around.
+The forward pass for members of both the CNPF and LNPF is represented schematically in {numref}`computational_graph_NPFs`.
+For the LNPF there is an extra step of sampling the latent variable $\mathbf{z}$ in between $R$ and $\mathrm{Dec}_{\theta}$.
+Typically, both $p_{\theta}(y^{(t)} | x^{(t)}, R)$ and $p_{\theta}(y^{(t)} | x^{(t)}, z)$ are Gaussian distributions meaning that the decoder predicts a mean $(\mu^{(t)}$ and a variance $\sigma^{2(t)}$. 
 
+```{figure} ../images/computational_graph_CNPs.svg
+---
+width: 300em
+name: computational_graph_NPFs
+alt: high level computational graph of NPF
+---
+High level computational graph of the Neural Process Family.
 ```
 
-As a concrete example of what a Neural Process looks like, {numref}`CNP` shows a schematic animation of the forward pass of a _Conditional Neural Process_ (CNP), a member of the CNPF that was the first Neural Process to be introduced, and conceptually the easiest to understand.
-We see that every $(x, y)$ pair in the context set (here with three datapoints) is passed through an MLP $e$ to obtain a local encoding, which is then aggregated.
-Finally, the representation is fed into another MLP $d$ along with the target input to yield the mean and variance of the predictive distribution of the target output $y$.
-We'll take a much more detailed look at the CNP in CNPF page of this tutorial.
+{numref}`CNP` shows a schematic animation of the forward pass of members of the CNPF ($e:=\mathrm{Enc}_{\theta}$, $a:=\mathrm{Agg}$, $d:=\mathrm{Dec}_{\theta}$, $r:=R$, $r_{c}:=R^{(c)}$).
+We see that every $(x, y)$ pair in the context set (here with three datapoints) is locally encoded by $e$ (e.g. an MLP).
+The local encodings $\{r_1, r_2, r_3\}$ are then aggregated by $a$ (e.g. mean pooling) to a global representation $r$.
+Finally, the global representation $r$ is fed along with the target input $x_{T}$ into a decoder $d$ (e.g. an MLP) to yield the mean and variance of the predictive distribution of the target output $y$.
 
 ```{figure} ../gifs/NPFs.gif
 ---
@@ -373,7 +364,7 @@ width: 30em
 name: CNP
 alt: Schematic representation of CNP forward pass.
 ---
-Schematic representation of CNP forward pass taken from [Marta Garnelo](https://www.martagarnelo.com/conditional-neural-processes).
+Schematic representation of the forward pass of members of the CNPF taken from [Marta Garnelo](https://www.martagarnelo.com/conditional-neural-processes). $e:=\mathrm{Enc}_{\theta}$, $a:=\mathrm{Agg}$, $d:=\mathrm{Dec}_{\theta}$, $r:=R$, $r_{c}:=R^{(c)}$.
 ```
 
 As we'll see in the following pages of this tutorial, both the CNPF and LNPF come with their specific advantages and disadvantages.
@@ -419,13 +410,14 @@ For now, we simply note the range of options and tradeoffs.
 To recap, we've (schematically!) thought about how to parameterise a map from observed context sets $\mathcal{C}$ to predictive distributions at any target inputs $\mathbf{x}_{\mathcal{T}}$ with neural networks.
 Next, we consider how to _train_ such a map, i.e. how to learn the parameters $\theta$.
 
+(meta_training)=
 ## Meta-Training in the NPF
 
 To perform _meta_-learning, we require a _meta_-dataset or a _dataset of datasets_.
 In the meta-learning literature, each dataset in the meta-dataset is referred to as a _task_.
 For the NPF, this means having access to many independent samples of functions from the data-generating process.
 Each sampled function is then a task.
-For example, we may have a large collection of audio waveforms $\matchal{M} := \{ \mathcal{D}_i \}_{i=1}^{N_{\mathrm{tasks}}}$ from different speakers.
+For example, we may have a large collection of audio waveforms $\mathcal{M} := \{ \mathcal{D}_i \}_{i=1}^{N_{\mathrm{tasks}}}$ from different speakers.
 Each of these waveforms is itself a time-series $\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N$, where each $x^{(n)}, y^{(n)}$ is a timestamp/audio amplitude pair.
 Or we might have a large collection of natural images.
 Then each $\mathcal{D}$ would be a single image consisting of pixel-location/pixel-value pairs.
