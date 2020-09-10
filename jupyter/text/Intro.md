@@ -303,29 +303,13 @@ for some suitable functions $\rho$ and $\phi$. This is known as a 'sum decomposi
 -->
 ```
 
-To satisfy these requirements, members of the NPF first encode each point in the context set separately: $R^{(c)} = \mathrm{Enc}_{\theta}(x^{(c)}, y^{(c)})$ for each $(x^{(c)}, y^{(c)}) \in \mathcal{C}$.
-We refer to $\mathrm{Enc}_{\theta}$ as a _local encoder_, which can be represented with a neural network (we use $\theta$ to denote all the parameters in the Neural Process).
-These local encodings are then combined into a global representation of the context set, $R$, using an aggregation function, $\mathrm{Agg}$.
-Importantly, $\mathrm{Agg}$ is chosen to be _permutation invariant_: for any permutation $\pi$ of $\{ 1, 2, ..., C \}$,
+To satisfy these requirements, members of the NPF map the context set to global representation, $R$, using a permutation invariant encoder $\mathrm{Enc}_{\theta}$ (we use $\theta$ to denote all the parameters in the Neural Process)..
+Specifically, the encoder is always going to be of form $\mathrm{Enc}_{\theta}(\mathcal{C}) = = \rho \left ( \sum_{c=1}^C w \phi(x^{(c)}, y^{(c)}) \right)$ for appropriate $w$, $\rho$ and $\phi$.
+The sum operation in the encoder is key as it ensures permutation invariance --- due to the commutativity of the sum operation --- and that the resulting $R$ "lives" in the same space regardless of the number of context points $C$.
 
-$$
-\mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right)=\mathrm{Agg}\left(\pi\left(\{R^{(c)}\}_{c=1}^{C} \right)\right)
-$$
 
-```{admonition} Note$\qquad$Mean-pooling
----
-class: note, dropdown
----
-A simple and popular choice for $\mathrm{Agg}$ is _mean-pooling_:
 
-$$
-\mathrm{Agg}\left( \{R^{(c)}\}_{c=1}^{C} \right) = \frac{1}{C} \sum_{c=1}^C R^{(c)},
-$$
-
-which is easily seen to be permutation invariant as the summation is commutative.
-```
-
-The global encoding $R$ will then be used with the target input $x^{(t)}$ by a decoder $\mathrm{Dec}_{\theta}$ to parametrise the predictive distribution $p_{\theta}(\cdot | x^{(t)}; R)$.
+The global representation $R$ will then be used with the target input $x^{(t)}$ by a decoder $\mathrm{Dec}_{\theta}$ to parametrise the predictive distribution $p_{\theta}(\cdot | x^{(t)}; R)$.
 
 The NPF splits into two sub-families depending on whether or not the global representation is (used to define) a latent variable: the _conditional_ Neural Process family (CNPF), and the _latent_ Neural Process family (LNPF):
 
@@ -353,10 +337,11 @@ alt: high level computational graph of NPF
 High level computational graph of the Neural Process Family.
 ```
 
-{numref}`CNP` shows a schematic animation of the forward pass of members of the CNPF ($e:=\mathrm{Enc}_{\theta}$, $a:=\mathrm{Agg}$, $d:=\mathrm{Dec}_{\theta}$, $r:=R$, $r_{c}:=R^{(c)}$).
-We see that every $(x, y)$ pair in the context set (here with three datapoints) is locally encoded by $e$ (e.g. an MLP).
-The local encodings $\{r_1, r_2, r_3\}$ are then aggregated by $a$ (e.g. mean pooling) to a global representation $r$.
-Finally, the global representation $r$ is fed along with the target input $x_{T}$ into a decoder $d$ (e.g. an MLP) to yield the mean and variance of the predictive distribution of the target output $y$.
+As a concrete example of what a Neural Process looks like, {numref}`CNP` shows a schematic animation of the forward pass of a _Conditional Neural Process_ (CNP), a member of the CNPF that was the first Neural Process to be introduced, and conceptually the easiest to understand.
+We see that every $(x, y)$ pair in the context set (here with three datapoints) is passed through an MLP $e$ to obtain a local encoding.
+The local encodings $\{r_1, r_2, r_3\}$ are then aggregated by a mean pooling $a$ to a global representation $r$.
+Finally, the representation $r$ is fed into another MLP $d$ along with the target input to yield the mean and variance of the predictive distribution of the target output $y$.
+We'll take a much more detailed look at the CNP in CNPF page of this tutorial.
 
 ```{figure} ../gifs/NPFs.gif
 ---
@@ -364,14 +349,13 @@ width: 30em
 name: CNP
 alt: Schematic representation of CNP forward pass.
 ---
-Schematic representation of the forward pass of members of the CNPF taken from [Marta Garnelo](https://www.martagarnelo.com/conditional-neural-processes). $e:=\mathrm{Enc}_{\theta}$, $a:=\mathrm{Agg}$, $d:=\mathrm{Dec}_{\theta}$, $r:=R$, $r_{c}:=R^{(c)}$.
+Schematic representation of CNP forward pass taken from [Marta Garnelo](https://www.martagarnelo.com/conditional-neural-processes).
 ```
 
 As we'll see in the following pages of this tutorial, both the CNPF and LNPF come with their specific advantages and disadvantages.
 Roughly speaking, the LNPF allows us to model _dependencies_ in the predictive distribution over the target set, at the cost of requiring us to approximate an intractable objective function.
 
-Furthermore, even _within_ each family, there are myriad choices that can be made: Should we use an MLP or a convolutional network?
-What kind of aggregator function should we use?
+Furthermore, even _within_ each family, there are myriad choices that can be made. The most important of which is the choice of encoder. 
 Each of these choices will lead to neural processes with different inductive biases and capabilities.
 For example, later in the CNPF and LNPF pages of this tutorial, we will see that incorporating attention can help reduce underfitting, and that incorporating convolutions can help with spatial generalisation.
 As a teaser, we provide a very brief summary of the neural processes considered in this tutorial (This should be skimmed for now, but feel free to return here to get a quick overview once each model has been introduced. Clicking on each model brings you to the Reproducibility page which includes code for running the model):
@@ -384,23 +368,19 @@ name: summary_npf
 ---
 
 * - Model
-  - Network architecture
-  - Aggregator
+  - Encoder
   - Spatial generalisation
   - Predictive fit quality
 * - {doc}`Conditional NP <../reproducibility/CNP>`[^CNP], {doc}`Latent NP <../reproducibility/LNP>`[^LNP]
-  - MLP
-  - Mean-pooling
+  - MLP + Mean-pooling
   - No
   - Underfits
 * - {doc}`Attentive CNP <../reproducibility/AttnCNP>`[^AttnCNP], {doc}`Attentive LNP <../reproducibility/AttnLNP>`[^AttnLNP]
-  - MLP and self-attention
-  - Cross-attention
+  - MLP + Attention
   - No
   - Less underfitting, jagged samples
 * - {doc}`Convolutional CNP <../reproducibility/ConvCNP>`[^ConvCNP], {doc}`Convolutional LNP <../reproducibility/ConvLNP>`[^ConvLNP]  
-  - Convolutional
-  - Set-convolution
+  - SetConv + CNN + SetConv
   - Yes
   - Less underfitting, smooth samples
 ```
