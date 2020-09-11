@@ -12,8 +12,8 @@ Probabilistic graphical model for the Conditional NPF.
 
 The key design choice for NPs is how to model the predictive distribution $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$.
 In particular, we require the predictive distributions to be consistent with each other for different $\mathbf{x}_\mathcal{T}$, as discussed on the {ref}`previous page <target_consistency>`.
-A simple ways to ensure this is to use a predictive distribution that is *factorised* conditioned on the context set (as illustrated in {numref}`graph_model_CNPF`).
-In other words, conditioned on the context set $\mathcal{C}$, the prediction at each target location is _independent_ of predictions at other target location.
+A simple way to ensure this is to use a predictive distribution that is *factorised* conditioned on the context set (as illustrated in {numref}`graph_model_CNPF`).
+In other words, conditioned on the context set $\mathcal{C}$, the prediction at each target location is _independent_ of predictions at other target locations.
 We can concisely express this assumption as:
 
 ```{math}
@@ -55,7 +55,7 @@ $$
 ---
 class: hint, dropdown
 ---
-We show that the CNPF predictive distribution specifies a consistent stochastic processes, given a fixed context set $\mathcal{C}$. Recall that we require consistency under _marginalisation_ and _permutation_. 
+We show that the CNPF predictive distribution specifies a consistent stochastic processes, given a fixed context set $\mathcal{C}$. Recall that we require consistency under _marginalisation_ and _permutation_.
 
 (Consistency under permutation) Let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be the target inputs and $\pi$ be any permutation of $\{1, ..., T\}$. Then the predictive density is:
 
@@ -67,7 +67,7 @@ $$
 \end{align}
 $$
 
-since multiplication is commutative. 
+since multiplication is commutative.
 
 (Consistency under marginalisation) Consider two target inputs, $x^{(1)}, x^{(2)}$. Then by marginalising out the second target output, we get:
 
@@ -91,7 +91,7 @@ This means we can employ a simple maximum-likelihood procedure to train the mode
 
 Now that we've given an overview of the entire CNPF, we'll discuss three particular members: the Conditional Neural Process (CNP), Attentive Conditional Neural Process (AttnCNP), and the Convolutional Conditional Neural Process (ConvCNP). Each member of the CNPF can be broadly distinguished by:
 * The encoder $\mathrm{Enc}_{\theta}: \mathcal{C} \mapsto R$, which has to be permutation invariant to treat $\mathcal{C}$ as a set.
-* The decoder $R,x^{(t)} \mapsto \mu^{(t)},\sigma^{2(t)}$, 
+* The decoder $R,x^{(t)} \mapsto \mu^{(t)},\sigma^{2(t)}$,
  encode the representation $\mathcal{C} \mapsto R$ using the local encoder $\mathrm{Enc}_{\theta}$ and aggregator $\mathrm{Agg}$.
 
 We begin by describing the Conditional Neural Process, arguably the simplest member of the CNPF, and the first considered in the literature.
@@ -186,7 +186,7 @@ This means that once trained, CNPs are much more efficient than GPs (which scale
 Let's see what prediction using a CNP looks like in practice.
 We first consider a simple 1D regression task trained on samples from a GP with a radial basis function (RBF) kernel (data details in {doc}`Datasets Notebook <../reproducibility/Datasets>`).
 Besides providing useful (and aesthetically pleasing) visualisations, the GPs admit closed form posterior predictive distributions, which allow us to compare to the "best possible" distributions for a given context set.
-In particular, if the CNP was "perfect", it would exactly match the predictions of the oracle GP. 
+In particular, if the CNP was "perfect", it would exactly match the predictions of the oracle GP.
 
 ```{figure} ../gifs/CNP_rbf.gif
 ---
@@ -256,7 +256,7 @@ For example, CNPs struggle to take advantage of the fact that if a target point 
 To achieve this, Kim et al. {cite}`kim2019attentive` propose the Attentive CNP (AttnCNP[^AttnCNP]), which replace CNPs' mean aggregation by an _attention mechanism_ {cite}`bahdanau2014neural`.
 There are many great resources available about the use of attention mechanisms in machine learning (e.g. [Distill's interactive visualisation](https://distill.pub/2016/augmented-rnns/#attentional-interfaces), [Lil'Log](https://lilianweng.github.io/lil-log/2018/06/24/attention-attention.html), or the [Illustrated Transformer](http://jalammar.github.io/illustrated-transformer/)), and we encourage readers unfamiliar with the concept to look through these.
 For our purposes, it suffices to think of attention mechanisms as learning to _attend_ to specific parts of an input that are particularly relevant to the desired output, giving them more _weight_ than others when making a prediction.
-Specifically, the attention mechanism is a function $w_{\theta}(\cdot, cdot)$ that weights each context point (the keys) _for every target location_ (the querries), $w_{\theta}(x^{(c)},x^{(t)})$.
+Specifically, the attention mechanism is a function $w_{\theta}(\cdot, \cdot)$ that weights each context point (the keys) _for every target location_ (the querries), $w_{\theta}(x^{(c)},x^{(t)})$.
 The AttnCNP then replaces CNPs' simple average by a (more general) weighted average which gives a larger weight to "important" context points.
 
 To illustrate how attention can alleviate underfitting, imagine that our context set contains two observations with inputs $x^{(1)}, x^{(2)}$ that are "very far" apart in input space. These observations (input-output pairs) are then mapped by the encoder to the local representations $R^{(1)}, R^{(2)}$ respectively.
@@ -468,8 +468,8 @@ Then, a mapping $f \colon \mathcal{Z} \to \mathcal{H}$ is said to be _translatio
 
 This provides the central motivation behind the ConvCNP {cite}`gordon2019convolutional`: _baking TE into the CNPF_, whilst preserving its other desirable properties.
 Specifically, we would like the encoder to be a TE map between the context set $\mathcal{C}$ and a functional representation $R(\cdot)$, which as for AttnCNP will then be queried at the target location $R^{(t)}=R(x^{(t)})$.
-In deep learning, the prime candidate for a TE encoder is a CNN. 
-There is however an issue: the inputs and outputs to a CNN are discrete signals (e.g. images)and thus cannot take as input sets nor can they be queried at continuous (target) location $x^{(t)}$.
+In deep learning, the prime candidate for a TE encoder is a CNN.
+There is however an issue: the inputs and outputs to a CNN are discrete signals (e.g. images)and thus cannot take as input sets nor can they be queried at continuous (target) location $x^{(t)}$. Gordon et al.
 {cite}`gordon2019convolutional` solve this issue by introducing the SetConv layer, an operation which extends standard convolutions to sets and could be very useful beyond the NPF framework.
 
 ````{admonition} SetConv
@@ -501,14 +501,14 @@ To better understand the role of the density channel, consider a context set con
 
 $$
 \begin{align}
-\mathrm{SetConv} \left( \{(x^{c},y^{c})\}_{c=1}^{C} \right)(x) 
+\mathrm{SetConv} \left( \{(x^{c},y^{c})\}_{c=1}^{C} \right)(x)
 &= \sum_{c=1}^{C} y^{(c)} w_{\theta} \left( x - x^{(c)} \right) \\
 &= \left( y^{(c')} w_{\theta} \left( x - x^{(c')} \right) \right) + \sum_{c \neq c'}  y^{(c)} w_{\theta} \left( x - x^{(c)} \right) \\
-&= 0 + \sum_{c \neq c'}  y^{(c)} w_{\theta} \left( x - x^{(c)} \right) 
+&= 0 + \sum_{c \neq c'}  y^{(c)} w_{\theta} \left( x - x^{(c)} \right)
 \end{align}
 $$
 
-Hence, without a density channel, the encoder would be unable to distinguish between observing a context point with $y^{(c)} = 0$, and not observing a context point at all! With the density channel, the contribution of the point $c'$ becomes non-zero, specifically it controbutes ${bmatrix} w_{\theta} \left( x - x^{(c)} \right) \\ 0 \end{bmatrix} $  to the predictions. This turns out to be important in practice, as well as in the theoretical proofs regarding the expressivity of the ConvCNP.
+Hence, without a density channel, the encoder would be unable to distinguish between observing a context point with $y^{(c)} = 0$, and not observing a context point at all! With the density channel, the contribution of the point $c'$ becomes non-zero, specifically it contributes $\begin{bmatrix} w_{\theta} \left( x - x^{(c)} \right) \\ 0 \end{bmatrix} $  to the predictions. This turns out to be important in practice, as well as in the theoretical proofs regarding the expressivity of the ConvCNP.
 ```
 
 ```{admonition} Note$\qquad$Normalisation
@@ -533,8 +533,8 @@ Note that if $x^{c},x^{t}$ are discrete, the SetConv essentially recovers the st
 
 Armed with this convolution mapping a set to continuous a function, we can use a CNN as our encoder by "wrapping it" around two SetConvs.
 Specifically, the encoder of the ConvCNP first uses a SetConv to ensure that the encoder can take the context set $\mathcal{C}$ as input.
-The output of the SetConv (a continuous function) is then _discretised_ --- by evaluating it at evenly spaced grid of input locations $\{ mathrm{SetConv}\left( \mathcal{C} \right)(x^{(u)}) \}_{u=1}^U$ --- so that it can be  given as input to a CNN. 
-Finally the output of the CNN (a discrete function) then goes again through SetConv to obtain a continuous functional representation $R$. 
+The output of the SetConv (a continuous function) is then _discretised_ --- by evaluating it at evenly spaced grid of input locations $\{ \mathrm{SetConv}\left( \mathcal{C} \right)(x^{(u)}) \}_{u=1}^U$ --- so that it can be  given as input to a CNN.
+Finally the output of the CNN (a discrete function) is passed through an additional SetConv to obtain a continuous functional representation $R$.
 
 ```{admonition} Warning
 ---

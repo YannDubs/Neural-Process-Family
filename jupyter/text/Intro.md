@@ -1,11 +1,13 @@
 # The Neural Process Family
 
-It is well known that neural networks work very well when trained on large datasets, but they usually under perform when data is scarce.
-Humans, in contrast, can learn rapidly with few examples and perform well in new environments.
-Two possible explanations for this mismatch, is that humans are able to: 1) reuse knowledge from previous tasks to *rapidly adapt* to new one; 2) *estimate their confidence*, meaning that they can ask for help or increase their focus when they are very uncertain about a decision. 
-The **Neural Process Family** (NPF) is a collection of models that aim at incorporating both of the aforementioned attributes to neural nets.
-We say that Neural Processes (NPs) perform meta-learning with uncertainty-estimate, or more precisely, they use **meta-learning** to model **stochastic processes**.
-If you already know what these term mean and why they are important skip ahead to the {ref}`parametrisation of NPs <parametrizing_npf>`, if not stick with us and we'll unpack both of these terms in the following section, focusing on how they are used in the NPF.
+It is well known that neural networks work very well when trained on large datasets, but perform quite poorly when data is scarce.
+Conversely, humans are able to learn new tasks and concepts quite rapidly, and perform well in the face of new and changing environments.
+How can we explain this mismatch?
+Two possible explanations are that humans are able to: 1) reuse knowledge from previous tasks to *rapidly adapt* to new ones; and 2) *estimate their confidence*, meaning that they can ask for help or increase their focus when they are very uncertain about a decision.
+The **Neural Process Family** (NPF) is a collection of models that aim to use *meta-learning* to incorporating the aforementioned attributes into neural nets.
+We say that Neural Processes (NPs) perform meta-learning with uncertainty-estimates, or more precisely, that they use meta-learning to model *stochastic processes*.
+If you already know what these terms mean and why they are important, feel free to skip ahead to the {ref}`parametrisation of NPs <parametrizing_npf>`.
+If not stick with us and we'll unpack both of these terms in the following section, focusing on how they are used in the NPF.
 
 ```{admonition} Note$\qquad$Outline
 ---
@@ -44,16 +46,18 @@ Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a Co
 ```
 
 Before diving in, let us consider how NPs can be used in practice.
-Consider the task of restoring corrupted audio signals. Namely, we are given a sparse sparse and corrupted signal $\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N$, where $x$ are the inputs (time) and $y$ are the outputs (sound wave amplitude), and would like to reconstruct the signal conditioned on $\mathcal{D}$.
-If $\mathcal{D}$ is very sparse, there could be many reasonable reconstruction — hence we we should be wary of simply providing point estimates, and augment these with measures of uncertainty. Ideally, we could also sample an entire audio signal which is plausible.
+Consider the task of restoring corrupted audio signals.
+Namely, imagine that we are given a sparse sparse and corrupted signal $\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N$, where $x$ are the inputs (time) and $y$ are the outputs (sound wave amplitude), and our goal is to reconstruct the signal conditioned on $\mathcal{D}$.
+If $\mathcal{D}$ is very sparse, there could be many reasonable reconstructions — hence we we should be wary of simply providing a single reconstruction, and instead augment these with measures of uncertainty.
+Ideally, we could also produce plausible samples of an entire audio signal given the corrupted pieces that we do have access to.
 {numref}`ConvLNP` shows a NP being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.
 
-Being able to deal with corrupted/noisy/sparse time-series while estimating uncertainty, is crucial in any domain that involve temporal measurements, e.g., in medical domains or economic forecasting.
-But the real beauty of NPs, is that many common tasks is machine learning can be framed as having to quickly adapt to model new functions while providing uncertainty estimates.
-Take the example of interpolating missing pixel values in an image.
-By treating an image a function $I(\cdot)$ from pixel locations to pixel intensities or RGB channels--- expand the dropdown note below if this is not obvious --- NP can for example be used to upscale the resolution of an image by querying the (modelled) image function $I(\cdot)$ at pixel locations that are "in between" the pixels of the input images ({numref}`ConvCNP_superes_intro`).
-In a similar vein, NPs can be used to predict what is "behind" occlusions in images, for example "behind" clouds in satellite images.
-Importantly, NPs provide uncertainty estimates of for their predictions, meaning that they can be used to say when the collected data is too corrupted and new satellite images should be taken --- a process known as active learning.
+Being able to deal with corrupted / noisy / sparse time-series while estimating uncertainty is crucial in any domain involving temporal measurements, e.g., in medical domains or economic forecasting.
+But the usefulness of NPs goes beyond these tasks: it turns out that many common tasks is machine learning can be framed as having to adapt rapidly and model new functions while providing uncertainty estimates.
+As another example, let us consider interpolating missing pixel values, or even super-resolution tasks with images.
+By treating an image as a function $I(\cdot)$ from pixel locations to pixel intensities or RGB channels--- expand the dropdown note below if this is not obvious --- NPs can be used to upscale the resolution of an image by querying the (modelled) image function $I(\cdot)$ at pixel locations that are "in between" the pixels of the input images ({numref}`ConvCNP_superes_intro`).
+Similarly, NPs can be used to predict what is "behind" occlusions in images, for example "behind" clouds in satellite images.
+Importantly, NPs provide uncertainty estimates for their predictions, meaning that they can be used to say when the collected data is too corrupted and new satellite images should be taken --- a process known as active learning.
 
 ````{admonition} Note$\qquad$Images as Functions
 ---
@@ -74,8 +78,8 @@ Viewing images as functions from $\mathbb{Z}^2 \to \mathbb{R}$. Figure from {cit
 
 
 
-<!--- 
-Bit long :/ 
+<!---
+Bit long :/
 
 1. **Predicting time-series data**.
    Many tasks are associated with _time-series_ data.
@@ -91,7 +95,7 @@ Bit long :/
    Ideally, we could also **sample** the entire time-series, so we could consider many plausible completions of the data.
    {numref}`ConvLNP` shows an example of the NPF being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.
 --->
-  
+
 
 
 
@@ -109,11 +113,11 @@ Comparison between meta learning vs supervised learning, and modeling functions 
 
 ### Meta-learning
 
-In a standard supervised learning algorithm, a neural network is trained on a single dataset $\mathcal{C} := \{(x^{(c)}, y^{(c)})\}_{c=1}^C$ (which we will refer to as **context set**), and returns a predictor, $f(\cdot)$. 
+In a standard supervised learning algorithm, a neural network is trained on a single dataset $\mathcal{C} := \{(x^{(c)}, y^{(c)})\}_{c=1}^C$ (which we will refer to as a **context set**), and returns a predictor, $f(\cdot)$.
 At test time, a prediction at a target location $x^{(t)}$ (a test example) can be made by feeding it into the predictor to obtain $f(x^{(t)})$.
 By doing so for the entire test set (which we call **target inputs**) $\mathbf{x}_{\mathcal{T}} := \{x^{(t)}\}_{t=1}^T$, we get a set of predictions $f(\mathbf{x}_{\mathcal{T}}):= \{f(x^{(t)})\}_{t=1}^T$ which are then evaluated by comparing to the real **target outputs** $\mathbf{y}_{\mathcal{T}} := \{y^{(t)}\}_{t=1}^T$.
 We will refer to a context and target set as a *task*  $\mathcal{D} := (\mathcal{C}, \mathbf{x}_{\mathcal{T}}, \mathbf{y}_{\mathcal{T}})$.
-In summary a supervised learning algorithm can be seen as taking a dataset  $\mathcal{C}$ as input and modeling the desired function $f: x \mapsto y=f(x)$ (see upper left quadrant in {numref}`meta_learning_sp`).
+To summarise, a supervised learning algorithm can be seen as taking a dataset  $\mathcal{C}$ as input and modeling the desired function $f: x \mapsto y=f(x)$ (see upper left quadrant in {numref}`meta_learning_sp`).
 
 The idea of meta-learning is _learning to learn_, i.e., learning how to rapidly adapt to new supervised tasks.
 The key insight is that, as we just saw, a supervised learning algorithm can be seen as a function from a dataset to another function, $\mathcal{C} \mapsto f(\cdot;\mathcal{C})$.
@@ -174,7 +178,7 @@ It is especially crucial in the small context-set setting, which is often the ca
 
 What we need is not single predictions $f(x^{(t)}; \mathcal{C})$ at a desired target location $f(x; \mathcal{C})$, but rather a _distribution over predictions_ $p(y^{(t)} |x^{(t)} ; \mathcal{C})$.
 Previously, we thought of the predictor as mapping any target inputs $\mathbf{x}_{\mathcal{T}}$ to $f(\mathbf{x}_{\mathcal{T}}; \mathcal{C})$.
-Now, for any $\mathcal{C}$, and any choice of target inputs $\mathbf{x}_{\mathcal{T}}$, we want to return a _probability distribution_ $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})$. 
+Now, for any $\mathcal{C}$, and any choice of target inputs $\mathbf{x}_{\mathcal{T}}$, we want to return a _probability distribution_ $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})$.
 As long as these distributions are consistent with each other for any choices of $\mathbf{x}_{\mathcal{T}}$, specifying $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})$ for all finite sets of target inputs $\mathbf{x}_{\mathcal{T}}$ is actually equivalent to specifying a distribution of predictors $f(\cdot; \mathcal{C}) \sim p(\cdot |\cdot ; \mathcal{C})$.
 Each predictor sampled from this distribution would represent a plausible interpolation of the data, and the diversity of the samples would reflect the _uncertainty_ in our predictions --- think back to {numref}`ConvLNP`.
 Since each predictor $f(\cdot; \mathcal{C})$ is a function, this is a _distribution over functions_.
@@ -267,7 +271,7 @@ Thus, we can think of posterior inference in GPs as a map from context sets $\ma
 In this tutorial, we mainly use GPs to specify simple synthetic stochastic processes for benchmarking.
 We then train NPs to perform GP prediction.
 Since we can obtain the _exact_ GP predictive distribution in closed form, we can use GPs to test the efficacy of NPs.
-It is important to remember, however, that NPs can model a much broader range of SPs than GPs can (e.g. natural images, SPs with multimodal marginals), are more computationally efficient at test time, and can learn directly from data without the need to hand-specify a kernel.   
+It is important to remember, however, that NPs can model a much broader range of SPs than GPs can (e.g. natural images, SPs with multimodal marginals), are more computationally efficient at test time, and can learn directly from data without the need to hand-specify a kernel.
 ```
 
 
@@ -313,7 +317,7 @@ The global representation $R$ will then be used with the target input $x^{(t)}$ 
 
 The NPF splits into two sub-families depending on whether or not the global representation is (used to define) a latent variable: the _conditional_ Neural Process family (CNPF), and the _latent_ Neural Process family (LNPF):
 
-* In the CNPF, the predictive distribution at any set of target inputs $\mathbf{x}_{\mathcal{T}}$ is _factorised_ conditioned on $R$. That is, $p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, R)$. 
+* In the CNPF, the predictive distribution at any set of target inputs $\mathbf{x}_{\mathcal{T}}$ is _factorised_ conditioned on $R$. That is, $p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, R)$.
 
 * In the LNPF, the encoding $R$ is used to define a _latent variable_ $\mathbf{z} \sim p_{\theta}(\mathbf{z} | R)$. The predictive distribution is then factorised _conditioned on_ $\mathbf{z}$. That is, $p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \int \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, \mathbf{z}) p_{\theta}(\mathbf{z} | R) \, \mathrm{d}\mathbf{z}$.
 
@@ -326,7 +330,7 @@ The CNPF may be thought of as the LNPF in the case when the latent variable $\ma
 
 The forward pass for members of both the CNPF and LNPF is represented schematically in {numref}`computational_graph_NPFs`.
 For the LNPF there is an extra step of sampling the latent variable $\mathbf{z}$ in between $R$ and $\mathrm{Dec}_{\theta}$.
-Typically, both $p_{\theta}(y^{(t)} | x^{(t)}, R)$ and $p_{\theta}(y^{(t)} | x^{(t)}, z)$ are Gaussian distributions meaning that the decoder predicts a mean $(\mu^{(t)}$ and a variance $\sigma^{2(t)}$. 
+Typically, both $p_{\theta}(y^{(t)} | x^{(t)}, R)$ and $p_{\theta}(y^{(t)} | x^{(t)}, z)$ are Gaussian distributions meaning that the decoder predicts a mean $(\mu^{(t)}$ and a variance $\sigma^{2(t)}$.
 
 ```{figure} ../images/computational_graph_CNPs.svg
 ---
@@ -355,7 +359,7 @@ Schematic representation of CNP forward pass taken from [Marta Garnelo](https://
 As we'll see in the following pages of this tutorial, both the CNPF and LNPF come with their specific advantages and disadvantages.
 Roughly speaking, the LNPF allows us to model _dependencies_ in the predictive distribution over the target set, at the cost of requiring us to approximate an intractable objective function.
 
-Furthermore, even _within_ each family, there are myriad choices that can be made. The most important of which is the choice of encoder. 
+Furthermore, even _within_ each family, there are myriad choices that can be made. The most important of which is the choice of encoder.
 Each of these choices will lead to neural processes with different inductive biases and capabilities.
 For example, later in the CNPF and LNPF pages of this tutorial, we will see that incorporating attention can help reduce underfitting, and that incorporating convolutions can help with spatial generalisation.
 As a teaser, we provide a very brief summary of the neural processes considered in this tutorial (This should be skimmed for now, but feel free to return here to get a quick overview once each model has been introduced. Clicking on each model brings you to the Reproducibility page which includes code for running the model):
@@ -379,7 +383,7 @@ name: summary_npf
   - MLP + Attention
   - No
   - Less underfitting, jagged samples
-* - {doc}`Convolutional CNP <../reproducibility/ConvCNP>`[^ConvCNP], {doc}`Convolutional LNP <../reproducibility/ConvLNP>`[^ConvLNP]  
+* - {doc}`Convolutional CNP <../reproducibility/ConvCNP>`[^ConvCNP], {doc}`Convolutional LNP <../reproducibility/ConvLNP>`[^ConvLNP]
   - SetConv + CNN + SetConv
   - Yes
   - Less underfitting, smooth samples
