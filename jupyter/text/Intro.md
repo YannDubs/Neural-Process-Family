@@ -282,7 +282,7 @@ For the LNPF there is an extra step of sampling the latent variable $\mathbf{z}$
 
 ```{figure} ../images/computational_graph_NPFs.svg
 ---
-width: 300em
+width: 400em
 name: computational_graph_NPFs
 alt: high level computational graph of NPF
 ---
