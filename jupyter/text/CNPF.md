@@ -10,7 +10,7 @@ name: graph_model_CNPF
 Probabilistic graphical model for the Conditional NPF.
 ```
 
-The key design choice for NPs is how to model the predictive distribution $p( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$.
+The key design choice for NPs is how to model the predictive distribution $p_{\theta}( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$.
 In particular, we require the predictive distributions to be consistent with each other for different $\mathbf{x}_\mathcal{T}$, as discussed on the {ref}`previous page <target_consistency>`.
 A simple way to ensure this is to use a predictive distribution that is *factorised* conditioned on the context set (as illustrated in {numref}`graph_model_CNPF`).
 In other words, conditioned on the context set $\mathcal{C}$, the prediction at each target location is _independent_ of predictions at other target locations.
@@ -91,8 +91,7 @@ This means we can employ a simple maximum-likelihood procedure to train the mode
 
 Now that we've given an overview of the entire CNPF, we'll discuss three particular members: the Conditional Neural Process (CNP), Attentive Conditional Neural Process (AttnCNP), and the Convolutional Conditional Neural Process (ConvCNP). Each member of the CNPF can be broadly distinguished by:
 * The encoder $\mathrm{Enc}_{\theta}: \mathcal{C} \mapsto R$, which has to be permutation invariant to treat $\mathcal{C}$ as a set.
-* The decoder $R,x^{(t)} \mapsto \mu^{(t)},\sigma^{2(t)}$,
- encode the representation $\mathcal{C} \mapsto R$ using the local encoder $\mathrm{Enc}_{\theta}$ and aggregator $\mathrm{Agg}$.
+* The decoder $\mathrm{Dec}_{\theta}: R,x^{(t)} \mapsto \mu^{(t)},\sigma^{2(t)}$, which parametrizes the predictive distribution at location $x^{(t)}$ using the global representation $R$.
 
 We begin by describing the Conditional Neural Process, arguably the simplest member of the CNPF, and the first considered in the literature.
 
@@ -100,7 +99,7 @@ We begin by describing the Conditional Neural Process, arguably the simplest mem
 ## Conditional Neural Process (CNP)
 
 
-The main idea of the Conditional Neural Process (CNP) {cite}`garnelo2018conditional` is to enforce permutation invariance of the encoder by first _locally_ encoding each input-output pair in $\mathcal{C}$, and then _aggregating_ the encodings into a global representation, $R$,  of the context set using a commutative operation.
+The main idea of the Conditional Neural Process (CNP) {cite}`garnelo2018conditional` is to enforce permutation invariance of the encoder by first _locally_ encoding each context input-output pair into $R^{(c)}$, and then _aggregating_ the local encodings into a global representation, $R$,  of the context set using a commutative operation.
 Specifically, the local encoder is a feedforward multi-layer perceptron (MLP), while the aggregator is a mean pooling.
 The decoder is simply an MLP that takes as input the concatenation of the representation and the target input, $[R; x^{(t)}]$, and outputs a predictive mean $\mu^{(t)}$ and variance $\sigma^{2(t)}$.
 
@@ -129,7 +128,7 @@ To summarise, the CNP is defined by the following design choices (see {numref}`c
 * Decoding: $(\mu^{(t)}, \sigma^{2(t)}) = \mathrm{Dec}_{\theta}(R,x^{(t)}) =  \mathrm{MLP} \left( [R,x^{(t)}] \right)$.
 
 Note that the encoder is permutation invariant due to the commutativity of the sum operation, i.e., the order does not matter.
-Importantly, if the local encoder and the decoder were universal function approximators ("infinitely wide" MLP and unconstrained dimension of $R$) the CNP would essentially be able to predict any mean $\mu^{(t)}$ and variance $\sigma^{2(t)}$ thanks to the local encoder+aggregator (DeepSets; {cite}`zaheer2017deep`).
+Importantly, if the local encoder and the decoder were universal function approximators (think of "infinitely wide" MLP and unconstrained dimension of $R$) the CNP would essentially be able to predict any mean $\mu^{(t)}$ and variance $\sigma^{2(t)}$ thanks to the local encoder+aggregator (DeepSets; {cite}`zaheer2017deep`).
 
 ```{admonition} Advanced$\qquad$Universality and DeepSets
 ---
@@ -220,7 +219,28 @@ Moreover, it seems that no notion of periodicity has been learned in the predict
 Finally, the uncertainty seems constant, and is significantly overestimated everywhere.
 It seems that the CNP has failed to learn the more complex structure of the optimal predictive distribution for this kernel.
 
-Let's now test the CNP (same architecture) on a more interesting task, one where we do _not_ have access to the ground truth predictive distribution: image completion. As described on the previous page, an image can be viewed as a function from the 2D plane to $\mathbb{R}$ (for monochrome images) or to $\mathbb{R}^3$ (for RGB images). During meta-training, we treat each image as a sampled function, and split the image into context and target pixels. At test time, we can feed in a new context set and query the CNP at all the pixel locations, to interpolate the missing values / targets in the image. {numref}`CNP_img_interp_text` shows the results:
+
+Let's now test the CNP (same architecture) on a more interesting task, one where we do _not_ have access to the ground truth predictive distribution: image completion. 
+Note that NPs can be used to model images, as an image can be viewed as a function $I(\cdot)$ from pixel locations to pixel intensities or RGB channels--- expand the dropdown below if this is not obvious.
+
+````{admonition} Note$\qquad$Images as Functions
+---
+class: note, dropdown
+---
+In the Neural-Process literature, and in this tutorial, we view images as real-valued _functions_ on the two-dimensional plane.
+Each input $x$ is a two-dimensional vector denoting pixel location in the image, and each $y$ is a real number representing pixel intensity (or a three-dimensional vector for RGB images). {numref}`images_as_functions_text` illustrates how to interpret an MNIST image as a function:
+
+```{figure} ../images/images_as_functions.png
+---
+width: 30em
+name: images_as_functions_text
+alt: Viewing images as functions
+---
+Viewing images as functions from $\mathbb{Z}^2 \to \mathbb{R}$. Figure from {cite}`garnelo2018neural`.
+```
+````
+
+During meta-training, we treat each image as a sampled function, and split the image into context and target pixels. At test time, we can feed in a new context set and query the CNP at all the pixel locations, to interpolate the missing values / targets in the image. {numref}`CNP_img_interp_text` shows the results:
 
 ```{figure} ../gifs/CNP_img_interp.gif
 ---
@@ -269,19 +289,19 @@ This gain in expressivity comes at the cost of increased computational complexit
 class: attention
 ---
 Notice that the encoder $\mathrm{Enc}_{\theta}$ does not take the target location $x^{(t)}$ and can thus not directly predict a _target-specific_ representation $R^{(t)}$.
-To make the AttnCNP fit in an encoder-global representation-decoder framework we have to treat the global representation as a _function_ of the form $R : \mathcal{X} \to \mathbb{R}^{dimR}$ instead of a vector.
+To make the AttnCNP fit in an encoder -- global representation -- decoder framework we have to treat the global representation as a _function_ of the form $R : \mathcal{X} \to \mathbb{R}^{dimR}$ instead of a vector.
 In the decoder, this function will be queried at the target position $x^{(t)}$ to yield a target specific vector representation $R^{(t)} = R(x^{(t)})$.
 ```
 
 To summarise, the AttnCNP is defined by the following design choices (see {numref}`computational_graph_AttnCNPs_text`):
-* Encoding: $R(\cdot) = \mathrm{Enc}_{\theta}(\mathcal{C})(\cdot) = \sum_{c=1}^{C} w_{\theta} \left( x^{(c)}, \cdot \right) \mathrm{MLP} \left( [x^{(c)}; y^{(c)}] \right)$ .
-* Decoding: $(\mu^{(t)}, \sigma^{2(t)}) = \mathrm{Dec}_{\theta}(R(x^{(t)}), x^{(t)}) =  \mathrm{MLP} \left( [R(x^{(t)}),x^{(t)}] \right)$.
+* Encoding: $R(\cdot) = \mathrm{Enc}_{\theta}(\mathcal{C}) = \sum_{c=1}^{C} w_{\theta} \left( x^{(c)}, \cdot \right) \mathrm{MLP} \left( [x^{(c)}; y^{(c)}] \right)$ .
+* Decoding: $(\mu^{(t)}, \sigma^{2(t)}) = \mathrm{Dec}_{\theta}(R, x^{(t)}) =  \mathrm{MLP} \left( [R(x^{(t)}),x^{(t)}] \right)$.
 
 Note that, as for the CNP, the encoder is permutation invariant due to the commutativity of the sum operation.
 
 ```{figure} ../images/computational_graph_AttnCNPs.svg
 ---
-width: 300em
+width: 400em
 name: computational_graph_AttnCNPs_text
 alt: Computational graph of AttnCNP
 ---
@@ -469,31 +489,31 @@ Then, a mapping $f \colon \mathcal{Z} \to \mathcal{H}$ is said to be _translatio
 This provides the central motivation behind the ConvCNP {cite}`gordon2019convolutional`: _baking TE into the CNPF_, whilst preserving its other desirable properties.
 Specifically, we would like the encoder to be a TE map between the context set $\mathcal{C}$ and a functional representation $R(\cdot)$, which as for AttnCNP will then be queried at the target location $R^{(t)}=R(x^{(t)})$.
 In deep learning, the prime candidate for a TE encoder is a CNN.
-There is however an issue: the inputs and outputs to a CNN are discrete signals (e.g. images)and thus cannot take as input sets nor can they be queried at continuous (target) location $x^{(t)}$. Gordon et al.
+There is however an issue: the inputs and outputs to a CNN are discrete signals (e.g. images) and thus cannot take as input sets nor can they be queried at continuous (target) location $x^{(t)}$. Gordon et al.
 {cite}`gordon2019convolutional` solve this issue by introducing the SetConv layer, an operation which extends standard convolutions to sets and could be very useful beyond the NPF framework.
 
 ````{admonition} SetConv
 ---
 class: attention
 ---
-Standard convolutional layers in deep learning take in a discrete signal/function (e.g. a $128\times128$ monochrome image that can be seen as a function from $[0,127]^2 \to \mathbb{R}$) and outputs a discrete signal/function (e.g. another $128\times128$ monochrome image).
-The SetConv layer extends this operation to sets, i.e., it takes as input a set of continuous input-output pairs $\{(x^{c},y^{c})\}_{c=1}^{C}$ (e.g. a time-series sampled at irregular points) and outputs a function that can be queried at continuous locations $x^{t}$.
+Standard convolutional layers in deep learning take in a discrete signal/function (e.g. a $128\times128$ monochrome image that can be seen as a function from $\{0, \dots , 127\}^2 \to [0,1]$) and outputs a discrete signal/function (e.g. another $128\times128$ monochrome image).
+The SetConv layer extends this operation to sets, i.e., it takes as input a set of continuous input-output pairs $\{(x^{(c)},y^{(c)})\}_{c=1}^{C}$ (e.g. a time-series sampled at irregular points) and outputs a function that can be queried at continuous locations $x$.
 
 ```{math}
 :label: set_conv
 \begin{align}
-\mathrm{SetConv} \left( \{(x^{c},y^{c})\}_{c=1}^{C} \right)(x) = \sum_{c=1}^{C} \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} w_{\theta} \left( x - x^{(c)} \right).
+\mathrm{SetConv} \left( \{(x^{(c)},y^{(c)})\}_{c=1}^{C} \right)(x) = \sum_{c=1}^{C} \begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix} w_{\theta} \left( x - x^{(c)} \right).
 \end{align}
 ```
 
 Here, $w_{\theta}$ is a positive-definite Kernel function that maps the _distance between_ $x^{(c)}$ and $x$ to a real number.
-It is most often chosen to be an RBF: $w_{\theta}(r) = \exp(-\|r\|^2_2/ \ell^2)$, where $\ell$ is a learnable lengthscale parameter. You can think of this operation as simply placing Gaussian bumps down at every datapoint, similar to [Kernel Density Estimation](https://en.wikipedia.org/wiki/Kernel_density_estimation).
+It is most often chosen to be an RBF: $w_{\theta}(r) = \exp(- \frac{\|r\|^2_2}{\ell^2} )$, where $\ell$ is a learnable lengthscale parameter. You can think of this operation as simply placing Gaussian bumps down at every datapoint, similar to [Kernel Density Estimation](https://en.wikipedia.org/wiki/Kernel_density_estimation).
 
-Note that the SetConv operation is permutation invariant due to the sum operation, Furthermore, it is very similar to an attention mechanism, the main difference being that:
-* The weight only depends on the distance $x^{(c)}-x$ rather than on their absolute values. This is the key for TE which intuitively requires the mapping to only depend on relative positions rather than absolute ones.
+Note that the SetConv operation is permutation invariant due to the sum operation.Furthermore, it is very similar to an attention mechanism, the main difference being that:
+* The weight only depends on the distance $x^{(c)}-x$ rather than on their absolute values. This is the key for TE, which intuitively requires the mapping to only depend on relative positions rather than absolute ones.
 * We append a constant 1 to the value,  $\begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix}$, which results in an additional _channel_. Intuitively, we can think of this additional channel --- referred to as the _density channel_ --- as keeping track of where data was observed in $\mathcal{C}$.
 
-```{admonition} Note$\qquad$Density Channel
+```{admonition} Density Channel
 ---
 class: note
 ---
@@ -501,7 +521,7 @@ To better understand the role of the density channel, consider a context set con
 
 $$
 \begin{align}
-\mathrm{SetConv} \left( \{(x^{c},y^{c})\}_{c=1}^{C} \right)(x)
+\mathrm{SetConv} \left( \{(x^{(c)},y^{(c)})\}_{c=1}^{C} \right)(x)
 &= \sum_{c=1}^{C} y^{(c)} w_{\theta} \left( x - x^{(c)} \right) \\
 &= \left( y^{(c')} w_{\theta} \left( x - x^{(c')} \right) \right) + \sum_{c \neq c'}  y^{(c)} w_{\theta} \left( x - x^{(c)} \right) \\
 &= 0 + \sum_{c \neq c'}  y^{(c)} w_{\theta} \left( x - x^{(c)} \right)
@@ -519,16 +539,18 @@ It is common practice to use the density channel to _normalise_ the output of th
 
 $$
 \begin{align}
-    \mathrm{density}(x) &= \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} w_{\theta}(x^{(c)} - x) \\
-    \mathrm{signal}(x) &= \sum_{(x^{(c)}, y^{(c)}) \in \mathcal{C}} y^{(c)} w_{\theta}(x^{(c)} - x) \\
-    \mathrm{SetConv}(\mathcal{C})(x) &=  \begin{bmatrix} \mathrm{density}(x) \\ \mathrm{signal}(x) / \mathrm{density}(x) \end{bmatrix}
+\mathrm{density}(x) 
+&= \sum_{c=1}^{C}  w_{\theta}(x^{(c)} - x)\\
+\mathrm{signal}(x) 
+&= \sum_{c=1}^{C} y^{(c)} w_{\theta}(x^{(c)} - x) \\
+\mathrm{SetConv}(\mathcal{C})(x) &=  \begin{bmatrix} \mathrm{density}(x) \\ \mathrm{signal}(x) / \mathrm{density}(x) \end{bmatrix} 
 \end{align}
 $$
 
-Intuitively, this ensures that the magnitude of the signal channel doesn't blow up if there are a large number of context points at the same spot. The density channel of the ConvCNP encoder can be seen as (a scaled version of) a kernel density estimate, and the normalised signal channel can be seen as Nadaraya-Watson kernel regression.
+Intuitively, this ensures that the magnitude of the signal channel doesn't blow up if there are a large number of context points at the same spot. The density channel of the ConvCNP encoder can be seen as (a scaled version of) a kernel density estimate, and the normalised signal channel can be seen as [Nadaraya-Watson kernel regression](https://en.wikipedia.org/wiki/Kernel_regression#Nadaraya%E2%80%93Watson_kernel_regression).
 ```
 
-Note that if $x^{c},x^{t}$ are discrete, the SetConv essentially recovers the standard convolutional layer, denoted Conv. For example, let $I$ be a $128\times128$ monochrome image, then $\mathrm{SetConv}(\{(x^{c},I(x^{c})) | x^{c} \in [0,127]^2 \})(x^{t}) = [\mathrm{Conv}(I)[x^{t}]; 1]$ for all pixel locations $x^{t} \in [0,127]^2$, where $1$ comes from the fact that the density channel is always one when their are no "missing values".
+Note that if $x^{(c)},x^{(t)}$ are discrete, the SetConv essentially recovers the standard convolutional layer, denoted Conv. For example, let $I$ be a $128\times128$ monochrome image, then $\mathrm{SetConv}(\{(x^{(c)},I(x^{(c)}))\}_{x^{(c)} \in \{0, \dots , 127\}^2 })(x^{(t)}) = \begin{bmatrix} 1 \\ \mathrm{Conv}(I)[x^{t}] \end{bmatrix}$ for all pixel locations $x^{(t)} \in \{0, \dots , 127\}^2 $, where $1$ comes from the fact that the density channel is always $1$ when their are no "missing values".
 ````
 
 Armed with this convolution mapping a set to continuous a function, we can use a CNN as our encoder by "wrapping it" around two SetConvs.
@@ -544,13 +566,13 @@ The discretisation means that the resulting ConvCNP can only be approximately TE
 If the spacing between the grid points is $\Delta$, the ConvCNP would not be expected to be equivariant to shifts of the input that are smaller than $\Delta$.
 ```
 
-Similarly to AttnCNP, the decoder applies the resulting functional representation to the target location to get a target specific representation $R^{(t)}=R(x^{(t)})$, which is then used by a MLP to parametrize the final Gaussian distribution.
+Similarly to AttnCNP, the decoder applies the resulting functional representation to the target location to get a target specific representation $R^{(t)}=R(x^{(t)})$, which is then used by an MLP to parametrize the final Gaussian distribution.
 The only difference with AttnCNP being that the MLP does not directly take $x^{(t)}$ as input, to ensure that the ConvCNP is TE.
 
 
 Putting everything together, we can define the ConvCNP using the following design choices (illustrated in {numref}`computational_graph_ConvCNPs_text`):
-* Encoding: $R(\cdot) = \mathrm{Enc}_{\theta}(\mathcal{C})(\cdot) = \mathrm{SetConv} \left( \mathrm{CNN}\left(\{ \mathrm{SetConv}\left( \mathcal{C} \right)(x^{(u)}) \}_{u=1}^U \right) \right)(\cdot) $ .
-* Decoding: $(\mu^{(t)}, \sigma^{2(t)}) = \mathrm{Dec}_{\theta}(R(x^{(t)}), _) =  \mathrm{MLP} \left( R(x^{(t)}) \right)$.
+* Encoding: $R(\cdot) = \mathrm{Enc}_{\theta}(\mathcal{C}) = \mathrm{SetConv} \left( \mathrm{CNN}\left(\{ \mathrm{SetConv}\left( \mathcal{C} \right)(x^{(u)}) \}_{u=1}^U \right) \right)$ .
+* Decoding: $(\mu^{(t)}, \sigma^{2(t)}) = \mathrm{Dec}_{\theta}(R, x^{(t)}) =  \mathrm{MLP} \left( R(x^{(t)}) \right)$.
 
 ```{figure} ../images/computational_graph_ConvCNPs.svg
 ---
@@ -569,7 +591,7 @@ class: caution, dropdown
 Note that the separation of the ConvCNP into encoder and decoder is somewhat arbitrary. You could also view the encoder as the first SetConv, and the decoder as the CNN with the second SetConv, which is the view presented in the original ConvCNP paper.
 ```
 
-Importantly, if the CNN was unconstrained ("infinitely channels" in the CNN and $U \to \infty$) the ConvCNP would essentially be able to predict any mean $\mu^{(t)}$ and variance $\sigma^{2(t)}$ that can be predicted with a TE map (ConvDeepSets; {cite}`gordon2019convolutional`).
+Importantly, if the CNN was a uniuversal function approximator (think about "infinite channels" in the CNN and $U \to \infty$) the ConvCNP would essentially be able to predict any mean $\mu^{(t)}$ and variance $\sigma^{2(t)}$ that can be predicted with a TE map (ConvDeepSets; {cite}`gordon2019convolutional`).
 
 ```{admonition} Advanced$\qquad$ConvDeepSets
 ---
@@ -594,7 +616,7 @@ In particular, ConvCNPs specify $\phi \colon y \mapsto (1, y)^T$, $\rho$ as a CN
 Thus, ConvDeepSets motivate the architectural choices of the ConvCNP analagously to how DeepSets can be used to provide justification for the CNP architecture.
 ```
 
-{numref}`ConvCNP` shows a schematic animation of the forward pass of a ConvCNP.
+{numref}`ConvCNP_text` shows a schematic animation of the forward pass of a ConvCNP.
 We see that every $(x, y)$ pair in the context set (here with ten datapoints) goes through a SetConv.
 After concatenting the density channel, we discretize both the signal and the density channel so that they can be used as input to a CNN.
 The result then goes through a second SetConv to ouput a functional representation $R(\cdot)$ which an be querried at any target location $x^{(t)}$.
@@ -603,22 +625,14 @@ Finally, the global representation evaluated at each target $R(x^{(t)})$ is fed 
 ```{figure} ../gifs/explain_convcnp_RBF_10cntxt_largelength.gif
 ---
 width: 30em
-name: ConvCNP
+name: ConvCNP_text
 alt: Schematic representation of ConvCNP forward pass.
 ---
 Schematic representation of the forward pass of members of the ConvCNP.
 ```
 
 
-```{admonition} Note$\qquad$Computational Complexity
----
-class: dropdown, note
----
-Computing the discrete functional representation requires considering $C$ points in the context set for each discretised function location which scales as $\mathcal{O}(U*C)$.
-Similarly, computing the predictive at the target inputs scales as $\mathcal{O}(U*T)$. Finally, if the convolutional kernel has width $K$, the complexity of the CNN scales as $\mathcal{O}(U*K)$ (here we are ignoring the depth and number of channels). Hence the computational complexity of inference in a ConvCNP is thus $\mathcal{O}(U(C+K+T))$. In the on-the-grid ConvCNP, the computational complexity is simply $\mathcal{O}(U*K)$, where $U$ is the number of pixels for image data.
 
-This shows that there is a trade-off: if the number of discretisation points $U$ is too large then the computational cost will not be manageable, but if it is too small then ConvCNP will be only very 'coarsely' TE.
-```
 
 ```{admonition} Implementation$\qquad$On-the-grid ConvCNP
 ---
@@ -630,6 +644,16 @@ In the on-the-grid ConvCNP, the input data already lives on a discretised grid. 
 
 To implement this, let the input image be $I \in \mathbb{R}^{H \times W}$. Let $M \in \mathbb{R}^{H \times W}$ be a mask matrix, with $M_{i,j} = 1$ if the pixel at location $(i,j)$ is in the context set, and $0$ otherwise. Then we can compute the density channel as $\mathrm{density} = M$ and the signal channel as $\mathrm{signal} = I \odot M$, where $\odot$ denotes element-wise multiplication. We then stack these matrices as $[\mathrm{density}, \mathrm{signal}]^T$. This can then be passed into a CNN, and the CNN can output one channel for the predictive mean, and another for the log predictive variance.
 
+```
+
+```{admonition} Note$\qquad$Computational Complexity
+---
+class: dropdown, note
+---
+Computing the discrete functional representation requires considering $C$ points in the context set for each discretised function location which scales as $\mathcal{O}(U*C)$.
+Similarly, computing the predictive at the target inputs scales as $\mathcal{O}(U*T)$. Finally, if the convolutional kernel has width $K$, the complexity of the CNN scales as $\mathcal{O}(U*K)$ --- here we are ignoring the depth and number of channels. Hence the computational complexity of inference in a ConvCNP is $\mathcal{O}(U(C+K+T))$. In the on-the-grid ConvCNP, the computational complexity is simply $\mathcal{O}(U*K)$, where $U$ is the number of pixels for image data.
+
+This shows that there is a trade-off: if the number of discretisation points $U$ is too large then the computational cost will not be manageable, but if it is too small then ConvCNP will be only very "coarsely" TE.
 ```
 
 Now that we have constructed a translation equivariant member of the CNPF, we can test it in the more challenging extrapolation regime.
@@ -653,9 +677,9 @@ Note that this is a direct consequence of TE.
 We can see this by noting that it produces periodic predictions, even "far" away from the observed data.
 
 
-````{admonition} Caution$\qquad$Receptive Field
+````{admonition} Note$\qquad$Finite Receptive Field
 ---
-class: dropdown, warning
+class: dropdown, note
 ---
 The periodic kernel example is a little misleading, as the ConvCNP does not recover the underlying GP predictions everywhere.
 In fact, we know that it cannot exactly recover the underlying process.
