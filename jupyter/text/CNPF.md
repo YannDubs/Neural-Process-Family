@@ -87,7 +87,7 @@ CNPF members make an important tradeoff.
 On one hand, the factorisation assumption places a severe restriction on the class of predictive stochastic processes we can model.
 As discussed at the end of this chapter, this has important consequences, such as the inability of the CNPF to produce coherent samples.
 On the other hand, the factorisation assumption makes evaluation of the predictive likelihoods analytically tractable.
-This means we can employ a simple maximum-likelihood procedure to train the model parameters, i.e., training amounts to directly maximising the log-likelihood $\log p_{\boldsymbol\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$, as discussed on the {ref}`previous page <meta_training>`.
+This means we can employ a simple maximum-likelihood procedure to train the model parameters, i.e., training amounts to directly maximising the log-likelihood $\log p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$, as discussed on the {ref}`previous page <meta_training>`.
 
 Now that we've given an overview of the entire CNPF, we'll discuss three particular members: the Conditional Neural Process (CNP), Attentive Conditional Neural Process (AttnCNP), and the Convolutional Conditional Neural Process (ConvCNP). Each member of the CNPF can be broadly distinguished by:
 * The encoder $\mathrm{Enc}_{\theta}: \mathcal{C} \mapsto R$, which has to be permutation invariant to treat $\mathcal{C}$ as a set.
@@ -109,7 +109,7 @@ The decoder is simply an MLP that takes as input the concatenation of the repres
 ---
 class: dropdown
 ---
-Typically, we parameterise $\mathrm{Dec}_{\boldsymbol\theta}$ as outputting $(\mu^{(t)}, \log \sigma^{(t)})$, i.e., the _log_ standard deviation, so as to ensure that no negative variances occur.
+Typically, we parameterise $\mathrm{Dec}_{\theta}$ as outputting $(\mu^{(t)}, \log \sigma^{(t)})$, i.e., the _log_ standard deviation, so as to ensure that no negative variances occur.
 ```
 
 
