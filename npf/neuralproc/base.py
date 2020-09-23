@@ -6,9 +6,6 @@ from functools import partial
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.distributions import Normal
-from torch.distributions.independent import Independent
-
 from npf.architectures import MLP, merge_flat_input
 from npf.utils.helpers import (
     MultivariateNormalDiag,
@@ -17,6 +14,8 @@ from npf.utils.helpers import (
     make_abs_conv,
 )
 from npf.utils.initialization import weights_init
+from torch.distributions import Normal
+from torch.distributions.independent import Independent
 
 from .helpers import pool_and_replicate_middle, replicate_z_samples
 
@@ -33,7 +32,7 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
     Notes
     -----
     - when writing size of vectors something like `size=[batch_size,*n_cntxt,y_dim]` means that the
-    first dimension is the batch, the last is the target values and everything in the middle are context 
+    first dimension is the batch, the last is the target values and everything in the middle are context
     points. We use `*n_cntxt` as it can  be a single flattened dimension or many (for example on the grid).
 
     Parameters
@@ -57,11 +56,11 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
         Dimension of the encoded X. If `-1` uses `r_dim`. if `None` uses `x_dim`.
 
     is_heteroskedastic : bool, optional
-        Whether the posterior predictive std can depend on the target features. If using in conjuction 
+        Whether the posterior predictive std can depend on the target features. If using in conjuction
         to `NllLNPF`, it might revert to a *CNP model (collapse of latents). If the flag is False, it
-        pools all the scale parameters of the posterior distribution. This trick is only exactly 
-        recovers heteroskedasticity when the set target features are always the same (e.g. 
-        predicting values on a predefined grid) but is a good approximation even when not. 
+        pools all the scale parameters of the posterior distribution. This trick is only exactly
+        recovers heteroskedasticity when the set target features are always the same (e.g.
+        predicting values on a predefined grid) but is a good approximation even when not.
 
     XEncoder : nn.Module, optional
         Spatial encoder module which maps {x^i}_i -> {x_trnsf^i}_i. It should be
@@ -72,8 +71,8 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
     Decoder : nn.Module, optional
         Decoder module which maps {(x^t, r^t)}_t -> {p_y_suffstat^t}_t. It should be constructable
         via `decoder(x_dim, r_dim, n_out)`. If you have an decoder that maps
-        [r;x] -> y you can convert it via `merge_flat_input(Decoder)`. `None` uses MLP. In the 
-        computational model this corresponds to `g`. 
+        [r;x] -> y you can convert it via `merge_flat_input(Decoder)`. `None` uses MLP. In the
+        computational model this corresponds to `g`.
         Example:
             - `merge_flat_input(MLP)` : predict with MLP.
             - `merge_flat_input(SelfAttention, is_sum_merge=True)` : predict
@@ -83,8 +82,8 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
             - `discard_ith_arg(MLP, 0)` if want the decoding to only depend on r.
 
     PredictiveDistribution : torch.distributions.Distribution, optional
-        Predictive distribution. The input to the constructor are currently two values of the same 
-        shape : `loc` and `scale`, that are preprocessed by `p_y_loc_transformer` and 
+        Predictive distribution. The input to the constructor are currently two values of the same
+        shape : `loc` and `scale`, that are preprocessed by `p_y_loc_transformer` and
         `pred_scale_transformer`.
 
     p_y_loc_transformer : callable, optional
@@ -169,7 +168,9 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
         )
 
         dflt_Modules["SubDecoder"] = partial(
-            MLP, n_hidden_layers=4, hidden_size=self.r_dim,
+            MLP,
+            n_hidden_layers=4,
+            hidden_size=self.r_dim,
         )
 
         dflt_Modules["Decoder"] = merge_flat_input(
@@ -205,7 +206,7 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
 
         z_samples: torch.Tensor, size=[n_z_samples, batch_size, *n_lat, r_dim]
             Sampled latents. `None` if `encoded_path==deterministic`.
-            
+
         q_zCc: torch.distributions.Distribution, batch shape=[batch_size, *n_lat] ; event shape=[r_dim]
             Latent distribution for the context points. `None` if `encoded_path==deterministic`.
 
@@ -252,17 +253,17 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
 
     @abc.abstractmethod
     def encode_globally(self, X_cntxt, R_cntxt):
-        """Encode context set all together (globally). 
+        """Encode context set all together (globally).
 
         Parameters
         ----------
         X_cntxt : torch.Tensor, size=[batch_size, *n_cntxt, x_transf_dim]
-            Set of all context features {x^c}_c. 
+            Set of all context features {x^c}_c.
 
         Y_cntxt: torch.Tensor, size=[batch_size, *n_cntxt, y_dim]
             Set of all context values {y^c}_c.
 
-        Return 
+        Return
         ------
         R : torch.Tensor, size=[batch_size, *n_rep, r_dim]
             Global representations of the context set.
@@ -276,7 +277,7 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
         Parameters
         ----------
         X_cntxt : torch.Tensor, size=[batch_size, *n_cntxt, x_transf_dim]
-            Set of all context features {x^c}_c. 
+            Set of all context features {x^c}_c.
 
         z_samples: torch.Tensor, size=[n_z_samples, batch_size, *n_lat, r_dim]
             Sampled latents. `None` if `encoded_path==deterministic`.
@@ -285,7 +286,7 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
             Global representation of the context set. `None` if `self.encoded_path==latent`.
 
         X_trgt : torch.Tensor, size=[batch_size, *n_trgt, x_transf_dim]
-            Set of all target features {x^t}_t. 
+            Set of all target features {x^t}_t.
 
         Returns
         -------
@@ -295,18 +296,18 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
         pass
 
     def latent_path(self, X_cntxt, R, X_trgt, Y_trgt):
-        """Infer latent variable given context features and global representation. 
+        """Infer latent variable given context features and global representation.
 
         Parameters
         ----------
         R : torch.Tensor, size=[batch_size, *n_rep, r_dim]
-            Global representation values {r^u}_u. 
+            Global representation values {r^u}_u.
 
         X_cntxt : torch.Tensor, size=[batch_size, *n_cntxt, x_transf_dim]
-            Set of all context features {x^c}_c. 
+            Set of all context features {x^c}_c.
 
         X_trgt : torch.Tensor, size=[batch_size, *n_trgt, x_transf_dim]
-            Set of all target features {x^t}_t. 
+            Set of all target features {x^t}_t.
 
         Y_trgt: torch.Tensor, size=[batch_size, *n_trgt, y_dim], optional
             Set of all target values {y_t}. Only required during training and if
@@ -316,7 +317,7 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
         ------
         z_samples: torch.Tensor, size=[n_z_samples, batch_size, *n_lat, r_dim]
             Sampled latents. `None` if `encoded_path==deterministic`.
-            
+
         q_zCc: torch.distributions.Distribution, batch shape=[batch_size, *n_lat] ; event shape=[r_dim]
             Latent distribution for the context points. `None` if `encoded_path==deterministic`.
 
@@ -377,7 +378,7 @@ class NeuralProcessFamily(nn.Module, abc.ABC):
 
 class LatentNeuralProcessFamily(NeuralProcessFamily):
     """Base class for members of the latent neural process (sub-)family.
-    
+
     Parameters
     ----------
     *args:
@@ -389,17 +390,17 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         - `"both"` concatenates both the deterministic and sampled latents as input to the decoder.
 
     is_q_zCct : bool, optional
-        Whether to infer Z using q(Z|cntxt,trgt) instead of q(Z|cntxt). This requires the loss 
+        Whether to infer Z using q(Z|cntxt,trgt) instead of q(Z|cntxt). This requires the loss
         to perform some type of importance sampling. Only used if `encoded_path in {"latent", "both"}`.
 
-    n_z_samples_train : int or scipy.stats.rv_frozen, optional 
+    n_z_samples_train : int or scipy.stats.rv_frozen, optional
         Number of samples from the latent during training. Only used if `encoded_path in {"latent", "both"}`.
-        Can also be a scipy random variable , which is useful if the number of samples has to be stochastic, for 
+        Can also be a scipy random variable , which is useful if the number of samples has to be stochastic, for
         example when using `SUMOLossNPF`.
 
-    n_z_samples_test : int or scipy.stats.rv_frozen, optional 
+    n_z_samples_test : int or scipy.stats.rv_frozen, optional
         Number of samples from the latent during testing. Only used if `encoded_path in {"latent", "both"}`.
-        Can also be a scipy random variable , which is useful if the number of samples has to be stochastic, for 
+        Can also be a scipy random variable , which is useful if the number of samples has to be stochastic, for
         example when using `SUMOLossNPF`.
 
     LatentEncoder : nn.Module, optional
@@ -407,7 +408,7 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         `LatentEncoder(r_dim, n_out)`.  If `None` uses an MLP.
 
     LatentDistribution : torch.distributions.Distribution, optional
-        Latent distribution. The input to the constructor are currently two values  : `loc` and `scale`, 
+        Latent distribution. The input to the constructor are currently two values  : `loc` and `scale`,
         that are preprocessed by `q_z_loc_transformer` and `q_z_loc_transformer`.
 
     q_z_loc_transformer : callable, optional
@@ -434,6 +435,7 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         LatentDistribution=MultivariateNormalDiag,
         q_z_loc_transformer=nn.Identity(),
         q_z_scale_transformer=lambda z_scale: 0.1 + 0.9 * torch.sigmoid(z_scale),
+        z_dim=None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -441,20 +443,24 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         self.is_q_zCct = is_q_zCct
         self.n_z_samples_train = n_z_samples_train
         self.n_z_samples_test = n_z_samples_test
+        self.z_dim = self.r_dim if z_dim is None else z_dim
 
         if LatentEncoder is None:
             LatentEncoder = self.dflt_Modules["LatentEncoder"]
 
         # times 2 out because loc and scale (mean and var for gaussian)
-        self.latent_encoder = LatentEncoder(self.r_dim, self.r_dim * 2)
+        self.latent_encoder = LatentEncoder(self.r_dim, self.z_dim * 2)
 
         if self.encoded_path == "both":
-            # times 2 in because R and Z concatenated
-            self.r_z_merger = nn.Linear(self.r_dim * 2, self.r_dim)
+            self.r_z_merger = nn.Linear(self.r_dim + self.z_dim, self.r_dim)
 
         self.LatentDistribution = LatentDistribution
         self.q_z_loc_transformer = q_z_loc_transformer
         self.q_z_scale_transformer = q_z_scale_transformer
+
+        if self.z_dim != self.r_dim and self.encoded_path == "latent":
+            # will reshape the z samples to make sure they can be given to the decoder
+            self.reshaper_z = nn.Linear(self.z_dim, self.r_dim)
 
         self.reset_parameters()
 
@@ -464,7 +470,9 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         dflt_Modules = NeuralProcessFamily.dflt_Modules.__get__(self)
 
         dflt_Modules["LatentEncoder"] = partial(
-            MLP, n_hidden_layers=1, hidden_size=self.r_dim,
+            MLP,
+            n_hidden_layers=1,
+            hidden_size=self.r_dim,
         )
 
         return dflt_Modules
@@ -491,11 +499,8 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
     def latent_path(self, X_cntxt, R, X_trgt, Y_trgt):
 
         # q(z|c)
-        # batch shape = [batch_size, *n_lat] ; event shape = [r_dim]
+        # batch shape = [batch_size, *n_lat] ; event shape = [z_dim]
         q_zCc = self.infer_latent_dist(X_cntxt, R)
-
-        # size = [n_z_samples, batch_size, *n_lat, r_dim]
-        z_samples = q_zCc.rsample([self.n_z_samples])
 
         if self.is_q_zCct and Y_trgt is not None:
             # during training when we know Y_trgt, we can take an expectation over q(z|cntxt,trgt)
@@ -503,15 +508,18 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
             R_from_trgt = self.encode_globally(X_trgt, Y_trgt)
             q_zCct = self.infer_latent_dist(X_trgt, R_from_trgt)
 
-            # size = [n_z_samples, batch_size, *n_lat, r_dim]
+            # size = [n_z_samples, batch_size, *n_lat, z_dim]
             z_samples = q_zCct.rsample([self.n_z_samples])
         else:
             q_zCct = None
 
+            # size = [n_z_samples, batch_size, *n_lat, z_dim]
+        z_samples = q_zCc.rsample([self.n_z_samples])
+
         return z_samples, q_zCc, q_zCct
 
     def infer_latent_dist(self, X, R):
-        """Infer latent distribution given desired features and global representation. 
+        """Infer latent distribution given desired features and global representation.
 
         Parameters
         ----------
@@ -519,26 +527,26 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
             Set of all features {x^i}_i. E.g. context or target.
 
         R : torch.Tensor, size=[batch_size, *n_rep, r_dim]
-            Global representation values {r^u}_u. 
+            Global representation values {r^u}_u.
 
         Return
         ------
-        q_zCc: torch.distributions.Distribution, batch shape = [batch_size, *n_lat] ; event shape = [r_dim]
+        q_zCc: torch.distributions.Distribution, batch shape = [batch_size, *n_lat] ; event shape = [z_dim]
             Inferred latent distribution.
         """
 
-        # size = [batch_size, *n_lat, r_dim]
+        # size = [batch_size, *n_lat, z_dim]
         R_lat_inp = self.rep_to_lat_input(R)
 
-        # size = [batch_size, *n_lat, r_dim*2]
+        # size = [batch_size, *n_lat, z_dim*2]
         q_z_suffstat = self.latent_encoder(R_lat_inp)
 
-        q_z_loc, q_z_scale = q_z_suffstat.split(self.r_dim, dim=-1)
+        q_z_loc, q_z_scale = q_z_suffstat.split(self.z_dim, dim=-1)
 
         q_z_loc = self.q_z_loc_transformer(q_z_loc)
         q_z_scale = self.q_z_scale_transformer(q_z_scale)
 
-        # batch shape = [batch_size, *n_lat] ; event shape = [r_dim]
+        # batch shape = [batch_size, *n_lat] ; event shape = [z_dim]
         q_zCc = self.LatentDistribution(q_z_loc, q_z_scale)
 
         return q_zCc
@@ -555,10 +563,10 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         Parameters
         ----------
         R : torch.Tensor, size=[batch_size, *, r_dim]
-            Global representation values {r^u}_u. 
+            Global representation values {r^u}_u.
 
         z_samples : torch.Tensor, size=[n_z_samples, batch_size, *, r_dim]
-            Global representation values {r^u}_u. 
+            Global representation values {r^u}_u.
 
         Return
         ------
@@ -566,7 +574,7 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         """
         if R.shape != z_samples.shape:
 
-            R = R.unsqueeze(0).expand(*z_samples.shape)
+            R = R.unsqueeze(0).expand(*z_samples.shape[:-1], self.r_dim)
 
         # (add ReLU to not have linear followed by linear)
         return torch.relu(self.r_z_merger(torch.cat((R, z_samples), dim=-1)))

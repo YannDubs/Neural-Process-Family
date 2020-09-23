@@ -32,7 +32,7 @@ class GridConvCNP(NeuralProcessFamily):
 
     Notes
     -----
-    - Assumes that input, output and induced points are on the same grid. I.e. This cannot be used 
+    - Assumes that input, output and induced points are on the same grid. I.e. This cannot be used
     for sub-pixel interpolation / super resolution. I.e. in the code *n_rep = *n_cntxt = *n_trgt =* grid_shape.
     The real number of ontext and target will be determined by the masks.
     - Assumes that Y_cntxt is the grid values (y_dim / channels on last dim),
@@ -57,11 +57,11 @@ class GridConvCNP(NeuralProcessFamily):
         Convolution layer to use to map from context to induced points {(x^k, y^k)}, {x^q} -> {y^q}.
 
     CNN : nn.Module, optional
-        Convolutional model to use between induced points. It should be constructed via 
+        Convolutional model to use between induced points. It should be constructed via
         `CNN(r_dim)`. Important : the channel needs to be last dimension of input. Example:
-            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small 
+            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small
             ResNet.
-            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a 
+            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a
             UNet.
 
     kwargs :
@@ -69,7 +69,7 @@ class GridConvCNP(NeuralProcessFamily):
 
     References
     ----------
-    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint 
+    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint
     arXiv:1910.13556 (2019).
     """
 
@@ -81,7 +81,12 @@ class GridConvCNP(NeuralProcessFamily):
         y_dim,
         # uses only depth wise + make sure positive to be interpreted as a density
         Conv=lambda y_dim: make_abs_conv(nn.Conv2d)(
-            y_dim, y_dim, groups=y_dim, kernel_size=11, padding=11 // 2, bias=False,
+            y_dim,
+            y_dim,
+            groups=y_dim,
+            kernel_size=11,
+            padding=11 // 2,
+            bias=False,
         ),
         CNN=partial(
             CNN,
@@ -109,7 +114,11 @@ class GridConvCNP(NeuralProcessFamily):
         # don't force det so that can inherit ,
         kwargs["encoded_path"] = kwargs.get("encoded_path", "deterministic")
         super().__init__(
-            x_dim, y_dim, x_transf_dim=None, XEncoder=nn.Identity, **kwargs,
+            x_dim,
+            y_dim,
+            x_transf_dim=None,
+            XEncoder=nn.Identity,
+            **kwargs,
         )
 
         self.CNN = CNN
@@ -183,12 +192,12 @@ class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
         Dimension of y values.
 
     is_global : bool, optional
-        Whether to also use a global representation in addition to the latent one. Only if 
+        Whether to also use a global representation in addition to the latent one. Only if
         encoded_path = `latent`.
 
     CNNPostZ : Module, optional
         CNN to use after the sampling. If `None` uses the same as before sampling. Note that computations
-        will be heavier after sampling (as performing on all the samples) so you might want to 
+        will be heavier after sampling (as performing on all the samples) so you might want to
         make it smaller.
 
     kwargs :
@@ -196,7 +205,7 @@ class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
 
     References
     ----------
-    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint 
+    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint
     arXiv:1910.13556 (2019).
     """
 
@@ -212,7 +221,10 @@ class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
         **kwargs,
     ):
         super().__init__(
-            x_dim, y_dim, encoded_path=encoded_path, **kwargs,
+            x_dim,
+            y_dim,
+            encoded_path=encoded_path,
+            **kwargs,
         )
 
         self.is_global = is_global
@@ -240,8 +252,12 @@ class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
             z_samples = collapse_z_samples_batch(z_samples)
 
             if self.is_global:
-                # size = [n_z_samples*batch_size, *grid_shape, r_dim]
+                # size = [n_z_samples*batch_size, *grid_shape, z_dim]
                 z_samples = self.add_global_latent(z_samples)
+
+            # size = [n_z_samples * batch_size, n_induced, r_dim]
+            if self.z_dim != self.r_dim:
+                z_samples = self.reshaper_z(z_samples)
 
             # size = [n_z_samples*batch_size, *grid_shape, r_dim]
             # "mixing" after the sampling to have coherent samples
@@ -271,21 +287,3 @@ class GridConvLNP(LatentNeuralProcessFamily, GridConvCNP):
         R_trgt = R_trgt.view(n_z_samples, batch_size, *grid_shape, self.r_dim)
 
         return R_trgt
-
-
-"""
-class GridConvLNPDet(GridConvCNP):
-    _valid_paths = ["deterministic"]
-
-    def __init__(self, *args, **kwargs):
-        GridConvLNP.__init__(self, *args, encoded_path="deterministic", **kwargs)
-
-    dflt_Modules = ConvLNP.dflt_Modules
-
-    def trgt_dependent_representation(self, _, __, R_induced, ___):
-        # size = [batch_size, n_trgt, r_dim]
-        R_trgt = self.induced_to_induced_post_sampling(R_induced)
-
-        # n_z_samples=1. size = [1, batch_size, n_trgt, r_dim]
-        return R_trgt.unsqueeze(0)
-"""

@@ -50,7 +50,7 @@ class AttnCNP(NeuralProcessFamily):
         Additional arguments to `SelfAttention`.
 
     is_self_attn : bool, optional
-        Whether to use self attention in the encoder. 
+        Whether to use self attention in the encoder.
 
     kwargs :
         Additional arguments to `NeuralProcessFamily`.
@@ -78,7 +78,9 @@ class AttnCNP(NeuralProcessFamily):
         # don't force det so that can inherit ,
         kwargs["encoded_path"] = kwargs.get("encoded_path", "deterministic")
         super().__init__(
-            x_dim, y_dim, **kwargs,
+            x_dim,
+            y_dim,
+            **kwargs,
         )
 
         self.is_self_attn = is_self_attn
@@ -145,7 +147,7 @@ class AttnLNP(LatentNeuralProcessFamily, AttnCNP):
         Encoder which maps r -> z_suffstat. It should be constructed via
         `LatentEncoder(r_dim, n_out)`.  If `None` uses an MLP.
 
-    kwargs : 
+    kwargs :
         Additional arguments to `AttnCNP` and `NeuralProcessFamily`.
 
     References
@@ -184,8 +186,8 @@ class AttnLNP(LatentNeuralProcessFamily, AttnCNP):
         n_z_samples = z_samples.size(0)
 
         # latent path
-        # size = [n_z_samples, batch_size, n_trgt, r_dim]
-        z_samples = z_samples.expand(n_z_samples, batch_size, n_trgt, self.r_dim)
+        # size = [n_z_samples, batch_size, n_trgt, z_dim]
+        z_samples = z_samples.expand(n_z_samples, batch_size, n_trgt, self.z_dim)
 
         # deterministic path
         # size = [batch_size, n_trgt, r_dim]

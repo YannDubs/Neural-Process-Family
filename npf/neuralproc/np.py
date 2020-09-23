@@ -32,15 +32,15 @@ class CNP(NeuralProcessFamily):
         Encoder module which maps {x_transf_i, y_i} -> {r_i}. It should be constructable
         via `XYEncoder(x_transf_dim, y_dim, n_out)`. If you have an encoder that maps
         [x;y] -> r you can convert it via `merge_flat_input(Encoder)`. `None` uses
-        MLP. In the computational model this corresponds to `h` (with XEncoder). 
+        MLP. In the computational model this corresponds to `h` (with XEncoder).
         Example:
             - `merge_flat_input(MLP, is_sum_merge=False)` : learn representation
             with MLP. `merge_flat_input` concatenates (or sums) X and Y inputs.
-            - `merge_flat_input(SelfAttention, is_sum_merge=True)` : self attention mechanisms as 
+            - `merge_flat_input(SelfAttention, is_sum_merge=True)` : self attention mechanisms as
             [4]. For more parameters (attention type, number of layers ...) refer to its docstrings.
             - `discard_ith_arg(MLP, 0)` if want the encoding to only depend on Y.
 
-    kwargs : 
+    kwargs :
         Additional arguments to `NeuralProcessFamily`
 
     References
@@ -56,7 +56,9 @@ class CNP(NeuralProcessFamily):
         # don't force det so that can inherit ,
         kwargs["encoded_path"] = kwargs.get("encoded_path", "deterministic")
         super().__init__(
-            x_dim, y_dim, **kwargs,
+            x_dim,
+            y_dim,
+            **kwargs,
         )
 
         if XYEncoder is None:
@@ -72,7 +74,10 @@ class CNP(NeuralProcessFamily):
         dflt_Modules = NeuralProcessFamily.dflt_Modules.__get__(self)
 
         SubXYEncoder = partial(
-            MLP, n_hidden_layers=2, is_force_hid_smaller=True, hidden_size=self.r_dim,
+            MLP,
+            n_hidden_layers=2,
+            is_force_hid_smaller=True,
+            hidden_size=self.r_dim,
         )
         dflt_Modules["XYEncoder"] = merge_flat_input(SubXYEncoder, is_sum_merge=True)
 
@@ -122,7 +127,7 @@ class LNP(LatentNeuralProcessFamily, CNP):
         - `"latent"`  the decoder gets a sample latent representation as input as in [1].
         - `"both"` concatenates both the deterministic and sampled latents as input to the decoder [2].
 
-    kwargs : 
+    kwargs :
         Additional arguments to `ConditionalNeuralProcess` and `NeuralProcessFamily`.
 
     References
@@ -146,8 +151,12 @@ class LNP(LatentNeuralProcessFamily, CNP):
             R_trgt = self.merge_r_z(R, z_samples)
 
         elif self.encoded_path == "latent":
-            # size = [n_z_samples, batch_size, 1, r_dim]
+            # size = [n_z_samples, batch_size, 1, z_dim]
             R_trgt = z_samples
+
+            # size = [n_z_samples, batch_size, 1, r_dim]
+            if self.z_dim != self.r_dim:
+                R_trgt = self.reshaper_z(R_trgt)
 
         R_trgt = R_trgt.expand(n_z_samples, batch_size, n_trgt, self.r_dim)
 

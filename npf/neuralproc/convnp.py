@@ -40,17 +40,17 @@ class ConvCNP(NeuralProcessFamily):
         Density of induced-inputs to use. The induced-inputs will be regularly sampled.
 
     Interpolator : callable or str, optional
-        Callable to use to compute cntxt / trgt to and from the induced points.  {(x^k, y^k)}, {x^q} -> {y^q}. 
+        Callable to use to compute cntxt / trgt to and from the induced points.  {(x^k, y^k)}, {x^q} -> {y^q}.
         It should be constructed via `Interpolator(x_dim, in_dim, out_dim)`. Example:
             - `SetConv` : uses a set convolution as in the paper.
             - `"TransformerAttender"` : uses a cross attention layer.
 
     CNN : nn.Module, optional
-        Convolutional model to use between induced points. It should be constructed via 
+        Convolutional model to use between induced points. It should be constructed via
         `CNN(r_dim)`. Important : the channel needs to be last dimension of input. Example:
-            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small 
+            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small
             ResNet.
-            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a 
+            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a
             UNet.
 
     kwargs :
@@ -58,7 +58,7 @@ class ConvCNP(NeuralProcessFamily):
 
     References
     ----------
-    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint 
+    [1] Gordon, Jonathan, et al. "Convolutional conditional neural processes." arXiv preprint
     arXiv:1910.13556 (2019).
     """
 
@@ -92,7 +92,11 @@ class ConvCNP(NeuralProcessFamily):
         # don't force det so that can inherit ,
         kwargs["encoded_path"] = kwargs.get("encoded_path", "deterministic")
         super().__init__(
-            x_dim, y_dim, x_transf_dim=None, XEncoder=nn.Identity, **kwargs,
+            x_dim,
+            y_dim,
+            x_transf_dim=None,
+            XEncoder=nn.Identity,
+            **kwargs,
         )
 
         self.density_induced = density_induced
@@ -191,12 +195,12 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
         Dimension of y values.
 
     is_global : bool, optional
-        Whether to also use a global representation in addition to the latent one. Only if 
+        Whether to also use a global representation in addition to the latent one. Only if
         encoded_path = `latent`.
 
     CNNPostZ : Module, optional
         CNN to use after the sampling. If `None` uses the same as before sampling. Note that computations
-        will be heavier after sampling (as performing on all the samples) so you might want to 
+        will be heavier after sampling (as performing on all the samples) so you might want to
         make it smaller.
 
     kwargs :
@@ -204,7 +208,7 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
 
     References
     ----------
-    [1] Foong, Andrew YK, et al. "Meta-Learning Stationary Stochastic Process Prediction with 
+    [1] Foong, Andrew YK, et al. "Meta-Learning Stationary Stochastic Process Prediction with
     Convolutional Neural Processes." arXiv preprint arXiv:2007.01332 (2020).
     """
 
@@ -220,7 +224,10 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
         **kwargs,
     ):
         super().__init__(
-            x_dim, y_dim, encoded_path=encoded_path, **kwargs,
+            x_dim,
+            y_dim,
+            encoded_path=encoded_path,
+            **kwargs,
         )
 
         self.is_global = is_global
@@ -271,13 +278,18 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
 
         if self.encoded_path == "latent":
             # make all computations with n_z_samples and batch size merged (because CNN need it)
-            # size = [n_z_samples * batch_size, n_induced, self.r_dim]
+            # size = [n_z_samples * batch_size, n_induced, z_dim]
             z_samples = collapse_z_samples_batch(z_samples)
+
+            # size = [n_z_samples * batch_size, n_induced, r_dim]
+            if self.z_dim != self.r_dim:
+                z_samples = self.reshaper_z(z_samples)
 
             # size = [n_z_samples*batch_size, n_induced, r_dim]
             # "mixing" after the sampling to have coherent samples
             z_samples = self.induced_to_induced_post_sampling(z_samples)
 
+            #! SHOULD be directly after sampling (like in gridconvnp)
             if self.is_global:
                 # size = [n_z_samples*batch_size, n_induced, r_dim]
                 z_samples = self.add_global_latent(z_samples)
@@ -286,9 +298,9 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
             R_trgt = self.induced_to_trgt(X_induced, X_trgt, z_samples)
 
         elif self.encoded_path == "both":
-            # size = [n_z_samples, batch_size, n_induced, r_dim]
+            # size = [n_z_samples, batch_size, n_induced, z_dim]
             z_samples = z_samples.expand(
-                n_z_samples, batch_size, self.n_induced, self.r_dim
+                n_z_samples, batch_size, self.n_induced, self.z_dim
             )
 
             R_induced = self.merge_r_z(R_induced, z_samples)
@@ -311,7 +323,9 @@ class ConvLNP(LatentNeuralProcessFamily, ConvCNP):
     def add_global_latent(self, z_samples):
         """Add a global latent to z_samples."""
         # size = [n_z_samples*batch_size, n_induced, r_dim // 2]
-        local_z_samples, global_z_samples = z_samples.split(self.r_dim // 2, dim=-1)
+        local_z_samples, global_z_samples = z_samples.split(
+            z_samples.shape[-1] // 2, dim=-1
+        )
 
         # size = [n_z_samples*batch_size, n_induced, r_dim //2]
         global_z_samples = pool_and_replicate_middle(global_z_samples)

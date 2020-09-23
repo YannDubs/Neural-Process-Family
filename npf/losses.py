@@ -56,8 +56,8 @@ class BaseLossNPF(nn.Module, abc.ABC):
 
         Return
         ------
-        loss : torch.Tensor 
-            size=[batch_size] if `reduction=None` else [1]. 
+        loss : torch.Tensor
+            size=[batch_size] if `reduction=None` else [1].
         """
         p_yCc, z_samples, q_zCc, q_zCct = pred_outputs
 
@@ -89,13 +89,13 @@ class BaseLossNPF(nn.Module, abc.ABC):
         p_yCc: torch.distributions.Distribution, batch shape=[n_z_samples, batch_size, *n_trgt] ; event shape=[y_dim]
             Posterior distribution for target values {p(Y^t|y_c; x_c, x_t)}_t
 
-        z_samples: torch.Tensor, size=[n_z_samples, batch_size, *n_lat, r_dim]
+        z_samples: torch.Tensor, size=[n_z_samples, batch_size, *n_lat, z_dim]
             Sampled latents. `None` if `encoded_path==deterministic`.
-            
-        q_zCc: torch.distributions.Distribution, batch shape=[batch_size, *n_lat] ; event shape=[r_dim]
+
+        q_zCc: torch.distributions.Distribution, batch shape=[batch_size, *n_lat] ; event shape=[z_dim]
             Latent distribution for the context points. `None` if `encoded_path==deterministic`.
 
-        q_zCct: torch.distributions.Distribution, batch shape=[batch_size, *n_lat] ; event shape=[r_dim]
+        q_zCct: torch.distributions.Distribution, batch shape=[batch_size, *n_lat] ; event shape=[z_dim]
             Latent distribution for the targets. `None` if `encoded_path==deterministic`
             or not training or not `is_q_zCct`.
 
@@ -104,7 +104,7 @@ class BaseLossNPF(nn.Module, abc.ABC):
 
         Return
         ------
-        loss : torch.Tensor, size=[1]. 
+        loss : torch.Tensor, size=[1].
         """
         pass
 
@@ -169,7 +169,7 @@ class NLLLossLNPF(BaseLossNPF):
 
     References
     ----------
-    [?] 
+    [?]
     """
 
     def get_loss(self, p_yCc, z_samples, q_zCc, q_zCct, Y_trgt):
@@ -226,12 +226,14 @@ class SUMOLossLNPF(BaseLossNPF):
 
     References
     ----------
-    [1] Luo, Yucen, et al. "SUMO: Unbiased Estimation of Log Marginal Probability for Latent 
+    [1] Luo, Yucen, et al. "SUMO: Unbiased Estimation of Log Marginal Probability for Latent
     Variable Models." arXiv preprint arXiv:2004.00353 (2020)
     """
 
     def __init__(
-        self, p_n_z_samples=LightTailPareto(a=5).freeze(85), **kwargs,
+        self,
+        p_n_z_samples=LightTailPareto(a=5).freeze(85),
+        **kwargs,
     ):
         super().__init__()
         self.p_n_z_samples = p_n_z_samples
