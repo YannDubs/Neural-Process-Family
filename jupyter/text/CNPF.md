@@ -246,7 +246,7 @@ During meta-training, we treat each image as a sampled function, and split the i
 ---
 width: 30em
 name: CNP_img_interp_text
-alt: AttnCNP on CelebA and MNIST
+alt: CNP on CelebA and MNIST
 ---
 Posterior predictive of a CNP on CelebA $32\times32$ and MNIST.
 ```
