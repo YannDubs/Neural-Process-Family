@@ -112,7 +112,8 @@ class BaseLossNPF(nn.Module, abc.ABC):
 class CNPFLoss(BaseLossNPF):
     """Losss for conditional neural process (suf-)family [1]."""
 
-    def get_loss(self, p_yCc, _, __, ___, Y_trgt):
+    def get_loss(self, p_yCc, _, q_zCc, ___, Y_trgt):
+        assert q_zCc is None
         # \sum_t log p(y^t|z)
         # \sum_t log p(y^t|z). size = [z_samples, batch_size]
         sum_log_p_yCz = sum_log_prob(p_yCc, Y_trgt)
