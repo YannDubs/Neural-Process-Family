@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 <html>
@@ -7,17 +6,36 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Conditional NPF &#8212; Neural Process Family</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
-    <link href="../_static/css/index.css" rel="stylesheet">
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.css" type="text/css" />
+    
+  <link rel="stylesheet" href="../_static/css/index.d431a4ee1c1efae0e38bdfebc22debff.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.bfb7730f9caf2ec0b46a44615585038c.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-dropdown.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.30270b6e4c972e43c488.js">
+
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/sphinx-book-theme.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -25,8 +43,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script src="../_static/sphinx-book-theme.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.be0a4a0c39cd630af62a2fcf693f3f06.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
@@ -42,8 +60,8 @@
     <link rel="next" title="Latent NPFs" href="LNPF.html" />
     <link rel="prev" title="The Neural Process Family" href="Intro.html" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="docsearch:language" content="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
 
 
 
@@ -236,6 +254,7 @@
 
     <!-- Table of contents -->
     <div class="d-none d-md-block col-md-2 bd-toc show">
+        
         <div class="tocsection onthispage pt-5 pb-3">
             <i class="fas fa-list"></i> Contents
         </div>
@@ -286,6 +305,7 @@
 </ul>
 
         </nav>
+        
     </div>
 </div>
     <div id="main-content" class="row">
@@ -778,7 +798,7 @@ As with the AttnCNP, we consider CelebA and MNIST reconstruction experiments, bu
 </div>
 <p>From <a class="reference internal" href="#convcnp-img-text"><span class="std std-numref">Fig. 24</span></a> we see that the ConvCNP performs quite well on all datasets when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM).
 However, performance is less impressive when the context set is very small or when it is structured, e.g., half images.
-In our experiments we find that this is more of an issue for the ConvCNP than the AttnCNP (<a class="reference internal" href="../reproducibility/AttnCNP.html#attncnp-img"><span class="std std-numref">Fig. 53</span></a>); we hypothesize that this happens because the effective receptive field of the former is too small.</p>
+In our experiments we find that this is more of an issue for the ConvCNP than the AttnCNP (<a class="reference internal" href="../reproducibility/AttnCNP.html#attncnp-img"><span class="std std-numref">Fig. 54</span></a>); we hypothesize that this happens because the effective receptive field of the former is too small.</p>
 <div class="dropdown note admonition">
 <p class="admonition-title">Note<span class="math notranslate nohighlight">\(\qquad\)</span>Effective Receptive Field</p>
 <p>We call the <em>effective</em> receptive field <a class="bibtex reference internal" href="../zbibliography.html#luo2016understanding" id="id15">[LLUZ16]</a>, the empirical receptive field of a <em>trained</em> model rather than the theoretical receptive field for a given architecture.
@@ -793,7 +813,7 @@ Specifically, let’s consider a ConvCNP trained on <span class="math notranslat
 <a class="reference internal image-reference" href="../_images/ConvCNP_img_baselines1.gif"><img alt="ConvCNP and baselines on CelebA 128" src="../_images/ConvCNP_img_baselines1.gif" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 25 </span><span class="caption-text">ConvCNP and Nearest neighbour, bilinear, bicubic interpolation on CelebA 128.</span><a class="headerlink" href="#convcnp-img-baselines" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#convcnp-img-baselines"><span class="std std-numref">Fig. 25</span></a> shows that the ConvCNP performs much better than baseline interpolation methods. Having seen such encouraging results, as well as the decent zero shot generalisation capability of the ConvCNP on ZSMM, it is natural to want to evaluate the model on actual images with multiple faces with different scales and orientations:</p>
+<p><a class="reference internal" href="../reproducibility/ConvCNP.html#convcnp-img-baselines"><span class="std std-numref">Fig. 59</span></a> shows that the ConvCNP performs much better than baseline interpolation methods. Having seen such encouraging results, as well as the decent zero shot generalisation capability of the ConvCNP on ZSMM, it is natural to want to evaluate the model on actual images with multiple faces with different scales and orientations:</p>
 <div class="figure align-default" id="convcnp-img-zeroshot-text">
 <a class="reference internal image-reference" href="../_images/ConvCNP_img_zeroshot.png"><img alt="Zero shot generalization of ConvCNP to a real picture" src="../_images/ConvCNP_img_zeroshot.png" style="width: 20em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 26 </span><span class="caption-text">Zero shot generalization of a ConvCNP trained on CelebA and evaluated on Ellen’s selfie. We also show a baseline bilinear interpolator.</span><a class="headerlink" href="#convcnp-img-zeroshot-text" title="Permalink to this image">¶</a></p>
@@ -914,7 +934,10 @@ One such example is the use of Thompson sampling algorithms for e.g., contextual
       </div>
     </div>
 
-    <script src="../_static/js/index.js"></script>
+    
+  <script src="../_static/js/index.30270b6e4c972e43c488.js"></script>
+
+
     
   </body>
 </html>
