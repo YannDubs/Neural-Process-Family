@@ -268,11 +268,6 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#use-cases">
-   Use Cases
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#summary-of-npf-properties">
    Summary of NPF Properties
   </a>
@@ -291,26 +286,27 @@
                 
   <div class="section" id="the-neural-process-family">
 <h1>The Neural Process Family<a class="headerlink" href="#the-neural-process-family" title="Permalink to this headline">¶</a></h1>
-<p>Should doctors use predictions made by a neural network (e.g. predictions of your blood sugar level between appointments) to diagnose you, if the neural network was trained on millions of cases similar to yours?
+<!-- Should doctors use predictions made by a neural network (e.g. predictions of your blood sugar level between appointments) to diagnose you, if the neural network was trained on millions of cases similar to yours?
 Maybe, but what if it was trained on very different cases?
 Probably not, as neural networks require large number of train examples that are similar to the test examples.
 Recently there has been a big push in having networks that can quickly adapt to new situations.
 These methods (known as meta-learning) are exciting as they enable the use of deep learning in settings with little training data.
-Going back to our example, should doctors use a meta-learning network adapted on 10’000 cases ? 1’000 ? 100 ? 10 ? 1?
+Going back to our example, should doctors use a meta-learning network adapted on 10'000 cases ? 1'000 ? 100 ? 10 ? 1?
 When the number of cases becomes scarce, it is hard to gauge whether predictions are trustworthy even if meta-learning works well.
-Ideally, predictors should then also give an estimate of their confidence so that doctors can decide whether to trust the predictions.</p>
-<p>The <strong>Neural Process Family</strong> (NPF) is a collection of models that incorporate uncertainty estimates in meta-learning in a very natural fashion, namely, by meta-learning a <em>distribution</em> over predictors.
-More precisely, members of the NPF — Neural Processes (NPs) — use meta-learning of neural networks to directly model <em>stochastic processes</em>.</p>
-<p>We will unpack both of the terms “meta-learning” and “stochastic processes” in the following section, focusing on how they are used in the NPF.
-But before diving in, let us consider a few tasks that NPFs are particularly well-suited for.</p>
+Ideally, predictors should then also give an estimate of their confidence so that doctors can decide whether to trust the predictions. -->
+<!-- The **Neural Process Family** (NPF) is a collection of models that incorporate uncertainty estimates in meta-learning in a very natural fashion, namely, by meta-learning a *distribution* over predictors.
+More precisely, members of the NPF --- Neural Processes (NPs) --- use meta-learning of neural networks to directly model *stochastic processes*. -->
+<p>Deep learning has revolutionised the world of data-driven prediction, but there are still plenty of problems where it isn’t easily applicable. One such setting is the <em>small data</em> regime where <em>good uncertainty estimation</em> is required. Think, for example, of a doctor trying to predict a patient’s treatment outcome. We might have some measurements of our patient’s biophysical data since they were admitted to the hospital. However, just one patient’s data isn’t going to be enough to train a deep neural network. Furthermore, if the doctor is going to make a potentially life-changing treatment decision based on the network’s predictions, it is crucial that the network knows how certain it is, instead of being confidently wrong — something deep neural networks are prone to.</p>
+<!-- In fact, uncertainty estimation is important in any situation where we don't have enough data to completely nail down the predictions, as is usually the case in the small data regime. -->
+<p>The <strong>Neural Process Family</strong> (NPF) is a collection of models (called neural processes (NPs)) that tackles both of these issues, by <em>meta-learning</em> a distribution over predictors, also known as a <em>stochastic process</em>. Meta-learning allows neural processes to incorporate data from many related tasks (e.g. many different patients in our medical example) and the stochastic process framework allows the NPF to effectively represent uncertainty.</p>
+<p>We will unpack both the terms “meta-learning” and “stochastic process” in the following section.
+But before diving in, let’s consider some tasks that the NPF is` particularly well-suited for.</p>
 <ul class="simple">
 <li><p><strong>Predicting times-series data with uncertainty.</strong>
-Many tasks associated with time-series predictions require uncertainty estimate (e.g., clinical or economic forecasting).
-Let us consider the task of restoring corrupted audio signals.
-In this cases, we are given a dataset <span class="math notranslate nohighlight">\(\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N\)</span>, where <span class="math notranslate nohighlight">\(x\)</span> are the inputs (time) and <span class="math notranslate nohighlight">\(y\)</span> are the outputs (sound wave amplitude), and our goal is to reconstruct the signal conditioned on <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>.
-If <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> is very sparse, there could be many reasonable reconstructions — hence we should be wary of simply providing a single prediction, and instead augment these with measures of uncertainty.
-Ideally, we would be able to produce plausible <em>samples</em> of an entire audio signal.
-<a class="reference internal" href="#convlnp"><span class="std std-numref">Fig. 1</span></a> shows a NP being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.</p></li>
+Let’s consider the task of restoring corrupted audio signals.
+We are given a dataset <span class="math notranslate nohighlight">\(\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N\)</span>, where <span class="math notranslate nohighlight">\(x\)</span> are the inputs (time) and <span class="math notranslate nohighlight">\(y\)</span> are the outputs (sound wave amplitude), and our goal is to reconstruct the signal conditioned on <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>.
+If <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> is very sparse, there could be many reasonable reconstructions — hence we should be wary of simply providing a single prediction, and instead include measures of uncertainty.
+<a class="reference internal" href="#convlnp"><span class="std std-numref">Fig. 1</span></a> shows a neural process being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.</p></li>
 </ul>
 <div class="figure align-default" id="convlnp">
 <a class="reference internal image-reference" href="../_images/ConvLNP_norbf_gp_extrap.gif"><img alt="Samples from ConvLNP trained on GPs" src="../_images/ConvLNP_norbf_gp_extrap.gif" style="width: 35em;" /></a>
@@ -318,9 +314,9 @@ Ideally, we would be able to produce plausible <em>samples</em> of an entire aud
 </div>
 <ul class="simple">
 <li><p><strong>Interpolating image data with uncertainty.</strong> Imagine that we are given a satellite image of a region obscured by cloud-cover.
-For downstream tasks, we may need to make predictions regarding what is “behind” the occlusions. For example, the <a class="reference external" href="https://en.wikipedia.org/wiki/United_Nations_High_Commissioner_for_Refugees">UNHCR</a> might need to count the number of tents in a refugee camp to know how much food and healthcare to send there.
-If clouds are obscuring a large part of the image, we might be interested not just in a single interpolation, but in the entire probability distribution over plausible interpolations, to make our downstream predictions more robust to errors.
-<a class="reference internal" href="#convcnp-superes-intro"><span class="std std-numref">Fig. 2</span></a> shows a NP upscaling the resolution of an image by treating pixel locations that are “in between” the pixels of the input images as occluded pixels, i.e., by interpolating between pixels.</p></li>
+We might need to make predictions regarding what is “behind” the occlusions. For example, the <a class="reference external" href="https://en.wikipedia.org/wiki/United_Nations_High_Commissioner_for_Refugees">UNHCR</a> might need to count the number of tents in a refugee camp to know how much food and healthcare supplies to send there.
+If clouds are obscuring a large part of the image, we might be interested not just in a single interpolation, but in the entire probability distribution over plausible interpolations.
+<a class="reference internal" href="#convcnp-superes-intro"><span class="std std-numref">Fig. 2</span></a> shows a NP upscaling the resolution of an image by treating pixel locations that are “in between” the pixels of the input images as occluded pixels, i.e., by interpolating between pixels. The NP also provides uncertainty estimates, which aren’t shown here.</p></li>
 </ul>
 <div class="figure align-default" id="convcnp-superes-intro">
 <a class="reference internal image-reference" href="../_images/ConvCNP_superes.png"><img alt="Increasing image resolution with ConvCNP" src="../_images/ConvCNP_superes.png" style="width: 35em;" /></a>
@@ -328,14 +324,13 @@ If clouds are obscuring a large part of the image, we might be interested not ju
 </div>
 <div class="note dropdown admonition">
 <p class="admonition-title">Note<span class="math notranslate nohighlight">\(\qquad\)</span>Outline</p>
-<p>The goal of this tutorial is to provide a gentle introduction to the NPF.
-Our approach is to walk through several prominent members of the NPF, highlighting their key advantages and drawbacks.
+<p>Our approach in this tutorial will be to walk through several prominent members of the NPF, highlighting their key advantages and drawbacks.
 By accompanying the exposition with code and examples, we hope to (i) make the design choices and tradeoffs associated with each model clear and intuitive, and (ii) demonstrate both the simplicity of the framework and its broad applicability.</p>
-<p>This tutorial is split into three sections.
+<p><strong>This tutorial is split into three sections</strong>.
 This first page will give a broad, bird’s eye view of the entire Neural Process Family.
 We’ll see that the family splits naturally into two sub-families: the <a class="reference internal" href="CNPF.html"><span class="doc">Conditional NPF</span></a>, and the <a class="reference internal" href="LNPF.html"><span class="doc">Latent NPF</span></a>.
 These are covered in the following two pages, and there we’ll get into more detail about the different architectures in each family.
-In the Reproducibility section we provide the code to run all the models and generate all the plots, while the main <a class="reference external" href="https://github.com/YannDubs/Neural-Process-Family">github repository</a> contains the main framework for implementing NPs.</p>
+In the Reproducibility section we provide the code to run all the models and generate all the plots, while the <a class="reference external" href="https://github.com/YannDubs/Neural-Process-Family">github repository</a> contains the framework for implementing NPs.</p>
 <p>Throughout the tutorial, we make liberal use of dropdown boxes to avoid breaking up the exposition.
 Feel free to skip or skim those on a first reading.</p>
 </div>
@@ -347,25 +342,25 @@ Feel free to skip or skim those on a first reading.</p>
 </div>
 <div class="section" id="meta-learning">
 <h3>Meta-learning<a class="headerlink" href="#meta-learning" title="Permalink to this headline">¶</a></h3>
-<p>In a (deep) supervised learning, a neural network is trained to model a target function.
-Specifically, a network is trained on a single dataset <span class="math notranslate nohighlight">\(\mathcal{C} := \{(x^{(c)}, y^{(c)})\}_{c=1}^C\)</span> (which we will refer to as a <strong>context set</strong>), and give rise to a predictor, <span class="math notranslate nohighlight">\(f(\cdot)\)</span>.
-A supervised learning algorithm can thus be seen as a function mapping a dataset to a predictor <span class="math notranslate nohighlight">\(\mathcal{C} \mapsto f(x)\)</span>.
+<p>In (deep) supervised learning, a neural network is trained to model a target function given some observations.
+Specifically, a network is trained on a single dataset <span class="math notranslate nohighlight">\(\mathcal{C} := \{(x^{(c)}, y^{(c)})\}_{c=1}^C\)</span> (which we will refer to as a <strong>context set</strong>). The trained network is then used as a predictor, <span class="math notranslate nohighlight">\(f(x)\)</span>.
+A supervised learning algorithm can thus be seen as a map that takes datasets to a predictors <span class="math notranslate nohighlight">\(\mathcal{C} \mapsto f(x)\)</span>.
 At test time, a prediction at a target location <span class="math notranslate nohighlight">\(x^{(t)}\)</span> can be made by feeding it into the predictor to obtain <span class="math notranslate nohighlight">\(f(x^{(t)})\)</span>.
-By doing so for the entire test set (which we call <strong>target inputs</strong>) <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}} := \{x^{(t)}\}_{t=1}^T\)</span>, we get a set of predictions <span class="math notranslate nohighlight">\(f(\mathbf{x}_{\mathcal{T}}):= \{f(x^{(t)})\}_{t=1}^T\)</span>.
-The predictor is evaluated by comparing <span class="math notranslate nohighlight">\(f(\mathbf{x}_{\mathcal{T}})\)</span> to the real <strong>target outputs</strong> <span class="math notranslate nohighlight">\(\mathbf{y}_{\mathcal{T}} := \{y^{(t)}\}_{t=1}^T\)</span>.
-We will refer to a context and target set as a <em>task</em>  <span class="math notranslate nohighlight">\(\mathcal{D} := (\mathcal{C}, \mathbf{x}_{\mathcal{T}}, \mathbf{y}_{\mathcal{T}})\)</span>.
-The process is summarised in the upper left quadrant quadrant of <a class="reference internal" href="#meta-learning-sp"><span class="std std-numref">Fig. 3</span></a>.</p>
+By doing so for all the test inputs (which we call <strong>target inputs</strong>) <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}} := \{x^{(t)}\}_{t=1}^T\)</span>, we get a set of predictions <span class="math notranslate nohighlight">\(f(\mathbf{x}_{\mathcal{T}}):= \{f(x^{(t)})\}_{t=1}^T\)</span>.
+The predictor is evaluated by comparing <span class="math notranslate nohighlight">\(f(\mathbf{x}_{\mathcal{T}})\)</span> to the ground truth <strong>target outputs</strong> <span class="math notranslate nohighlight">\(\mathbf{y}_{\mathcal{T}} := \{y^{(t)}\}_{t=1}^T\)</span>.
+We will refer to a context and target set together as a <em>task</em>  <span class="math notranslate nohighlight">\(\mathcal{D} := (\mathcal{C}, \mathbf{x}_{\mathcal{T}}, \mathbf{y}_{\mathcal{T}})\)</span>.
+This standard supervised learning process is visualised in the upper left quadrant quadrant of <a class="reference internal" href="#meta-learning-sp"><span class="std std-numref">Fig. 3</span></a>.</p>
 <p>The idea of meta-learning is <em>learning to learn</em>, i.e., learning how to rapidly adapt to new supervised tasks.
-The key insight is that, as we just saw, a supervised learning algorithm is itself a function.
-As a result we can use supervised learning to model a supervised learning algorithm, hence the name <em>meta</em>.</p>
-<p>When would such a scheme be useful in practice? When we have access to a large collection <span class="math notranslate nohighlight">\(\mathcal{M}= \{ \mathcal{D_i} \}_{i=1}^{N_{\mathrm{tasks}}}\)</span> of related datasets. This collection of tasks forms the meta-dataset, or dataset of datasets, on which the meta-learning algorithm is (meta-)trained.
-The result of meta-training is a supervised learning algorithm, i.e., a map <span class="math notranslate nohighlight">\(\mathcal{C} \mapsto f(x; \mathcal{C})\)</span>.
+The key insight is that, as we just saw, a supervised learning algorithm is itself a function from <span class="math notranslate nohighlight">\(\mathcal{C} \mapsto f(x)\)</span>.
+As a result we can use supervised learning to model this function, hence the name <em>meta</em>.</p>
+<p>To train a meta-learner, we need a large collection <span class="math notranslate nohighlight">\(\mathcal{M}= \{ \mathcal{D_i} \}_{i=1}^{N_{\mathrm{tasks}}}\)</span> of related datasets — a meta-dataset.
+The result of meta-training on this meta-dataset is a supervised learning algorithm, i.e., a map <span class="math notranslate nohighlight">\(\mathcal{C} \mapsto f(x; \mathcal{C})\)</span>.
 At meta-test time, we’ll adapt the predictor to a task it has never seen before by providing it a new context set <span class="math notranslate nohighlight">\(\mathcal{C}\)</span>.
-In this blog we will only consider cases where the output of meta-training is a neural network, meaning that the adaptation to a new task is done with a single forward pass, without any gradient updates!
-The resulting predictor <span class="math notranslate nohighlight">\(f(\cdot; \mathcal{C})\)</span> will use the information obtained during meta-learning to make predictions on this new task.
-The whole process is illustrated in the bottom left quadrant of <a class="reference internal" href="#meta-learning-sp"><span class="std std-numref">Fig. 3</span></a>.</p>
-<p>Because it shares information across tasks, meta-learning is especially well-suited to situations where each task is a <em>small</em> dataset, as in, e.g., few-shot learning.
-However, this raises the question: if the context set is small, can we really expect to obtain a unique predictor <span class="math notranslate nohighlight">\(f(\cdot; \mathcal{C})\)</span> from it?
+In this blog we will only consider cases where the map <span class="math notranslate nohighlight">\(\mathcal{C} \mapsto f(x; \mathcal{C})\)</span> is parameterised by a neural network, meaning that the adaptation to a new task is done with a single forward pass, without any gradient updates!
+The resulting predictor <span class="math notranslate nohighlight">\(f(\cdot; \mathcal{C})\)</span> uses the information obtained during meta-learning to make predictions on this new task.
+The whole meta-learning process is illustrated in the bottom left quadrant of <a class="reference internal" href="#meta-learning-sp"><span class="std std-numref">Fig. 3</span></a>.</p>
+<p>Because it can share information across tasks, meta-learning is especially well-suited to situations where each task is a <em>small</em> dataset, as in, e.g., few-shot learning.
+However, if the context set is small, should we really expect to obtain a unique predictor <span class="math notranslate nohighlight">\(f(\cdot; \mathcal{C})\)</span> from it?
 To relate this back to our examples, if we only observe an audio signal at a few timestamps, or an image at a few pixels, can we really uniquely reconstruct the original?
 What we need is to express our <em>uncertainty</em>, and this leads us naturally to <em>stochastic processes</em>.</p>
 <div class="note dropdown admonition">
@@ -404,16 +399,14 @@ What we need is to express our <em>uncertainty</em>, and this leads us naturally
 </div>
 <div class="section" id="stochastic-process-prediction">
 <h3>Stochastic Process Prediction<a class="headerlink" href="#stochastic-process-prediction" title="Permalink to this headline">¶</a></h3>
-<p>We’ve seen that we can think of meta-learning as learning a map directly from context sets <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> to predictor functions <span class="math notranslate nohighlight">\(f(\cdot; \mathcal{C})\)</span>.
+<p>We’ve seen that we can think of meta-learning as learning a map directly from context sets <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> to predictor functions <span class="math notranslate nohighlight">\(f(x; \mathcal{C})\)</span>.
 However, there are many situations where a single predictor without error-bars isn’t good enough.
-Quantifying our uncertainty is crucial for decision-making, and has many applications such as in active learning, Bayesian optimisation.
-It is especially crucial in the small context-set setting, which is often the case in meta-learning.</p>
-<p>What we need is not a set of single predictions <span class="math notranslate nohighlight">\(f(\mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span> at desired target locations, but rather a <em>distribution over predictions</em> <span class="math notranslate nohighlight">\(p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span>.
-As long as these distributions are consistent with each other for any choices of <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span>, specifying <span class="math notranslate nohighlight">\(p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span> for all finite sets of target inputs <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span> is actually equivalent to specifying a distribution of predictors.
-Each predictor sampled from this distribution would represent a plausible interpolation of the data, and the diversity of the samples would reflect the <em>uncertainty</em> in our predictions — think back to <a class="reference internal" href="#convlnp"><span class="std std-numref">Fig. 1</span></a>.
-Since each predictor <span class="math notranslate nohighlight">\(f(\cdot; \mathcal{C})\)</span> is a function, this is a <em>distribution over functions</em>.
+Quantifying uncertainty is crucial for decision-making, and has many applications such as in model-based reinforcement learning, Bayesian optimisation and out-of-distribution detection.</p>
+<p>Given target inputs <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span>, what we need is not a single prediction <span class="math notranslate nohighlight">\(f(\mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span>, but rather a <em>distribution over predictions</em> <span class="math notranslate nohighlight">\(p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span>.
+As long as these distributions are consistent with each other for different choices of <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span>, this is actually equivalent to specifying a distribution over <em>functions</em>, <span class="math notranslate nohighlight">\(f(x)\)</span>.
 In mathematics, this is known as a <em>stochastic process</em> (SP).
-Hence, <strong>the NPF can generally be seen as meta-learning neural networks to map from datasets to stochastic processes</strong>.
+Each predictor sampled from this distribution would represent a plausible interpolation of the data, and the diversity of the samples would reflect the <em>uncertainty</em> in our predictions — think back to <a class="reference internal" href="#convlnp"><span class="std std-numref">Fig. 1</span></a>.
+Hence, <strong>the NPF can be viewed as using neural networks to meta-learn a map from datasets to predictive stochastic processes</strong>.
 This is where the name Neural Process comes from, and is illustrated in the bottom right quadrant of <a class="reference internal" href="#meta-learning-sp"><span class="std std-numref">Fig. 3</span></a>.</p>
 <div class="hint dropdown admonition">
 <p class="admonition-title">Advanced<span class="math notranslate nohighlight">\(\qquad\)</span>Stochastic Process Consistency</p>
@@ -451,9 +444,9 @@ p(y^{(1)}| x^{(1)}) p(y^{(2)}| x^{(2)} ; \{x^{(1)},  y^{(1)} \} ) \neq p(y^{(2)}
 <p>The lack of consistency for different context sets is the reason we use the notation <span class="math notranslate nohighlight">\(p(y|x;\mathcal{C})\)</span> instead of <span class="math notranslate nohighlight">\(p(y|x,\mathcal{C})\)</span> as standard rules of probabilities cannot be used for <span class="math notranslate nohighlight">\(\mathcal{C}\)</span>.
 In practice, NPs yields good predictive performance even though they can violate this consistency.</p>
 </div>
-<p>This point of view of NPs as modeling a mapping from a dataset to stochastic process by specifying <span class="math notranslate nohighlight">\(p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span> for any target inputs <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span> is helpful for making theoretical statements about the NPF.
-It also helps us contrast the NPF with another classical machine learning method for stochastic process prediction, <em>Gaussian processes</em> (GPs), which we use mainly as a benchmark.
-In contrast to GP prediction, in NPs we want to make use of the expressivity of deep neural networks in our mapping.
+<p>This point of view of NPs as outputting predictive stochastic processes is helpful for making theoretical statements about the NPF.
+It also helps us contrast the NPF with another classical machine learning method for stochastic process prediction, <em>Gaussian processes</em> (GPs), which do not incorporate meta-learning (illustrated in the top right quadrant of <a class="reference internal" href="#meta-learning-sp"><span class="std std-numref">Fig. 3</span></a>). In this tutorial, we use GPs mainly to benchmark the NPF and provide synthetic datasets.
+In contrast to GP prediction, NPs use the expressivity of deep neural networks in their mapping.
 In order to do this, each member of the NPF has to address these questions: 1) How can we use neural networks to parameterise a map from datasets to predictive distributions over arbitrary target sets? 2) How can we learn this map?</p>
 <div class="note dropdown admonition">
 <p class="admonition-title">Note<span class="math notranslate nohighlight">\(\qquad\)</span>Gaussian Processes</p>
@@ -475,7 +468,7 @@ p (\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathcal{C}) &amp;=
 \end{align}
 \end{split}\]</div>
 <p>where we denote <span class="math notranslate nohighlight">\(K_{\mathcal{T}, \mathcal{C}}\)</span> as the matrix constructed by evaluating the kernel at the inputs of the target set with those of the context set, and similarly for <span class="math notranslate nohighlight">\(K_{\mathcal{C}, \mathcal{C}}\)</span>, <span class="math notranslate nohighlight">\(K_{\mathcal{C}, \mathcal{T}}\)</span>, and <span class="math notranslate nohighlight">\(K_{\mathcal{T}, \mathcal{T}}\)</span>.
-Thus, we can think of posterior inference in GPs as a map from context sets <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> to distribution over predictive functions, just as we are considering for NPs.</p>
+Thus, we can think of posterior inference in GPs as a map from context sets <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> to distributions over predictive functions, just as for NPs.</p>
 <p>In this tutorial, we mainly use GPs to specify simple synthetic stochastic processes for benchmarking.
 We then train NPs to perform GP prediction.
 Since we can obtain the <em>exact</em> GP predictive distribution in closed form, we can use GPs to test the efficacy of NPs.
@@ -486,23 +479,21 @@ It is important to remember, however, that NPs can model a much broader range of
 <div class="section" id="parameterising-neural-processes">
 <span id="parametrizing-npf"></span><h2>Parameterising Neural Processes<a class="headerlink" href="#parameterising-neural-processes" title="Permalink to this headline">¶</a></h2>
 <p>Here we will discuss how to parametrise NPs.
-As a reminder, there are three constraints that any NP should satisfy:</p>
+As a reminder, here are three design goals that we want each NP to satisfy:</p>
 <ol class="simple">
-<li><p><strong>Use neural networks.</strong> The map from context set to predictive distributions should be parametrized by a neural network. We will use a subscript <span class="math notranslate nohighlight">\(\theta\)</span> to denote all the parameters of the network, <span class="math notranslate nohighlight">\(p_{\theta}(y|x; \mathcal{C})\)</span>.</p></li>
-<li><p><strong>The context set <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> should be treated as a set.</strong> This differs from standard vector-valued in that: i) a set may have <em>varying sizes</em>; ii) a set has no intrinsic ordering. The second point means that NPs should be <em>permutation invariant</em>, i.e., <span class="math notranslate nohighlight">\(p_{\theta}(y|x; \mathcal{C}) = p_{\theta}(y|x; \pi ( \mathcal{C})) \)</span> for any permutation operator <span class="math notranslate nohighlight">\(\pi\)</span>.</p></li>
-<li><p><strong>Consistency.</strong> The resulting posterior predictive <span class="math notranslate nohighlight">\(p_{\theta}(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span> should be consistent for any <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span> to ensure that NPs give rise to proper stochastic processes — see advanced dropdown above for more details.</p></li>
+<li><p><strong>Use neural networks.</strong> The map from context sets to predictive distributions should be parametrized by a neural network. We will use a subscript <span class="math notranslate nohighlight">\(\theta\)</span> to denote all the parameters of the network, <span class="math notranslate nohighlight">\(p_{\theta}(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span>.</p></li>
+<li><p><strong>The context set <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> should be treated as a set.</strong> This differs from standard vector-valued inputs in that: i) a set may have <em>varying sizes</em>; ii) a set has no intrinsic ordering. The second point means that NPs should be <em>permutation invariant</em>, i.e., <span class="math notranslate nohighlight">\(p_{\theta}(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = p_{\theta}(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \pi(\mathcal{C}))\)</span> for any permutation operator <span class="math notranslate nohighlight">\(\pi\)</span>.</p></li>
+<li><p><strong>Consistency.</strong> The resulting predictive distributions <span class="math notranslate nohighlight">\(p_{\theta}(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span> should be consistent with each other for varying <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span> to ensure that NPs give rise to proper stochastic processes — see advanced dropdown above for more details.</p></li>
 </ol>
-<p>To satisfy these requirements, members of NPs map the context set to global representation, <span class="math notranslate nohighlight">\(R\)</span>, using a set neural network encoder <span class="math notranslate nohighlight">\(\mathrm{Enc}_{\theta}\)</span>.
-Specifically, the encoder is always going to be of form <span class="math notranslate nohighlight">\(\mathrm{Enc}_{\theta}(\mathcal{C}) = \rho \left ( \sum_{c=1}^C w \phi(x^{(c)}, y^{(c)}) \right)\)</span> for appropriate <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(\rho\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span>.
-The sum operation in the encoder is key as it ensures permutation invariance — due to the commutativity of the sum operation — and that the resulting <span class="math notranslate nohighlight">\(R\)</span> “lives” in the same space regardless of the number of context points <span class="math notranslate nohighlight">\(C\)</span>.
-The encoder of various members of the NPF is theoretically well justified as we will later highlight.</p>
-<p>The global representation <span class="math notranslate nohighlight">\(R\)</span> will then be used with the target input <span class="math notranslate nohighlight">\(x^{(t)}\)</span> by a decoder <span class="math notranslate nohighlight">\(\mathrm{Dec}_{\theta}\)</span> to parametrise the predictive distribution <span class="math notranslate nohighlight">\(\mathrm{Dec}_{\theta}: R,x^{(t)} \mapsto p_{\theta}(\cdot| x^{(t)}; R)\)</span>, typically the predictive distribution is Gaussian meaning that the decoder predicts a mean <span class="math notranslate nohighlight">\(\mu^{(t)}\)</span> and a variance <span class="math notranslate nohighlight">\(\sigma^{2(t)}\)</span>.
-As seen in the next paragraph, the decoder of NPs will always make some factorisation assumption to ensure that the posterior predictive is consistent.</p>
+<p>To satisfy these requirements, NPs first map the entire context set to a representation, <span class="math notranslate nohighlight">\(R\)</span>, using an encoder <span class="math notranslate nohighlight">\(\mathrm{Enc}_{\theta}\)</span>.
+Specifically, the encoder is always going to be of form <span class="math notranslate nohighlight">\(\mathrm{Enc}_{\theta}(\mathcal{C}) = \rho \left ( \sum_{c=1}^C w_c \phi(x^{(c)}, y^{(c)}) \right)\)</span> for appropriate <span class="math notranslate nohighlight">\(w_c\)</span>, <span class="math notranslate nohighlight">\(\rho\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span>, which are defined using neural networks.
+The sum operation in the encoder is key as it ensures permutation invariance — due to the commutativity of the sum operation — and that the resulting <span class="math notranslate nohighlight">\(R\)</span> “lives” in the same space regardless of the number of context points <span class="math notranslate nohighlight">\(C\)</span>.</p>
+<p>The representation <span class="math notranslate nohighlight">\(R\)</span> will then be used with the target input <span class="math notranslate nohighlight">\(x^{(t)}\)</span> by a decoder <span class="math notranslate nohighlight">\(\mathrm{Dec}_{\theta}\)</span> to parametrise the predictive distribution <span class="math notranslate nohighlight">\(\mathrm{Dec}_{\theta}: R,x^{(t)} \mapsto p_{\theta}(\cdot| x^{(t)}; R)\)</span>. Typically the predictive distribution is Gaussian meaning that the decoder predicts a mean <span class="math notranslate nohighlight">\(\mu^{(t)}\)</span> and a variance <span class="math notranslate nohighlight">\(\sigma^{2(t)}\)</span>.</p>
 <div class="note admonition">
 <p class="admonition-title">Concrete Example</p>
 <p>As a concrete example of what a Neural Process looks like, <a class="reference internal" href="#cnp"><span class="std std-numref">Fig. 4</span></a> shows a schematic animation of the forward pass of a <em>Conditional Neural Process</em> (CNP), the first Neural Process to be introduced.
 We see that every <span class="math notranslate nohighlight">\((x, y)\)</span> pair in the context set (here with three datapoints) is passed through an MLP <span class="math notranslate nohighlight">\(e\)</span> to obtain a local encoding.
-The local encodings <span class="math notranslate nohighlight">\(\{r_1, r_2, r_3\}\)</span> are then aggregated by a mean pooling <span class="math notranslate nohighlight">\(a\)</span> to a global representation <span class="math notranslate nohighlight">\(r\)</span>.
+The local encodings <span class="math notranslate nohighlight">\(\{r_1, r_2, r_3\}\)</span> are then aggregated by a mean pooling <span class="math notranslate nohighlight">\(a\)</span> to a representation <span class="math notranslate nohighlight">\(r\)</span>.
 Finally, the representation <span class="math notranslate nohighlight">\(r\)</span> is fed into another MLP <span class="math notranslate nohighlight">\(d\)</span> along with the target input to yield the mean and variance of the predictive distribution of the target output <span class="math notranslate nohighlight">\(y\)</span>.
 We’ll take a much more detailed look at the CNP <a class="reference internal" href="#cnp"><span class="std std-ref">later</span></a>.</p>
 <div class="figure align-default" id="cnp">
@@ -510,7 +501,7 @@ We’ll take a much more detailed look at the CNP <a class="reference internal" 
 <p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Schematic representation of CNP forward pass taken from <a class="reference external" href="https://www.martagarnelo.com/conditional-neural-processes">Marta Garnelo</a>.</span><a class="headerlink" href="#cnp" title="Permalink to this image">¶</a></p>
 </div>
 </div>
-<p>The NPF splits into two sub-families depending on whether or not the global representation is (used to define) a latent variable: the <em>conditional</em> Neural Process family (CNPF), and the <em>latent</em> Neural Process family (LNPF):</p>
+<p>After that, the NPF splits into two sub-families depending on whether or not the representation is used to define a stochastic latent variable. These sub-families are called the <em>conditional</em> Neural Process family (CNPF), and the <em>latent</em> Neural Process family (LNPF):</p>
 <ul class="simple">
 <li><p>In the CNPF, the predictive distribution at any set of target inputs <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}}\)</span> is <em>factorised</em> conditioned on <span class="math notranslate nohighlight">\(R\)</span>. That is, <span class="math notranslate nohighlight">\(p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, R)\)</span>.</p></li>
 <li><p>In the LNPF, the encoding <span class="math notranslate nohighlight">\(R\)</span> is used to define a global <em>latent variable</em> <span class="math notranslate nohighlight">\(\mathbf{z} \sim p_{\theta}(\mathbf{z} | R)\)</span>. The predictive distribution is then factorised <em>conditioned on</em> <span class="math notranslate nohighlight">\(\mathbf{z}\)</span>. That is, <span class="math notranslate nohighlight">\(p_{\theta}(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C}) = \int \prod_{t=1}^T p_{\theta}(y^{(t)} | x^{(t)}, \mathbf{z}) p_{\theta}(\mathbf{z} | R) \, \mathrm{d}\mathbf{z}\)</span>.</p></li>
@@ -518,12 +509,12 @@ We’ll take a much more detailed look at the CNP <a class="reference internal" 
 <p>The forward pass for members of both the CNPF and LNPF is represented schematically in <a class="reference internal" href="#computational-graph-npfs"><span class="std std-numref">Fig. 5</span></a>.
 For the LNPF there is an extra step of sampling the latent variable <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> in between <span class="math notranslate nohighlight">\(R\)</span> and <span class="math notranslate nohighlight">\(\mathrm{Dec}_{\theta}\)</span>.<a class="footnote-reference brackets" href="#det" id="id1">1</a></p>
 <div class="figure align-default" id="computational-graph-npfs">
-<a class="reference internal image-reference" href="text/../images/computational_graph_NPFs.svg"><img alt="high level computational graph of NPF" src="text/../images/computational_graph_NPFs.svg" width="400em" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_NPFs.svg"><img alt="high level computational graph of NPF" src="../_images/computational_graph_NPFs.svg" width="400em" /></a>
 <p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">High level computational graph of the Neural Process Family.</span><a class="headerlink" href="#computational-graph-npfs" title="Permalink to this image">¶</a></p>
 </div>
-<p>As we’ll see in the following pages of this tutorial, both the CNPF and LNPF come with their specific advantages and disadvantages.
+<p>As we’ll see in the following pages of this tutorial, the CNPF and LNPF come with their own advantages and disadvantages.
 Roughly speaking, the LNPF allows us to model <em>dependencies</em> in the predictive distribution over the target set, at the cost of requiring us to approximate an intractable objective function.</p>
-<p>Furthermore, even <em>within</em> each family, there are myriad choices that can be made. The most important of which is the choice of encoder.
+<p>Furthermore, even <em>within</em> each family, there are myriad choices that can be made. The most important is the choice of encoder and decoder architecture.
 Each of these choices will lead to neural processes with different inductive biases and capabilities.
 As a teaser, we provide a very brief summary of the neural processes considered in this tutorial (This should be skimmed for now, but feel free to return here to get a quick overview once each model has been introduced. Clicking on each model brings you to the Reproducibility page which includes code for running the model):</p>
 <table class="table" id="summary-npf">
@@ -574,18 +565,17 @@ Next, we consider how to <em>train</em> such a map, i.e. how to learn the parame
 <p>To perform <em>meta</em>-learning, we require a <em>meta</em>-dataset or a <em>dataset of datasets</em>.
 In the meta-learning literature, each dataset in the meta-dataset is referred to as a <em>task</em>.
 For the NPF, this means having access to many independent samples of functions from the data-generating process.
-Each sampled function is then a task.
-For example, we may have a large collection of audio waveforms <span class="math notranslate nohighlight">\(\mathcal{M} := \{ \mathcal{D}_i \}_{i=1}^{N_{\mathrm{tasks}}}\)</span> from different speakers.
-Each of these waveforms is itself a time-series <span class="math notranslate nohighlight">\(\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N\)</span>, where each <span class="math notranslate nohighlight">\(x^{(n)}, y^{(n)}\)</span> is a timestamp/audio amplitude pair.
+Each sampled function is then a task. We would like to use this meta-dataset to learn how to make predictions at a target set upon observing a context set. To do this, we use an <em>episodic training procedure</em>, common in meta-learning. Each episode can be summarised in five steps:</p>
+<!-- For example, we may have a large collection of audio waveforms $\mathcal{M} := \{ \mathcal{D}_i \}_{i=1}^{N_{\mathrm{tasks}}}$ from different speakers.
+Each of these waveforms is itself a time-series $\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N$, where each $x^{(n)}, y^{(n)}$ is a timestamp/audio amplitude pair.
 Or we might have a large collection of natural images.
-Then each <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> would be a single image consisting of pixel-location/pixel-value pairs.</p>
-<p>We would like to use this meta-dataset to learn how to make predictions at a target set upon observing a context set. To do this, we use an <em>episodic training procedure</em>, common in meta-learning, for the NPF. Each episode can be summarised in five steps:</p>
+Then each $\mathcal{D}$ would be a single image consisting of pixel-location/pixel-value pairs. -->
 <ol class="simple">
 <li><p>Sample a task <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> from <span class="math notranslate nohighlight">\(\{ \mathcal{D}_i \}_{i=1}^{N_{\mathrm{tasks}}}\)</span>.</p></li>
 <li><p>Randomly split the task into context and target sets: <span class="math notranslate nohighlight">\(\mathcal{D} = \mathcal{C} \cup \mathcal{T}\)</span>.</p></li>
 <li><p>Pass <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> through the Neural Process to obtain the predictive distribution at the target inputs, <span class="math notranslate nohighlight">\(p_\theta(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span>.</p></li>
 <li><p>Compute the log likelihood <span class="math notranslate nohighlight">\(\mathcal{L} = \log p_\theta(\mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}; \mathcal{C})\)</span> which measures the predictive performance on the target set.<a class="footnote-reference brackets" href="#objective" id="id8">8</a>
-Note that for the <span class="math notranslate nohighlight">\(LNPF\)</span>, we will have to compute an approximation or a lower bound of the log-likelihood objective.</p></li>
+Note that for the LNPF, we will have to compute an approximation or a lower bound of the log-likelihood objective.</p></li>
 <li><p>Compute the gradient <span class="math notranslate nohighlight">\(\nabla_{\theta}\mathcal{L}\)</span> for stochastic gradient optimisation.</p></li>
 </ol>
 <p>The episodes are repeated until training converges.
@@ -622,18 +612,19 @@ How does this relate to the description we gave earlier? In the previous section
 This point of view of the NPF can provide good intuition and is helpful for making theoretical statements about the NPF. It also helps us contrast the Neural Process Family with another classical machine learning method for stochastic process prediction, _Gaussian processes_.
 
 There are, however, several technical conditions that need to be satisfied to ensure that the NPF specifies a genuinely consistent stochastic process. These conditions are prominent in the original literature on Neural Processes, and help motivate some of the design choices in the NPF, such as the factorisation assumption in the CNPF. We provide a discussion of some of these issues in the dropdown box below. However, it is possible to follow the rest of this tutorial without covering this more technical section, so **feel free to skim or skip it on a first reading**. In summary, for a fixed context set $\mathcal{C}$, the NPF predictive distribution indeed defines a single consistent predictive stochastic process, although this may not be the case for varying context sets. -->
-</div>
-<div class="section" id="use-cases">
-<h2>Use Cases<a class="headerlink" href="#use-cases" title="Permalink to this headline">¶</a></h2>
-<p>What tasks can a trained Neural Process be applied to?
+<!-- ## Use Cases
+
+What tasks can a trained Neural Process be applied to?
 Broadly speaking, they can be used in any situation where predictions need to be made under uncertainty.
-We list a few examples here.</p>
-<ul class="simple">
-<li><p><strong>Regression with uncertainty</strong>. Imagine you’re writing an algorithm to predict rainfall in the future, or to forecast demand for materials in your supply chain. These are all regression tasks where a well-trained Neural Process could exploit intricate structure in the data to make predictions and provide crucial uncertainty estimates.</p></li>
-<li><p><strong>Interpolating missing values</strong>. This is closely related to the previous use case. Given a corrupted image or audio signal, we may want to see what the plausible interpolations are. Moreover, if the corrupted region is large, we want to be aware of the whole range of plausible interpolations, not just one guess. If the image is, say, a medical scan, this could be crucial for decision-making.</p></li>
-<li><p><strong>Active learning</strong>. In active learning, our goal is to provide accurate predictions with as few measurements as possible. This is typically done by performing measurements at points with the greatest uncertainty. A Neural Process can be used to provide these uncertainty estimates. Once the measurement is taken, the new context point can be fed back into the Neural Process, and the uncertainty estimates can be updated for the next measurement.</p></li>
-<li><p><strong>Bayesian optimisation</strong>. In Bayesian optimisation, the goal is to perform black-box optimisation of an unknown function when gradient information is unavailable, and each evaluation of the objective function is expensive. Most algorithms for Bayesian optimisation rely on querying points which have high expected reward and also high uncertainty, thus trading off exploration and exploitation.</p></li>
-</ul>
+We list a few examples here.
+
+* **Regression with uncertainty**. Imagine you're writing an algorithm to predict rainfall in the future, or to forecast demand for materials in your supply chain. These are all regression tasks where a well-trained Neural Process could exploit intricate structure in the data to make predictions and provide crucial uncertainty estimates.
+
+* **Interpolating missing values**. This is closely related to the previous use case. Given a corrupted image or audio signal, we may want to see what the plausible interpolations are. Moreover, if the corrupted region is large, we want to be aware of the whole range of plausible interpolations, not just one guess. If the image is, say, a medical scan, this could be crucial for decision-making.
+
+* **Active learning**. In active learning, our goal is to provide accurate predictions with as few measurements as possible. This is typically done by performing measurements at points with the greatest uncertainty. A Neural Process can be used to provide these uncertainty estimates. Once the measurement is taken, the new context point can be fed back into the Neural Process, and the uncertainty estimates can be updated for the next measurement.
+
+* **Bayesian optimisation**. In Bayesian optimisation, the goal is to perform black-box optimisation of an unknown function when gradient information is unavailable, and each evaluation of the objective function is expensive. Most algorithms for Bayesian optimisation rely on querying points which have high expected reward and also high uncertainty, thus trading off exploration and exploitation. -->
 </div>
 <div class="section" id="summary-of-npf-properties">
 <h2>Summary of NPF Properties<a class="headerlink" href="#summary-of-npf-properties" title="Permalink to this headline">¶</a></h2>
@@ -648,7 +639,7 @@ We list a few examples here.</p>
 <li><p>✗ <strong>The need for a large dataset for meta-training</strong>. Meta-learning requires training on a large dataset of target and context points sampled from different functions, i.e., a large dataset of datasets. In some situations, a dataset of datasets may simply not be available. Furthermore, although predicting on a new context set after meta-training is fast, meta-training itself can be computationally expensive depending on the size of the network and the meta-dataset.</p></li>
 <li><p>✗ <strong>Underfitting and smoothness issues</strong>. The NPF predictive distribution has been known to underfit the context set, and also sometimes to provide unusually jagged predictions for regression tasks. The sharpness and diversity of the image samples for the LNPF could also be improved. However, improvements are being made on this front, with both the attentive and convolutional variants of the NPF providing significant advances.</p></li>
 </ul>
-<p>In summary, we’ve taken a bird’s eye view of the Neural Process Family and seen how they specify a map from datasets to stochastic processes, and how this map can be trained via meta-learning. We’ve also seen some of their use-cases and properties. Let’s now dive into the actual architectures! In the next two pages we’ll cover everything you need to know to get started with the models in Conditional and Neural Process Families.</p>
+<p>In summary, we’ve taken a bird’s eye view of the Neural Process Family and seen how they specify a map from datasets to stochastic processes, and how this map can be trained via meta-learning. We’ve also seen some of their use-cases and properties. Let’s now dive into the actual architectures! In the next two pages we’ll cover everything you need to know to get started with the models in Conditional and Latent Neural Process Families.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
