@@ -1,10 +1,12 @@
 # Neural Process Family [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/YannDubs/Neural-Process-Family/blob/master/LICENSE) [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-This repo contains the code behind the [Neural Process Family webiste](https://yanndubs.github.io/Neural-Process-Family/text/Intro.html).
+Main entry point: [**Neural Process Family** website](https://yanndubs.github.io/Neural-Process-Family/text/Intro.html).
 
-Specifically it contains:
+## What ?
+
+This repository contains:
 - the text of the [Neural Process Family webiste](https://yanndubs.github.io/Neural-Process-Family/text/Intro.html)
-- the code (training / plotting) as well as pretrained model to investigate the following models on image and synthetic 1D datasets:
+- the Pytorch code (training / plotting) as well as pretrained model to investigate the following models on image and synthetic 1D datasets:
     - CNP from [Conditional Neural Processes](https://arxiv.org/abs/1807.01613)
     - LNP from [Neural Processes](https://arxiv.org/abs/1807.01622)
     - AttnCNP and AttnLNP from [Attentive Neural Processes](https://arxiv.org/abs/1901.05761)
@@ -36,14 +38,14 @@ Note that the version of skorch must be 0.8 to ensure that the pretrained models
 
 ## Examples
 
-Check the [webiste](https://yanndubs.github.io/Neural-Process-Family/text/Intro.html) for many plots and the code to produce them.
+Check the [website](https://yanndubs.github.io/Neural-Process-Family/text/Intro.html) for many plots and the code to produce them.
 Here is a teaser:
 
 Sample functions from the predictive distribution of ConvLNPs (blue) and the oracle GP (green) with periodic and noisy Matern kernels:
 
 ![Samples from ConvLNP trained on GPs](jupyter/gifs/ConvLNP_norbf_gp_extrap.gif)
 
-Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP.:
+Increasing the resolution of 16x16 CelebA to 128x128 with a ConvCNP.:
 
 ![Increasing image resolution with ConvCNP](jupyter/images/ConvCNP_superes.png)
 
