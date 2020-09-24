@@ -1,0 +1,93 @@
+Traceback (most recent call last):
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 51, in single_nb_execution
+    executenb(
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/site-packages/nbclient/client.py", line 1082, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/site-packages/nbclient/util.py", line 74, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/site-packages/nbclient/util.py", line 53, in just_run
+    return loop.run_until_complete(coro)
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/site-packages/nbclient/client.py", line 535, in async_execute
+    await self.async_execute_cell(
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/site-packages/nbclient/client.py", line 827, in async_execute_cell
+    self._check_raise_for_error(cell, exec_reply)
+  File "/home/yann/anaconda3/envs/book/lib/python3.8/site-packages/nbclient/client.py", line 735, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply['content'])
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+%matplotlib inline
+%config InlineBackend.figure_format = 'retina'
+
+import logging
+import os
+import warnings
+
+import matplotlib.pyplot as plt
+import torch
+
+os.chdir("../..")
+
+warnings.filterwarnings("ignore")
+warnings.simplefilter("ignore")
+logging.disable(logging.ERROR)
+
+N_THREADS = 8
+IS_FORCE_CPU = False  # Nota Bene : notebooks don't deallocate GPU memory
+
+if IS_FORCE_CPU:
+    os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+torch.set_num_threads(N_THREADS)
+------------------
+
+[0;31m------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m        Traceback (most recent call last)
+[0;32m<ipython-input-1-ad4da52f004f>[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0mget_ipython[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mrun_line_magic[0m[0;34m([0m[0;34m'matplotlib'[0m[0;34m,[0m [0;34m'inline'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      2[0m [0mget_ipython[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mrun_line_magic[0m[0;34m([0m[0;34m'config'[0m[0;34m,[0m [0;34m"InlineBackend.figure_format = 'retina'"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      3[0m [0;34m[0m[0m
+[1;32m      4[0m [0;32mimport[0m [0mlogging[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      5[0m [0;32mimport[0m [0mos[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/anaconda3/envs/book/lib/python3.8/site-packages/IPython/core/interactiveshell.py[0m in [0;36mrun_line_magic[0;34m(self, magic_name, line, _stack_depth)[0m
+[1;32m   2324[0m                 [0mkwargs[0m[0;34m[[0m[0;34m'local_ns'[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mget_local_scope[0m[0;34m([0m[0mstack_depth[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   2325[0m             [0;32mwith[0m [0mself[0m[0;34m.[0m[0mbuiltin_trap[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 2326[0;31m                 [0mresult[0m [0;34m=[0m [0mfn[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   2327[0m             [0;32mreturn[0m [0mresult[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   2328[0m [0;34m[0m[0m
+
+[0;32m<decorator-gen-108>[0m in [0;36mmatplotlib[0;34m(self, line)[0m
+
+[0;32m~/anaconda3/envs/book/lib/python3.8/site-packages/IPython/core/magic.py[0m in [0;36m<lambda>[0;34m(f, *a, **k)[0m
+[1;32m    185[0m     [0;31m# but it's overkill for just that one bit of state.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    186[0m     [0;32mdef[0m [0mmagic_deco[0m[0;34m([0m[0marg[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 187[0;31m         [0mcall[0m [0;34m=[0m [0;32mlambda[0m [0mf[0m[0;34m,[0m [0;34m*[0m[0ma[0m[0;34m,[0m [0;34m**[0m[0mk[0m[0;34m:[0m [0mf[0m[0;34m([0m[0;34m*[0m[0ma[0m[0;34m,[0m [0;34m**[0m[0mk[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    188[0m [0;34m[0m[0m
+[1;32m    189[0m         [0;32mif[0m [0mcallable[0m[0;34m([0m[0marg[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/anaconda3/envs/book/lib/python3.8/site-packages/IPython/core/magics/pylab.py[0m in [0;36mmatplotlib[0;34m(self, line)[0m
+[1;32m     97[0m             [0mprint[0m[0;34m([0m[0;34m"Available matplotlib backends: %s"[0m [0;34m%[0m [0mbackends_list[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     98[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 99[0;31m             [0mgui[0m[0;34m,[0m [0mbackend[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mshell[0m[0;34m.[0m[0menable_matplotlib[0m[0;34m([0m[0margs[0m[0;34m.[0m[0mgui[0m[0;34m.[0m[0mlower[0m[0;34m([0m[0;34m)[0m [0;32mif[0m [0misinstance[0m[0;34m([0m[0margs[0m[0;34m.[0m[0mgui[0m[0;34m,[0m [0mstr[0m[0;34m)[0m [0;32melse[0m [0margs[0m[0;34m.[0m[0mgui[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    100[0m             [0mself[0m[0;34m.[0m[0m_show_matplotlib_backend[0m[0;34m([0m[0margs[0m[0;34m.[0m[0mgui[0m[0;34m,[0m [0mbackend[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    101[0m [0;34m[0m[0m
+
+[0;32m~/anaconda3/envs/book/lib/python3.8/site-packages/IPython/core/interactiveshell.py[0m in [0;36menable_matplotlib[0;34m(self, gui)[0m
+[1;32m   3491[0m         """
+[1;32m   3492[0m         [0;32mfrom[0m [0mIPython[0m[0;34m.[0m[0mcore[0m [0;32mimport[0m [0mpylabtools[0m [0;32mas[0m [0mpt[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 3493[0;31m         [0mgui[0m[0;34m,[0m [0mbackend[0m [0;34m=[0m [0mpt[0m[0;34m.[0m[0mfind_gui_and_backend[0m[0;34m([0m[0mgui[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0mpylab_gui_select[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   3494[0m [0;34m[0m[0m
+[1;32m   3495[0m         [0;32mif[0m [0mgui[0m [0;34m!=[0m [0;34m'inline'[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/anaconda3/envs/book/lib/python3.8/site-packages/IPython/core/pylabtools.py[0m in [0;36mfind_gui_and_backend[0;34m(gui, gui_select)[0m
+[1;32m    278[0m     """
+[1;32m    279[0m [0;34m[0m[0m
+[0;32m--> 280[0;31m     [0;32mimport[0m [0mmatplotlib[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    281[0m [0;34m[0m[0m
+[1;32m    282[0m     [0;32mif[0m [0mgui[0m [0;32mand[0m [0mgui[0m [0;34m!=[0m [0;34m'auto'[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mModuleNotFoundError[0m: No module named 'matplotlib'
+ModuleNotFoundError: No module named 'matplotlib'
+

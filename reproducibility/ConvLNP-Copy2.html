@@ -1,0 +1,1134 @@
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Convolutional Latent Neural Process (ConvLNP) &#8212; Neural Process Family</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-dropdown.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/logo.gif" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Neural Process Family</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/Intro.html">
+   The Neural Process Family
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Sub-Families
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/CNPF.html">
+   Conditional NPF
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/LNPF.html">
+   Latent NPF
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Reproducibility
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Datasets.html">
+   Datasets
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="CNP.html">
+   CNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="AttnCNP.html">
+   AttnCNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ConvCNP.html">
+   ConvCNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LNP.html">
+   LNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="AttnLNP.html">
+   AttnLNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ConvLNP.html">
+   ConvLNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Losses.html">
+   LNPF Losses
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Reference
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../zbibliography.html">
+   Bibliography
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference external" href="https://github.com/YannDubs/Neural-Process-Family">
+   GitHub Repo
+   <i class="fas fa-external-link-alt">
+   </i>
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/reproducibility/ConvLNP-Copy2.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/YannDubs/Neural-Process-Family/master?urlpath=tree/reproducibility/ConvLNP-Copy2.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/YannDubs/Neural-Process-Family/blob/master/reproducibility/ConvLNP-Copy2.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#initialization">
+   Initialization
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#plots">
+     Plots
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#gps-dataset">
+       GPs Dataset
+      </a>
+      <ul class="nav section-nav flex-column">
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#samples-from-a-single-gp">
+         Samples from a single GP
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#samples-from-gps-with-varying-kernels">
+         Samples from GPs with varying Kernels
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#samples-from-gps-with-varying-kernel-hyperparameters">
+         Samples from GPs with varying kernel hyperparameters
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#image-dataset">
+       Image Dataset
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="convolutional-latent-neural-process-convlnp">
+<h1>Convolutional Latent Neural Process (ConvLNP)<a class="headerlink" href="#convolutional-latent-neural-process-convlnp" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default" id="computational-graph-convlnps">
+<a class="reference internal image-reference" href="../_images/computational_graph_ConvLNPs.svg"><img alt="Computational graph ConvLNP" height="300em" src="../_images/computational_graph_ConvLNPs.svg" /></a>
+<p class="caption"><span class="caption-text">Computational graph for Convolutional Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-convlnps" title="Permalink to this image">¶</a></p>
+</div>
+<p>In this notebook we will show how to train a ConvLNP on samples from GPs and images using our framework, as well as how to make nice visualizations of sampled from ConvLNP.
+We will follow quite closely the previous <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a> and <a class="reference internal" href="ConvCNP.html"><span class="doc">ConvCNP notebook</span></a>.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_format = &#39;retina&#39;
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="n">N_THREADS</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">IS_FORCE_CPU</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Nota Bene : notebooks don&#39;t deallocate GPU memory</span>
+
+<span class="k">if</span> <span class="n">IS_FORCE_CPU</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUDA_VISIBLE_DEVICES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">N_THREADS</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>Let’s load all the data. For more details about the data and some samples, see the <a class="reference internal" href="Datasets.html"><span class="doc">data</span></a> notebook.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">get_all_gp_datasets</span><span class="p">,</span> <span class="n">get_img_datasets</span>
+
+<span class="c1"># DATASETS</span>
+<span class="c1"># gp</span>
+<span class="n">gp_datasets</span><span class="p">,</span> <span class="n">gp_test_datasets</span><span class="p">,</span> <span class="n">gp_valid_datasets</span> <span class="o">=</span> <span class="n">get_all_gp_datasets</span><span class="p">()</span>
+<span class="c1"># image</span>
+<span class="n">img_datasets</span><span class="p">,</span> <span class="n">img_test_datasets</span> <span class="o">=</span> <span class="n">get_img_datasets</span><span class="p">([</span><span class="s2">&quot;mnist&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s define the context target splitters, which given a data point will return the context set and target set by selecting randomly selecting some points and preprocessing them so that the features are in <span class="math notranslate nohighlight">\([-1,1]\)</span>.
+We use the same as in <a class="reference internal" href="ConvCNP.html"><span class="doc">ConvCNP notebook</span></a>, namely all target points and uniformly sampling in <span class="math notranslate nohighlight">\([0,50]\)</span> and <span class="math notranslate nohighlight">\([0,n\_pixels * 0.3]\)</span> for 1D and 2D respectively and the 2D splitter return the mask instead of the features to enable implementation of the “on the grid” ConvLNP with standard deep learning building blocks.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf.utils.datasplit</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CntxtTrgtGetter</span><span class="p">,</span>
+    <span class="n">GetRandomIndcs</span><span class="p">,</span>
+    <span class="n">GridCntxtTrgtGetter</span><span class="p">,</span>
+    <span class="n">RandomMasker</span><span class="p">,</span>
+    <span class="n">get_all_indcs</span><span class="p">,</span>
+    <span class="n">no_masker</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">utils.data</span> <span class="kn">import</span> <span class="n">cntxt_trgt_collate</span><span class="p">,</span> <span class="n">get_test_upscale_factor</span>
+
+<span class="c1"># CONTEXT TARGET SPLIT</span>
+<span class="n">get_cntxt_trgt_1d</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span>
+    <span class="n">CntxtTrgtGetter</span><span class="p">(</span>
+        <span class="n">contexts_getter</span><span class="o">=</span><span class="n">GetRandomIndcs</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span> <span class="n">targets_getter</span><span class="o">=</span><span class="n">get_all_indcs</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">get_cntxt_trgt_2d</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span>
+    <span class="n">GridCntxtTrgtGetter</span><span class="p">(</span>
+        <span class="n">context_masker</span><span class="o">=</span><span class="n">RandomMasker</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">0.3</span><span class="p">),</span> <span class="n">target_masker</span><span class="o">=</span><span class="n">no_masker</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">is_return_masks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># will be using grid conv CNP =&gt; can work directly with mask</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">ConvLNP</span><span class="p">,</span> <span class="n">GridConvLNP</span>
+<span class="kn">from</span> <span class="nn">npf.architectures</span> <span class="kn">import</span> <span class="n">CNN</span><span class="p">,</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">ResConvBlock</span><span class="p">,</span> <span class="n">SetConv</span><span class="p">,</span> <span class="n">discard_ith_arg</span>
+<span class="kn">from</span> <span class="nn">npf.utils.helpers</span> <span class="kn">import</span> <span class="n">CircularPad2d</span><span class="p">,</span> <span class="n">make_abs_conv</span><span class="p">,</span> <span class="n">make_padded_conv</span>
+<span class="kn">from</span> <span class="nn">utils.helpers</span> <span class="kn">import</span> <span class="n">count_parameters</span>
+
+<span class="n">R_DIM</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">is_q_zCct</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># use NPML instead of NPVI =&gt; don&#39;t use posterior sampling</span>
+    <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># going to be more expensive</span>
+    <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
+    <span class="n">Decoder</span><span class="o">=</span><span class="n">discard_ith_arg</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">),</span>  <span class="c1"># use small decoder because already went through CNN</span>
+    <span class="n">z_dim</span><span class="o">=</span><span class="mi">16</span>
+<span class="p">)</span>
+
+<span class="n">CNN_KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">ConvBlock</span><span class="o">=</span><span class="n">ResConvBlock</span><span class="p">,</span>
+    <span class="n">is_chan_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># all computations are done with channel last in our code</span>
+    <span class="n">n_conv_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">n_blocks</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># 1D case</span>
+<span class="n">model_1d</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">ConvLNP</span><span class="p">,</span>
+    <span class="n">x_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">y_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">Interpolator</span><span class="o">=</span><span class="n">SetConv</span><span class="p">,</span>
+    <span class="n">CNN</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">CNN</span><span class="p">,</span>
+        <span class="n">Conv</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">,</span>
+        <span class="n">Normalization</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">density_induced</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>  <span class="c1"># density of discretization</span>
+    <span class="n">is_global</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># use some global representation in addition to local</span>
+    <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># on the grid</span>
+<span class="n">model_2d</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">GridConvLNP</span><span class="p">,</span>
+    <span class="n">x_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># for gridded conv it&#39;s the mask shape</span>
+    <span class="n">CNN</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">CNN</span><span class="p">,</span>
+        <span class="n">Conv</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span>
+        <span class="n">Normalization</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">is_global</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># use some global representation in addition to local</span>
+    <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+
+
+<span class="n">n_params_1d</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">model_1d</span><span class="p">())</span>
+<span class="n">n_params_2d</span> <span class="o">=</span> <span class="n">count_parameters</span><span class="p">(</span><span class="n">model_2d</span><span class="p">(</span><span class="n">y_dim</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number Parameters (1D): </span><span class="si">{</span><span class="n">n_params_1d</span><span class="si">:</span><span class="s2">,d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number Parameters (2D): </span><span class="si">{</span><span class="n">n_params_2d</span><span class="si">:</span><span class="s2">,d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number Parameters (1D): 349,348
+Number Parameters (2D): 461,073
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">skorch</span>
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">ELBOLossLNPF</span>
+<span class="kn">from</span> <span class="nn">skorch.callbacks</span> <span class="kn">import</span> <span class="n">GradientNormClipping</span><span class="p">,</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">add_y_dim</span>
+<span class="kn">from</span> <span class="nn">utils.train</span> <span class="kn">import</span> <span class="n">train_models</span>
+
+<span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">is_retrain</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether to load precomputed model or retrain</span>
+    <span class="n">criterion</span><span class="o">=</span><span class="n">ELBOLossLNPF</span><span class="p">,</span> <span class="c1"># NPML</span>
+    <span class="n">chckpnt_dirname</span><span class="o">=</span><span class="s2">&quot;results/pretrained/&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">decay_lr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>  <span class="c1"># smaller batch because multiple samples</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">GradientNormClipping</span><span class="p">(</span><span class="n">gradient_clip_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">],</span>  <span class="c1"># clipping gradients stabilizes training</span>
+<span class="p">)</span>
+
+
+<span class="c1"># 1D</span>
+<span class="n">trainers_1d</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+    <span class="n">gp_datasets</span><span class="p">,</span>
+    <span class="p">{</span><span class="s2">&quot;ConvLNP_NPVI_smallz&quot;</span><span class="p">:</span> <span class="n">model_1d</span><span class="p">},</span>
+    <span class="n">test_datasets</span><span class="o">=</span><span class="n">gp_test_datasets</span><span class="p">,</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_1d</span><span class="p">,</span>
+    <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_1d</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">KWARGS</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Training RBF_Kernel/ConvLNP_NPVI_smallz/run_0 ---
+
+Re-initializing module.
+Re-initializing optimizer.
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 3417, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &quot;&lt;ipython-input-5-7fbf7ed94a34&gt;&quot;, line 23, in &lt;module&gt;
+    trainers_1d = train_models(
+  File &quot;/Neural-Process-Family/utils/train.py&quot;, line 261, in train_models
+    trainer.load_params(checkpoint=chckpt)
+  File &quot;/usr/local/lib/python3.8/dist-packages/skorch/net.py&quot;, line 1644, in load_params
+    self.history = History.from_file(checkpoint.f_history_)
+  File &quot;/usr/local/lib/python3.8/dist-packages/skorch/history.py&quot;, line 161, in from_file
+    with open_file_like(f, &#39;r&#39;) as fp:
+  File &quot;/usr/lib/python3.8/contextlib.py&quot;, line 113, in __enter__
+    return next(self.gen)
+  File &quot;/usr/local/lib/python3.8/dist-packages/skorch/utils.py&quot;, line 433, in open_file_like
+    f = open(f, mode)
+FileNotFoundError: [Errno 2] No such file or directory: &#39;results/pretrained/RBF_Kernel/ConvLNP_NPVI_smallz/run_0/history.json&#39;
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 2044, in showtraceback
+    stb = value._render_traceback_()
+AttributeError: &#39;FileNotFoundError&#39; object has no attribute &#39;_render_traceback_&#39;
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 1169, in get_records
+    return _fixed_getinnerframes(etb, number_of_lines_of_context, tb_offset)
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 316, in wrapped
+    return f(*args, **kwargs)
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 350, in _fixed_getinnerframes
+    records = fix_frame_records_filenames(inspect.getinnerframes(etb, context))
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 1503, in getinnerframes
+    frameinfo = (tb.tb_frame,) + getframeinfo(tb, context)
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 1461, in getframeinfo
+    filename = getsourcefile(frame) or getfile(frame)
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 708, in getsourcefile
+    if getattr(getmodule(object, filename), &#39;__loader__&#39;, None) is not None:
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 745, in getmodule
+    if ismodule(module) and hasattr(module, &#39;__file__&#39;):
+KeyboardInterrupt
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 3417, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File &quot;&lt;ipython-input-5-7fbf7ed94a34&gt;&quot;, line 23, in &lt;module&gt;
+    trainers_1d = train_models(
+  File &quot;/Neural-Process-Family/utils/train.py&quot;, line 261, in train_models
+    trainer.load_params(checkpoint=chckpt)
+  File &quot;/usr/local/lib/python3.8/dist-packages/skorch/net.py&quot;, line 1644, in load_params
+    self.history = History.from_file(checkpoint.f_history_)
+  File &quot;/usr/local/lib/python3.8/dist-packages/skorch/history.py&quot;, line 161, in from_file
+    with open_file_like(f, &#39;r&#39;) as fp:
+  File &quot;/usr/lib/python3.8/contextlib.py&quot;, line 113, in __enter__
+    return next(self.gen)
+  File &quot;/usr/local/lib/python3.8/dist-packages/skorch/utils.py&quot;, line 433, in open_file_like
+    f = open(f, mode)
+FileNotFoundError: [Errno 2] No such file or directory: &#39;results/pretrained/RBF_Kernel/ConvLNP_NPVI_smallz/run_0/history.json&#39;
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 2044, in showtraceback
+    stb = value._render_traceback_()
+AttributeError: &#39;FileNotFoundError&#39; object has no attribute &#39;_render_traceback_&#39;
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 3337, in run_ast_nodes
+    if (await self.run_code(code, result,  async_=asy)):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 3434, in run_code
+    self.showtraceback(running_compiled_code=True)
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 2046, in showtraceback
+    stb = self.InteractiveTB.structured_traceback(etype,
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 1435, in structured_traceback
+    return FormattedTB.structured_traceback(
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 1335, in structured_traceback
+    return VerboseTB.structured_traceback(
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 1192, in structured_traceback
+    formatted_exception = self.format_exception_as_a_whole(etype, evalue, etb, number_of_lines_of_context,
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 1150, in format_exception_as_a_whole
+    last_unique, recursion_repeat = find_recursion(orig_etype, evalue, records)
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 451, in find_recursion
+    return len(records), 0
+TypeError: object of type &#39;NoneType&#39; has no len()
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py&quot;, line 2044, in showtraceback
+    stb = value._render_traceback_()
+AttributeError: &#39;TypeError&#39; object has no attribute &#39;_render_traceback_&#39;
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 1169, in get_records
+    return _fixed_getinnerframes(etb, number_of_lines_of_context, tb_offset)
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 316, in wrapped
+    return f(*args, **kwargs)
+  File &quot;/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py&quot;, line 350, in _fixed_getinnerframes
+    records = fix_frame_records_filenames(inspect.getinnerframes(etb, context))
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 1503, in getinnerframes
+    frameinfo = (tb.tb_frame,) + getframeinfo(tb, context)
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 1461, in getframeinfo
+    filename = getsourcefile(frame) or getfile(frame)
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 708, in getsourcefile
+    if getattr(getmodule(object, filename), &#39;__loader__&#39;, None) is not None:
+  File &quot;/usr/lib/python3.8/inspect.py&quot;, line 754, in getmodule
+    os.path.realpath(f)] = module.__name__
+  File &quot;/usr/lib/python3.8/posixpath.py&quot;, line 391, in realpath
+    path, ok = _joinrealpath(filename[:0], filename, {})
+  File &quot;/usr/lib/python3.8/posixpath.py&quot;, line 424, in _joinrealpath
+    newpath = join(path, name)
+  File &quot;/usr/lib/python3.8/posixpath.py&quot;, line 76, in join
+    a = os.fspath(a)
+KeyboardInterrupt
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+    <span class="p">[</span><span class="o">...</span> <span class="n">skipping</span> <span class="n">hidden</span> <span class="mi">1</span> <span class="n">frame</span><span class="p">]</span>
+
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">5</span><span class="o">-</span><span class="mi">7</span><span class="n">fbf7ed94a34</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">     </span><span class="mi">22</span> <span class="c1"># 1D</span>
+<span class="ne">---&gt; </span><span class="mi">23</span> <span class="n">trainers_1d</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">24</span>     <span class="n">gp_datasets</span><span class="p">,</span>
+
+<span class="nn">/Neural-Process-Family/utils/train.py</span> in <span class="ni">train_models</span><span class="nt">(datasets, models, criterion, test_datasets, valid_datasets, chckpnt_dirname, is_continue_train, is_retrain, runs, starting_run, train_split, device, max_epochs, batch_size, lr, optimizer, callbacks, patience, decay_lr, is_reeval, seed, datasets_kwargs, models_kwargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">260</span>                 <span class="n">trainer</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+<span class="ne">--&gt; </span><span class="mi">261</span>                 <span class="n">trainer</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">checkpoint</span><span class="o">=</span><span class="n">chckpt</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">262</span> 
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/net.py</span> in <span class="ni">load_params</span><span class="nt">(self, f_params, f_optimizer, f_history, checkpoint)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1643</span>             <span class="k">if</span> <span class="n">f_history</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">checkpoint</span><span class="o">.</span><span class="n">f_history</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1644</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">History</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">checkpoint</span><span class="o">.</span><span class="n">f_history_</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1645</span>             <span class="n">formatted_files</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="o">.</span><span class="n">get_formatted_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/history.py</span> in <span class="ni">from_file</span><span class="nt">(cls, f)</span>
+<span class="g g-Whitespace">    </span><span class="mi">160</span> 
+<span class="ne">--&gt; </span><span class="mi">161</span>         <span class="k">with</span> <span class="n">open_file_like</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">162</span>             <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span>
+
+<span class="nn">/usr/lib/python3.8/contextlib.py</span> in <span class="ni">__enter__</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">112</span>         <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">113</span>             <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">114</span>         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/utils.py</span> in <span class="ni">open_file_like</span><span class="nt">(f, mode)</span>
+<span class="g g-Whitespace">    </span><span class="mi">432</span>     <span class="k">if</span> <span class="n">new_fd</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">433</span>         <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">434</span>     <span class="k">try</span><span class="p">:</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;results/pretrained/RBF_Kernel/ConvLNP_NPVI_smallz/run_0/history.json&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py</span> in <span class="ni">showtraceback</span><span class="nt">(self, exc_tuple, filename, tb_offset, exception_only, running_compiled_code)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2043</span>                         <span class="c1"># in the engines. This should return a list of strings.</span>
+<span class="ne">-&gt; </span><span class="mi">2044</span>                         <span class="n">stb</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">_render_traceback_</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">2045</span>                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+
+<span class="ne">AttributeError</span>: &#39;FileNotFoundError&#39; object has no attribute &#39;_render_traceback_&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py</span> in <span class="ni">run_ast_nodes</span><span class="nt">(self, nodelist, cell_name, interactivity, compiler, result)</span>
+<span class="g g-Whitespace">   </span><span class="mi">3336</span>                         <span class="n">asy</span> <span class="o">=</span> <span class="n">compare</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">3337</span>                     <span class="k">if</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_code</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span>  <span class="n">async_</span><span class="o">=</span><span class="n">asy</span><span class="p">)):</span>
+<span class="g g-Whitespace">   </span><span class="mi">3338</span>                         <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="p">[</span><span class="o">...</span> <span class="n">skipping</span> <span class="n">hidden</span> <span class="mi">1</span> <span class="n">frame</span><span class="p">]</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py</span> in <span class="ni">showtraceback</span><span class="nt">(self, exc_tuple, filename, tb_offset, exception_only, running_compiled_code)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2045</span>                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">2046</span>                         <span class="n">stb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">InteractiveTB</span><span class="o">.</span><span class="n">structured_traceback</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">2047</span>                                             <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">,</span> <span class="n">tb_offset</span><span class="o">=</span><span class="n">tb_offset</span><span class="p">)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">structured_traceback</span><span class="nt">(self, etype, value, tb, tb_offset, number_of_lines_of_context)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1434</span>             <span class="bp">self</span><span class="o">.</span><span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span>
+<span class="ne">-&gt; </span><span class="mi">1435</span>         <span class="k">return</span> <span class="n">FormattedTB</span><span class="o">.</span><span class="n">structured_traceback</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1436</span>             <span class="bp">self</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">,</span> <span class="n">tb_offset</span><span class="p">,</span> <span class="n">number_of_lines_of_context</span><span class="p">)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">structured_traceback</span><span class="nt">(self, etype, value, tb, tb_offset, number_of_lines_of_context)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1334</span>             <span class="c1"># Verbose modes need a full traceback</span>
+<span class="ne">-&gt; </span><span class="mi">1335</span>             <span class="k">return</span> <span class="n">VerboseTB</span><span class="o">.</span><span class="n">structured_traceback</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1336</span>                 <span class="bp">self</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">,</span> <span class="n">tb_offset</span><span class="p">,</span> <span class="n">number_of_lines_of_context</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">structured_traceback</span><span class="nt">(self, etype, evalue, etb, tb_offset, number_of_lines_of_context)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1191</span> 
+<span class="ne">-&gt; </span><span class="mi">1192</span>         <span class="n">formatted_exception</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_exception_as_a_whole</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">evalue</span><span class="p">,</span> <span class="n">etb</span><span class="p">,</span> <span class="n">number_of_lines_of_context</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1193</span>                                                                <span class="n">tb_offset</span><span class="p">)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">format_exception_as_a_whole</span><span class="nt">(self, etype, evalue, etb, number_of_lines_of_context, tb_offset)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1149</span> 
+<span class="ne">-&gt; </span><span class="mi">1150</span>         <span class="n">last_unique</span><span class="p">,</span> <span class="n">recursion_repeat</span> <span class="o">=</span> <span class="n">find_recursion</span><span class="p">(</span><span class="n">orig_etype</span><span class="p">,</span> <span class="n">evalue</span><span class="p">,</span> <span class="n">records</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1151</span> 
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">find_recursion</span><span class="nt">(etype, value, records)</span>
+<span class="g g-Whitespace">    </span><span class="mi">450</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_recursion_error</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">records</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">451</span>         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">),</span> <span class="mi">0</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span> 
+
+<span class="ne">TypeError</span>: object of type &#39;NoneType&#39; has no len()
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py</span> in <span class="ni">showtraceback</span><span class="nt">(self, exc_tuple, filename, tb_offset, exception_only, running_compiled_code)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2043</span>                         <span class="c1"># in the engines. This should return a list of strings.</span>
+<span class="ne">-&gt; </span><span class="mi">2044</span>                         <span class="n">stb</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">_render_traceback_</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">2045</span>                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+
+<span class="ne">AttributeError</span>: &#39;TypeError&#39; object has no attribute &#39;_render_traceback_&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/async_helpers.py</span> in <span class="ni">_pseudo_sync_runner</span><span class="nt">(coro)</span>
+<span class="g g-Whitespace">     </span><span class="mi">66</span>     <span class="s2">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">67</span><span class="s2">     try:</span>
+<span class="ne">---&gt; </span><span class="mi">68</span><span class="s2">         coro.send(None)</span>
+<span class="g g-Whitespace">     </span><span class="mi">69</span><span class="s2">     except StopIteration as exc:</span>
+<span class="g g-Whitespace">     </span><span class="mi">70</span><span class="s2">         return exc.value</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py</span> in <span class="ni">run_cell_async</span><span class="nt">(self, raw_cell, store_history, silent, shell_futures, transformed_cell, preprocessing_exc_tuple)</span>
+<span class="g g-Whitespace">   </span><span class="mi">3143</span><span class="s2">                     interactivity = &#39;async&#39;</span>
+<span class="g g-Whitespace">   </span><span class="mi">3144</span><span class="s2"> </span>
+<span class="ne">-&gt; </span><span class="mi">3145</span><span class="s2">                 has_raised = await self.run_ast_nodes(code_ast.body, cell_name,</span>
+<span class="g g-Whitespace">   </span><span class="mi">3146</span><span class="s2">                        interactivity=interactivity, compiler=compiler, result=result)</span>
+<span class="g g-Whitespace">   </span><span class="mi">3147</span><span class="s2"> </span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py</span> in <span class="ni">run_ast_nodes</span><span class="nt">(self, nodelist, cell_name, interactivity, compiler, result)</span>
+<span class="g g-Whitespace">   </span><span class="mi">3354</span><span class="s2">             if result:</span>
+<span class="g g-Whitespace">   </span><span class="mi">3355</span><span class="s2">                 result.error_before_exec = sys.exc_info()[1]</span>
+<span class="ne">-&gt; </span><span class="mi">3356</span><span class="s2">             self.showtraceback()</span>
+<span class="g g-Whitespace">   </span><span class="mi">3357</span><span class="s2">             return True</span>
+<span class="g g-Whitespace">   </span><span class="mi">3358</span><span class="s2"> </span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/interactiveshell.py</span> in <span class="ni">showtraceback</span><span class="nt">(self, exc_tuple, filename, tb_offset, exception_only, running_compiled_code)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2044</span><span class="s2">                         stb = value._render_traceback_()</span>
+<span class="g g-Whitespace">   </span><span class="mi">2045</span><span class="s2">                     except Exception:</span>
+<span class="ne">-&gt; </span><span class="mi">2046</span><span class="s2">                         stb = self.InteractiveTB.structured_traceback(etype,</span>
+<span class="g g-Whitespace">   </span><span class="mi">2047</span><span class="s2">                                             value, tb, tb_offset=tb_offset)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2048</span><span class="s2"> </span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">structured_traceback</span><span class="nt">(self, etype, value, tb, tb_offset, number_of_lines_of_context)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1433</span><span class="s2">         else:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1434</span><span class="s2">             self.tb = tb</span>
+<span class="ne">-&gt; </span><span class="mi">1435</span><span class="s2">         return FormattedTB.structured_traceback(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1436</span><span class="s2">             self, etype, value, tb, tb_offset, number_of_lines_of_context)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1437</span><span class="s2"> </span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">structured_traceback</span><span class="nt">(self, etype, value, tb, tb_offset, number_of_lines_of_context)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1333</span><span class="s2">         if mode in self.verbose_modes:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1334</span><span class="s2">             # Verbose modes need a full traceback</span>
+<span class="ne">-&gt; </span><span class="mi">1335</span><span class="s2">             return VerboseTB.structured_traceback(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1336</span><span class="s2">                 self, etype, value, tb, tb_offset, number_of_lines_of_context</span>
+<span class="g g-Whitespace">   </span><span class="mi">1337</span><span class="s2">             )</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">structured_traceback</span><span class="nt">(self, etype, evalue, etb, tb_offset, number_of_lines_of_context)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1208</span><span class="s2">         chained_exc_ids = set()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1209</span><span class="s2">         while evalue:</span>
+<span class="ne">-&gt; </span><span class="mi">1210</span><span class="s2">             formatted_exceptions += self.format_exception_as_a_whole(etype, evalue, etb, lines_of_context,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1211</span><span class="s2">                                                                      chained_exceptions_tb_offset)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1212</span><span class="s2">             exception = self.get_parts_of_chained_exception(evalue)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">format_exception_as_a_whole</span><span class="nt">(self, etype, evalue, etb, number_of_lines_of_context, tb_offset)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1148</span><span class="s2"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">1149</span><span class="s2"> </span>
+<span class="ne">-&gt; </span><span class="mi">1150</span><span class="s2">         last_unique, recursion_repeat = find_recursion(orig_etype, evalue, records)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1151</span><span class="s2"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">1152</span><span class="s2">         frames = self.format_records(records, last_unique, recursion_repeat)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/IPython/core/ultratb.py</span> in <span class="ni">find_recursion</span><span class="nt">(etype, value, records)</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span><span class="s2">     # first frame (from in to out) that looks different.</span>
+<span class="g g-Whitespace">    </span><span class="mi">450</span><span class="s2">     if not is_recursion_error(etype, value, records):</span>
+<span class="ne">--&gt; </span><span class="mi">451</span><span class="s2">         return len(records), 0</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span><span class="s2"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">453</span><span class="s2">     # Select filename, lineno, func_name to track frames with</span>
+
+<span class="ne">TypeError</span>: object of type &#39;NoneType&#39; has no len()
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="plots">
+<h3>Plots<a class="headerlink" href="#plots" title="Permalink to this headline">¶</a></h3>
+<p>Let’s visualize how well the model performs in different settings.</p>
+<div class="section" id="gps-dataset">
+<h4>GPs Dataset<a class="headerlink" href="#gps-dataset" title="Permalink to this headline">¶</a></h4>
+<p>Let’s define a plotting function that we will use in this section. We’ll reuse the same plotting procedure as in <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">PRETTY_RENAMER</span><span class="p">,</span> <span class="n">plot_multi_posterior_samples_1d</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="c1"># PLOTTING KWARGS</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">is_plot_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot underlying GP</span>
+        <span class="n">is_plot_real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># don&#39;t plot sampled / underlying function</span>
+        <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot the predictive std</span>
+        <span class="n">is_fill_generator_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># do not fill predictive of GP</span>
+        <span class="n">pretty_renamer</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">,</span>  <span class="c1"># pretiffy names of modulte + data</span>
+        <span class="c1"># Fix formatting for coherent GIF</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;legend.loc&quot;</span><span class="p">:</span> <span class="s2">&quot;upper right&quot;</span><span class="p">}</span>
+        <span class="p">),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="samples-from-a-single-gp">
+<h5>Samples from a single GP<a class="headerlink" href="#samples-from-a-single-gp" title="Permalink to this headline">¶</a></h5>
+<p>First, let us visualize the ConvLNP when it is trained on samples from a single GP.
+We will directly evaluate in the “harder” extrapolation regime.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_single_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;All&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;Variable&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvLNP_single_gp_extrap&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">left_extrap</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># shift signal 2 to the right for extrapolation</span>
+    <span class="n">right_extrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># shift signal 2 to the right for extrapolation</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>  <span class="c1"># 20 samples from the latent</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convlnp-single-gp-extrap">
+<a class="reference internal image-reference" href="../_images/ConvLNP_single_gp_extrap.gif"><img alt="ConvLNP on single GP" src="../_images/ConvLNP_single_gp_extrap.gif" style="width: 35em;" /></a>
+<p class="caption"><span class="caption-text">Posterior predictive of ConvLNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and ConvCNP trained on samples for the corresponding GP. The interpolation and extrapolation regime is delimited delimited by red dashes.</span><a class="headerlink" href="#convlnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">ConvLNP_single_gp_extrap</span></code> we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to <a class="reference internal" href="AttnLNP.html#attnlnp-single-gp"><span class="std std-numref">Fig. 66</span></a>.</p>
+</div>
+<div class="section" id="samples-from-gps-with-varying-kernels">
+<h5>Samples from GPs with varying Kernels<a class="headerlink" href="#samples-from-gps-with-varying-kernels" title="Permalink to this headline">¶</a></h5>
+<p>Let us now make the problem harder by having the ConvLNP model a stochastic process whose posterior predictive is non Gaussian. We will do so by having the following underlying generative process: sample kernel hyperparameters then sample from the GP. Note that the data generating process is not a GP (when marginalizing over kernel hyperparameters). Theoretically this could still be modeled by a LNPF as the latent variables could model the current kernel hyperparameter. This is where the use of a global representation makes sense.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># data with varying kernels simply merged single kernels</span>
+<span class="n">single_gp_datasets</span> <span class="o">=</span> <span class="n">filter_single_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">)</span>
+
+<span class="c1"># use same trainer for all, but have to change their name to be the same as datasets</span>
+<span class="n">base_trainer_name</span> <span class="o">=</span> <span class="s2">&quot;All_Kernels/ConvLNP/run_0&quot;</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">trainers_1d</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="p">]</span>
+<span class="n">replicated_trainers</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">single_gp_datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">replicated_trainers</span><span class="p">[</span><span class="n">base_trainer_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;All_Kernels&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">trainer</span>
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvLNP_kernel_gp&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">replicated_trainers</span><span class="p">,</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">single_gp_datasets</span><span class="p">,</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convlnp-kernel-gp">
+<a class="reference internal image-reference" href="../_images/ConvLNP_kernel_gp.gif"><img alt="ConvLNP on GPs with discrete varying kernel" src="../_images/ConvLNP_kernel_gp.gif" style="width: 35em;" /></a>
+<p class="caption"><span class="caption-text">Similar to <code class="xref std std-numref docutils literal notranslate"><span class="pre">ConvLNP_single_gp_extrap</span></code> but the training was performed on all data simultaneously.</span><a class="headerlink" href="#convlnp-kernel-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">ConvLNP_kernel_gp</span></code> we see that ConvLNP performs quite well in this much harder setting. Indeed, it seems to model process using the periodic kernel when the number of context points is small but quickly (around 15 context points) recovers the correct underlying kernel. Note that we plot the posterior predictive of the actual underlying GP but the generating process is highly non Gaussian.</p>
+</div>
+<div class="section" id="samples-from-gps-with-varying-kernel-hyperparameters">
+<h5>Samples from GPs with varying kernel hyperparameters<a class="headerlink" href="#samples-from-gps-with-varying-kernel-hyperparameters" title="Permalink to this headline">¶</a></h5>
+<p>We will now consider a similar experiment as before, but instead of using 3 different kernels we will use range an entire range of different kernel hyperparameters (Noisy Matern Kernel with length scale in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span>). This might seem easier than the previous task, as the kernels are more similar, but it also means that the number of possible kernels is not finite and thus we are never really training or testing on sampled from the same GP.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_hyp_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Variable&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvLNP_vary_gp&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_hyp_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>  <span class="c1"># 20 samples from the latent</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># selected to make it clear that the GP is fitted (not oracle stochatic process)</span>
+    <span class="c1"># change name of GP, it&#39;s not an oracle anymore but fitted</span>
+    <span class="n">model_labels</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">main</span><span class="o">=</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="s2">&quot;Fitted GP&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convlnp-vary-gp">
+<a class="reference internal image-reference" href="../_images/ConvLNP_vary_gp.gif"><img alt="ConvLNP on GPs with continuous varying kernel" src="../_images/ConvLNP_vary_gp.gif" style="width: 35em;" /></a>
+<p class="caption"><span class="caption-text">Similar to the 2nd row (Noisy Matern Kernel) of <a class="reference internal" href="ConvCNP.html#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 56</span></a> but the training was performed on sampled from Noisy Matern Kernel with different length scales in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span>. The GP (in green) corresponds to the one with the length scale in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span> giving rise to the largest marginal likelihood.</span><a class="headerlink" href="#convlnp-vary-gp" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">ConvLNP_vary_gp</span></code> we see that ConvLNP is still able to perform quite well, but it predicts in a very different way than the fitted GP. Namely it doesn’t really seem to change the kernel hyperparameter / global latent during training. This contrasts with the fitted GP which clearly shows that estimate of the length scale changes for different context set size.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 1D PLOTS ######</span>
+
+<span class="c1">### No RBF ###</span>
+<span class="k">def</span> <span class="nf">filter_single_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Periodic&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;Noisy&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvLNP_norbf_gp_extrap&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">left_extrap</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># shift signal 2 to the right for extrapolation</span>
+    <span class="n">right_extrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># shift signal 2 to the right for extrapolation</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="image-dataset">
+<h4>Image Dataset<a class="headerlink" href="#image-dataset" title="Permalink to this headline">¶</a></h4>
+<p>Let us now look at images. We again will use the same plotting procedure as in <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">plot_multi_posterior_samples_imgs</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">multi_posterior_imgs_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_imgs</span><span class="p">,</span>  <span class="c1"># core plotting</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>  
+            <span class="mf">0.005</span><span class="p">,</span>
+            <span class="mf">0.01</span><span class="p">,</span>
+            <span class="mf">0.02</span><span class="p">,</span>
+            <span class="mf">0.05</span><span class="p">,</span>
+            <span class="mf">0.1</span><span class="p">,</span>
+            <span class="mf">0.15</span><span class="p">,</span>
+            <span class="mf">0.2</span><span class="p">,</span>
+            <span class="mf">0.3</span><span class="p">,</span>
+            <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s2">&quot;hhalf&quot;</span><span class="p">,</span>  <span class="c1"># horizontal half of the image</span>
+            <span class="s2">&quot;vhalf&quot;</span><span class="p">,</span>  <span class="c1"># vertival half of the image</span>
+        <span class="p">],</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="c1"># PLOTTING KWARGS</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">n_plots</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># images per datasets</span>
+        <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot the predictive std</span>
+        <span class="n">pretty_renamer</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">,</span>  <span class="c1"># pretiffy names of modulte + data</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;font_scale&quot;</span><span class="p">:</span><span class="mf">0.7</span><span class="p">},</span>
+        <span class="c1"># Fix formatting for coherent GIF</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">multi_posterior_imgs_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvLNP_img&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2d</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convlnp-img">
+<a class="reference internal image-reference" href="../_images/ConvLNP_img.gif"><img alt="ConvLNP on images" src="../_images/ConvLNP_img.gif" style="width: 45em;" /></a>
+<p class="caption"><span class="caption-text">Mean and std of the posterior predictive of an ConvLNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#convlnp-img" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">ConvLNP_img</span></code> we see that ConvLNP performs similarly to ConvCNP. Namely, well when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM), but has difficulties when the context set is very small or when it is structured, e.g., half images.
+Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.html#attnlnp-img"><span class="std std-numref">Fig. 67</span></a>) the variance of the posterior predictive for each sample seems much smaller. I.e. the variance is all modeled by the latent. This makes sense, as you can interpret the variance of the conditional posterior predictive to be the aleatoric uncertainty, which is probably homoskedastic (same for all pixels) in images.</p>
+<p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">PRETTY_RENAMER</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_qualitative_with_kde</span>
+
+<span class="n">n_trainers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainers_2d</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">trainer</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trainers_2d</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">data_name</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">img_test_datasets</span><span class="p">[</span><span class="n">data_name</span><span class="p">]</span>
+
+    <span class="n">plot_qualitative_with_kde</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">PRETTY_RENAMER</span><span class="p">[</span><span class="n">model_name</span><span class="p">],</span> <span class="n">trainer</span><span class="p">],</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+        <span class="n">percentiles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>  <span class="c1"># desired test percentile</span>
+        <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>  <span class="c1"># kde / image ratio</span>
+        <span class="n">is_smallest_xrange</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># rescale X axis based on percentile</span>
+        <span class="n">h_pad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># padding</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">[</span><span class="n">data_name</span><span class="p">],</span>
+        <span class="n">upscale_factor</span><span class="o">=</span><span class="n">get_test_upscale_factor</span><span class="p">(</span><span class="n">data_name</span><span class="p">),</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvLNP-Copy2_24_0.png" src="../_images/ConvLNP-Copy2_24_0.png" />
+<img alt="../_images/ConvLNP-Copy2_24_1.png" src="../_images/ConvLNP-Copy2_24_1.png" />
+<img alt="../_images/ConvLNP-Copy2_24_2.png" src="../_images/ConvLNP-Copy2_24_2.png" />
+</div>
+</div>
+<p>We have seen that a latent variable enable coherent sampling and to “switch kernel”. Let us now see whether it enables a non Gaussian marginal posterior predictive.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">select_labels</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_config</span><span class="p">,</span><span class="n">plot_img_marginal_pred</span>
+
+<span class="k">with</span> <span class="n">plot_config</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lines.linewidth&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}):</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_img_marginal_pred</span><span class="p">(</span>
+        <span class="n">trainers_2d</span><span class="p">[</span><span class="s2">&quot;mnist/ConvLNP/run_0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">module_</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span>
+        <span class="n">select_labels</span><span class="p">(</span><span class="n">img_test_datasets</span><span class="p">[</span><span class="s2">&quot;mnist&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># Selecting a 3</span>
+        <span class="n">GridCntxtTrgtGetter</span><span class="p">(</span>
+            <span class="n">RandomMasker</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">0.05</span><span class="p">),</span> <span class="n">target_masker</span><span class="o">=</span><span class="n">no_masker</span>
+        <span class="p">),</span>  <span class="c1"># 5% context</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">is_uniform_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># on the grid model</span>
+        <span class="n">n_marginals</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>  <span class="c1"># number of pixels posterior predictive</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="c1"># number of samples from the posterior pred</span>
+        <span class="n">n_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># number of columns for the sampled</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvLNP_marginal.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvLNP-Copy2_26_0.png" src="../_images/ConvLNP-Copy2_26_0.png" />
+</div>
+</div>
+<p>In the last figure, we see that, as desired, LNPFs can:</p>
+<ol class="simple">
+<li><p>Give rise to coherent but varied samples</p></li>
+<li><p>Model a marginal predictive distribution which is highly non Gaussian. Here we see a large spike for black pixels.</p></li>
+</ol>
+<p>Note that we are plotting a few (7) marginal posterior predictive that are multi modal by selecting the ones that have the largest <a class="reference external" href="https://en.wikipedia.org/wiki/Multimodal_distribution#Bimodality_coefficient">Sarle’s bimodality coefficient</a> <a class="bibtex reference internal" href="../zbibliography.html#ellison1987effect" id="id1">[Ell87]</a>.</p>
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./reproducibility"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Yann Dubois, Jonathan Gordon, ‪Andrew Foong<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../_static/js/index.js"></script>
+    
+  </body>
+</html>

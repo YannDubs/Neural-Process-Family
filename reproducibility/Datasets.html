@@ -1,0 +1,618 @@
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Datasets &#8212; Neural Process Family</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-dropdown.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Conditional Neural Process (CNP)" href="CNP.html" />
+    <link rel="prev" title="Latent NPFs" href="../text/LNPF.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/logo.gif" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Neural Process Family</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/Intro.html">
+   The Neural Process Family
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Sub-Families
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/CNPF.html">
+   Conditional NPF
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/LNPF.html">
+   Latent NPF
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Reproducibility
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Datasets
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="CNP.html">
+   CNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="AttnCNP.html">
+   AttnCNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ConvCNP.html">
+   ConvCNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LNP.html">
+   LNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="AttnLNP.html">
+   AttnLNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ConvLNP.html">
+   ConvLNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Losses.html">
+   LNPF Losses
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Reference
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../zbibliography.html">
+   Bibliography
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference external" href="https://github.com/YannDubs/Neural-Process-Family">
+   GitHub Repo
+   <i class="fas fa-external-link-alt">
+   </i>
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/reproducibility/Datasets.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/YannDubs/Neural-Process-Family/master?urlpath=tree/reproducibility/Datasets.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/YannDubs/Neural-Process-Family/blob/master/reproducibility/Datasets.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#d-gaussian-process-datasets">
+   1D Gaussian Process Datasets
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#samples-from-a-single-gp">
+     Samples from a single GP
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#samples-from-gps-with-varying-kernels">
+     Samples from GPs with varying Kernels
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#image-datasets">
+   Image Datasets
+  </a>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="datasets">
+<h1>Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h1>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_format = &#39;retina&#39;
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
+
+<span class="n">N_THREADS</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">IS_FORCE_CPU</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Nota Bene : notebooks don&#39;t deallocate GPU memory</span>
+
+<span class="k">if</span> <span class="n">IS_FORCE_CPU</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUDA_VISIBLE_DEVICES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">N_THREADS</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="d-gaussian-process-datasets">
+<h2>1D Gaussian Process Datasets<a class="headerlink" href="#d-gaussian-process-datasets" title="Permalink to this headline">¶</a></h2>
+<p>A good way to compare members of the NPFs is by trying to model samples from different Gaussian processes.
+Specifically, we will investigate NPFs in the following three settings:</p>
+<ol class="simple">
+<li><p><strong>Samples from a single GP</strong> the first question we want to understand is how well NPFs can model a ground truth GP. To test this hypothesis, we will repeatedly sample from a single GP and then compare the posterior predictive to the ground truth GP. Note that this is not really a natural setting, but the goal is to understand how biased the objective is and which NPF can best approximate the ground truth GP with finite computation. We will</p>
+<ul class="simple">
+<li><p>Training : 100 epochs, each epoch consists of 10k different context and target sets from the GP (never see the same example twice)</p></li>
+<li><p>Datasets : 3 datasets, each corresponding to a GP with a different kernel with fixed hyper-parameters. Namely : <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.RBF.html">RBF</a>, <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.ExpSineSquared.html">Exp-Sine-Squared (periodic)</a>, <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern">Matern</a> with <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.WhiteKernel.html#sklearn.gaussian_process.kernels.WhiteKernel">noise</a>.</p></li>
+<li><p>Evaluation : compare to the ground truth GP</p></li>
+</ul>
+</li>
+<li><p><strong>Samples from GPs with varying Kernels</strong> the second experiment will be to investigate whether members of the NPF can model a ground truth GP even it was trained on samples from different kernels. I.e. if it can “recognize” the kernel and model the ground truth GP once it does. To do so we will simply train on the 3 datasets from the first point.</p>
+<ul class="simple">
+<li><p>Training : 100 epochs, each epoch consists of 10k different context and target sets from the GP (never see the same example twice)</p></li>
+<li><p>Datasets : union of the 3 datasets from the first point</p></li>
+<li><p>Evaluation : evaluate on each 3 datasets separately and compare to the ground truth GP</p></li>
+</ul>
+</li>
+<li><p><strong>Samples from GPs with varying Kernel hyperparameters</strong> finally we will test whether the NPFs can model a family of GPs.</p>
+<ul class="simple">
+<li><p>Training : 100 epochs, each epoch consists of 10k different context and target sets from the GP (never see the same example twice)</p></li>
+<li><p>Datasets : Data generated by sampling a length scale <span class="math notranslate nohighlight">\([0.01, 0.3]\)</span> and then a function from a GP with Matern kernel and the corresponding length scale</p></li>
+<li><p>Evaluation : compare to a GP with Matern Kernel, with a length scale fitted on the context points (using the marginal likelihood)</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Extensions</strong></p>
+<ul class="simple">
+<li><p>See the docstrings of <code class="docutils literal notranslate"><span class="pre">GPDataset</span></code> for more parameters.</p></li>
+<li><p>Adding a dataset from a new kernel is straightforward by defining your own <a class="reference external" href="https://scikit-learn.org/stable/modules/gaussian_process.html#kernels-for-gaussian-processes">kernel</a> and following the same step as below.</p></li>
+</ul>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># GPDataset Docstring</span>
+<span class="kn">from</span> <span class="nn">utils.data</span> <span class="kn">import</span> <span class="n">GPDataset</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">GPDataset</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="samples-from-a-single-gp">
+<span id="samples-from-gp"></span><h3>Samples from a single GP<a class="headerlink" href="#samples-from-a-single-gp" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">RBF</span><span class="p">,</span> <span class="n">ExpSineSquared</span><span class="p">,</span> <span class="n">Matern</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+
+<span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">get_gp_datasets</span>
+
+
+<span class="k">def</span> <span class="nf">get_datasets_single_gp</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return train / tets / valid sets for &#39;Samples from a single GP&#39;.&quot;&quot;&quot;</span>
+    <span class="n">kernels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="n">kernels</span><span class="p">[</span><span class="s2">&quot;RBF_Kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RBF</span><span class="p">(</span><span class="n">length_scale</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
+
+    <span class="n">kernels</span><span class="p">[</span><span class="s2">&quot;Periodic_Kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpSineSquared</span><span class="p">(</span><span class="n">length_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">periodicity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="c1">#kernels[&quot;Matern_Kernel&quot;] = Matern(length_scale=0.2, nu=1.5)</span>
+
+    <span class="n">kernels</span><span class="p">[</span><span class="s2">&quot;Noisy_Matern_Kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WhiteKernel</span><span class="p">(</span><span class="n">noise_level</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">+</span> <span class="n">Matern</span><span class="p">(</span>
+        <span class="n">length_scale</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="mf">1.5</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">get_gp_datasets</span><span class="p">(</span>
+        <span class="n">kernels</span><span class="p">,</span>
+        <span class="n">is_vary_kernel_hyp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># use a single hyperparameter per kernel</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>  <span class="c1"># number of different context-target sets</span>
+        <span class="n">n_points</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>  <span class="c1"># size of target U context set for each sample</span>
+        <span class="n">is_reuse_across_epochs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># never see the same example twice</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># create the dataset and store it (if not already done)</span>
+<span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,)</span> <span class="o">=</span> <span class="n">get_datasets_single_gp</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_dataset_samples_1d</span>
+
+<span class="n">n_datasets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_datasets</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_datasets</span><span class="p">),</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">plot_dataset_samples_1d</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Datasets_6_0.png" src="../_images/Datasets_6_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_datasets_variable_hyp_gp</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return train / tets / valid sets for &#39;Samples from GPs with varying Kernel hyperparameters&#39;.&quot;&quot;&quot;</span>
+    <span class="n">kernels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="n">kernels</span><span class="p">[</span><span class="s2">&quot;Variable_Matern_Kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Matern</span><span class="p">(</span><span class="n">length_scale_bounds</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span> <span class="n">nu</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">get_gp_datasets</span><span class="p">(</span>
+        <span class="n">kernels</span><span class="p">,</span>
+        <span class="n">is_vary_kernel_hyp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># use a single hyperparameter per kernel</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>  <span class="c1"># number of different context-target sets</span>
+        <span class="n">n_points</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>  <span class="c1"># size of target U context set for each sample</span>
+        <span class="n">is_reuse_across_epochs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># never see the same example twice</span>
+    <span class="p">)</span>
+
+
+
+<span class="c1"># create the dataset and store it (if not already done)</span>
+<span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,)</span> <span class="o">=</span> <span class="n">get_datasets_variable_hyp_gp</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_datasets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_datasets</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_datasets</span><span class="p">),</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">plot_dataset_samples_1d</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Datasets_8_0.png" src="../_images/Datasets_8_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="samples-from-gps-with-varying-kernels">
+<h3>Samples from GPs with varying Kernels<a class="headerlink" href="#samples-from-gps-with-varying-kernels" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.data.helpers</span> <span class="kn">import</span> <span class="n">DatasetMerger</span>
+
+
+<span class="k">def</span> <span class="nf">get_datasets_varying_kernel_gp</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return train / tets / valid sets for &#39;Samples from GPs with varying Kernels&#39;.&quot;&quot;&quot;</span>
+
+    <span class="n">datasets</span><span class="p">,</span> <span class="n">test_datasets</span><span class="p">,</span> <span class="n">valid_datasets</span> <span class="o">=</span> <span class="n">get_datasets_single_gp</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">All_Kernels</span><span class="o">=</span><span class="n">DatasetMerger</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">All_Kernels</span><span class="o">=</span><span class="n">DatasetMerger</span><span class="p">(</span><span class="n">test_datasets</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">All_Kernels</span><span class="o">=</span><span class="n">DatasetMerger</span><span class="p">(</span><span class="n">valid_datasets</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># create the dataset and store it (if not already done)</span>
+<span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,)</span> <span class="o">=</span> <span class="n">get_datasets_varying_kernel_gp</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_datasets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_datasets</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_datasets</span><span class="p">),</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">plot_dataset_samples_1d</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Datasets_11_0.png" src="../_images/Datasets_11_0.png" />
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="image-datasets">
+<h2>Image Datasets<a class="headerlink" href="#image-datasets" title="Permalink to this headline">¶</a></h2>
+<p>We will be using the following datasets</p>
+<ul class="simple">
+<li><p>MNIST <a class="bibtex reference internal" href="../zbibliography.html#lecun1998gradient" id="id1">[LBB+98]</a></p></li>
+<li><p>CelebA <a class="bibtex reference internal" href="../zbibliography.html#liu2018large" id="id2">[LLWT18]</a> (rescaled to <span class="math notranslate nohighlight">\(32 \times 32\)</span> pixels)</p></li>
+<li><p>Zero Shot Multi MNIST <a class="bibtex reference internal" href="../zbibliography.html#gordon2019convolutional" id="id3">[GBF+19]</a> (ZSMM).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We will follow <a class="bibtex reference internal" href="../zbibliography.html#foong2020convnp" id="id4">[FBG+20]</a> for ZSMM. Namely, train on translated MNIST and test on a larger canvas with multiple digits (ZSMM).</p>
+</div>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.data</span> <span class="kn">import</span> <span class="n">get_train_test_img_dataset</span>
+
+<span class="n">datasets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;CelebA32&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_train_test_img_dataset</span><span class="p">(</span><span class="s2">&quot;celeba32&quot;</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;MNIST&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_train_test_img_dataset</span><span class="p">(</span><span class="s2">&quot;mnist&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_dataset_samples_imgs</span>
+
+<span class="n">n_datasets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_datasets</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">n_datasets</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">plot_dataset_samples_imgs</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Datasets_15_0.png" src="../_images/Datasets_15_0.png" />
+</div>
+</div>
+<p>Let us now visualize some training and testing samples from ZSMM:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">datasets_zsmm</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">datasets_zsmm</span><span class="p">[</span><span class="s2">&quot;ZSMM Train&quot;</span><span class="p">],</span> <span class="n">datasets_zsmm</span><span class="p">[</span><span class="s2">&quot;ZSMM Test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_train_test_img_dataset</span><span class="p">(</span><span class="s2">&quot;zsmms&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>INFO:utils.data.imgs:Resizing ZeroShotMultiMNIST ...
+INFO:utils.data.imgs:Resizing ZeroShotMultiMNIST ...
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_dataset_samples_imgs</span>
+
+<span class="n">n_datasets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets_zsmm</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_datasets</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">n_datasets</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets_zsmm</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">plot_dataset_samples_imgs</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Datasets_18_0.png" src="../_images/Datasets_18_0.png" />
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./reproducibility"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="../text/LNPF.html" title="previous page">Latent NPFs</a>
+    <a class='right-next' id="next-link" href="CNP.html" title="next page">Conditional Neural Process (CNP)</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Yann Dubois, Jonathan Gordon, ‪Andrew Foong<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../_static/js/index.js"></script>
+    
+  </body>
+</html>

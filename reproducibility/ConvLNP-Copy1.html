@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Convolutional Latent Neural Process (ConvLNP) &#8212; Neural Process Family</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="../_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-dropdown.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/logo.gif" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Neural Process Family</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/Intro.html">
+   The Neural Process Family
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Sub-Families
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/CNPF.html">
+   Conditional NPF
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../text/LNPF.html">
+   Latent NPF
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Reproducibility
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Datasets.html">
+   Datasets
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="CNP.html">
+   CNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="AttnCNP.html">
+   AttnCNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ConvCNP.html">
+   ConvCNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="LNP.html">
+   LNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="AttnLNP.html">
+   AttnLNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ConvLNP.html">
+   ConvLNP
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Losses.html">
+   LNPF Losses
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  Reference
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../zbibliography.html">
+   Bibliography
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference external" href="https://github.com/YannDubs/Neural-Process-Family">
+   GitHub Repo
+   <i class="fas fa-external-link-alt">
+   </i>
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/reproducibility/ConvLNP-Copy1.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/YannDubs/Neural-Process-Family"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/YannDubs/Neural-Process-Family/master?urlpath=tree/reproducibility/ConvLNP-Copy1.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        <a class="colab-button" href="https://colab.research.google.com/github/YannDubs/Neural-Process-Family/blob/master/reproducibility/ConvLNP-Copy1.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="../_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#initialization">
+   Initialization
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#training">
+     Training
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#image-dataset">
+       Image Dataset
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="convolutional-latent-neural-process-convlnp">
+<h1>Convolutional Latent Neural Process (ConvLNP)<a class="headerlink" href="#convolutional-latent-neural-process-convlnp" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default" id="computational-graph-convlnps">
+<a class="reference internal image-reference" href="../_images/computational_graph_ConvLNPs.svg"><img alt="Computational graph ConvLNP" height="300em" src="../_images/computational_graph_ConvLNPs.svg" /></a>
+<p class="caption"><span class="caption-text">Computational graph for Convolutional Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-convlnps" title="Permalink to this image">¶</a></p>
+</div>
+<p>In this notebook we will show how to train a ConvLNP on samples from GPs and images using our framework, as well as how to make nice visualizations of sampled from ConvLNP.
+We will follow quite closely the previous <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a> and <a class="reference internal" href="ConvCNP.html"><span class="doc">ConvCNP notebook</span></a>.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_format = &#39;retina&#39;
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="n">N_THREADS</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">IS_FORCE_CPU</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Nota Bene : notebooks don&#39;t deallocate GPU memory</span>
+
+<span class="k">if</span> <span class="n">IS_FORCE_CPU</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUDA_VISIBLE_DEVICES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">N_THREADS</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="initialization">
+<h2>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>Let’s load all the data. For more details about the data and some samples, see the <a class="reference internal" href="Datasets.html"><span class="doc">data</span></a> notebook.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">get_all_gp_datasets</span><span class="p">,</span> <span class="n">get_img_datasets</span>
+
+<span class="c1"># DATASETS</span>
+<span class="c1"># gp</span>
+<span class="n">gp_datasets</span><span class="p">,</span> <span class="n">gp_test_datasets</span><span class="p">,</span> <span class="n">gp_valid_datasets</span> <span class="o">=</span> <span class="n">get_all_gp_datasets</span><span class="p">()</span>
+<span class="c1"># image</span>
+<span class="n">img_datasets</span><span class="p">,</span> <span class="n">img_test_datasets</span> <span class="o">=</span> <span class="n">get_img_datasets</span><span class="p">([</span> <span class="s2">&quot;zsmms&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s define the context target splitters, which given a data point will return the context set and target set by selecting randomly selecting some points and preprocessing them so that the features are in <span class="math notranslate nohighlight">\([-1,1]\)</span>.
+We use the same as in <a class="reference internal" href="ConvCNP.html"><span class="doc">ConvCNP notebook</span></a>, namely all target points and uniformly sampling in <span class="math notranslate nohighlight">\([0,50]\)</span> and <span class="math notranslate nohighlight">\([0,n\_pixels * 0.3]\)</span> for 1D and 2D respectively and the 2D splitter return the mask instead of the features to enable implementation of the “on the grid” ConvLNP with standard deep learning building blocks.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf.utils.datasplit</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CntxtTrgtGetter</span><span class="p">,</span>
+    <span class="n">GetRandomIndcs</span><span class="p">,</span>
+    <span class="n">GridCntxtTrgtGetter</span><span class="p">,</span>
+    <span class="n">RandomMasker</span><span class="p">,</span>
+    <span class="n">get_all_indcs</span><span class="p">,</span>
+    <span class="n">no_masker</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">utils.data</span> <span class="kn">import</span> <span class="n">cntxt_trgt_collate</span><span class="p">,</span> <span class="n">get_test_upscale_factor</span>
+
+<span class="c1"># CONTEXT TARGET SPLIT</span>
+<span class="n">get_cntxt_trgt_1d</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span>
+    <span class="n">CntxtTrgtGetter</span><span class="p">(</span>
+        <span class="n">contexts_getter</span><span class="o">=</span><span class="n">GetRandomIndcs</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span> <span class="n">targets_getter</span><span class="o">=</span><span class="n">get_all_indcs</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">get_cntxt_trgt_2d</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span>
+    <span class="n">GridCntxtTrgtGetter</span><span class="p">(</span>
+        <span class="n">context_masker</span><span class="o">=</span><span class="n">RandomMasker</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">target_masker</span><span class="o">=</span><span class="n">no_masker</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">is_return_masks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># will be using grid conv CNP =&gt; can work directly with mask</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s now define the models. We use a similar architecture as in <a class="reference internal" href="ConvCNP.html"><span class="doc">ConvCNP notebook</span></a> (<code class="docutils literal notranslate"><span class="pre">ConvCNP</span></code> with <code class="docutils literal notranslate"><span class="pre">ConvLNP</span></code>) the differences can be summarized as follows (in <span class="math notranslate nohighlight">\(\color{red}{\text{red}}\)</span>):</p>
+<ul class="simple">
+<li><p>Off the grid (GP datasets):</p>
+<ol class="simple">
+<li><p>Set convolution with normalized Gaussian RBF kernel to get a functional representation of the context set, and concatenate the density channel.</p></li>
+<li><p>Uniformly discretize (64 points per unit) the output function to enable the use of standard CNNs.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{8}\)</span> layer ResNet to process the functional representation with the <span class="math notranslate nohighlight">\(\color{red}{\text{output being a normal distribution at every discretized / induced point}}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{\text{Sample from each Gaussian distributions independently}}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{\text{8 layer ResNet to process the sample from the latent functional representation}}\)</span>.</p></li>
+<li><p>Set Convolution with normalized Gaussian RBF kernel to enable querying at each target feature.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{\text{Linear decoder}}\)</span>.</p></li>
+</ol>
+</li>
+<li><p>On the grid  (MNIST, CelebA32):</p>
+<ol class="simple">
+<li><p>Apply the mask to the input image, concatenate the mask as a new (density) channel, and apply a convolutional layer.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{8}\)</span> layer ResNet to process the functional representation with the <span class="math notranslate nohighlight">\(\color{red}{\text{output being a normal distribution at every discretized / induced point}}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{\text{Sample from each Gaussian distributions independently}}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{\text{8 layer ResNet to process the sample from the latent functional representation}}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\color{red}{\text{Linear decoder}}\)</span>.</p></li>
+</ol>
+</li>
+</ul>
+<p>ALthough we do not implement it this way, it would be very simple to implement the ConvLNP by stacking 2 ConvCNPs. The first one is used to model discretized latent function, the second is used to reintroduce dependencies between target points by taking as input a sample from the first one.</p>
+<p>Note that we use <code class="docutils literal notranslate"><span class="pre">is_q_zCct=False</span></code> (contrary to other LNPFs), this is because we use NPML instead of NPVI for ConvLNP. We discuss this in details in <a class="reference internal" href="../text/LNPF.html#training-lnpf"><span class="std std-ref">Training LNPF</span></a>, this objective performs competitively for all LNPFs, but we only use it here for ConvLNP which is especially hard to train with NPVI.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">ConvLNP</span><span class="p">,</span> <span class="n">GridConvLNP</span>
+<span class="kn">from</span> <span class="nn">npf.architectures</span> <span class="kn">import</span> <span class="n">CNN</span><span class="p">,</span> <span class="n">MLP</span><span class="p">,</span> <span class="n">ResConvBlock</span><span class="p">,</span> <span class="n">SetConv</span><span class="p">,</span> <span class="n">discard_ith_arg</span>
+<span class="kn">from</span> <span class="nn">npf.utils.helpers</span> <span class="kn">import</span> <span class="n">CircularPad2d</span><span class="p">,</span> <span class="n">make_abs_conv</span><span class="p">,</span> <span class="n">make_padded_conv</span>
+<span class="kn">from</span> <span class="nn">utils.helpers</span> <span class="kn">import</span> <span class="n">count_parameters</span>
+
+<span class="n">R_DIM</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">is_q_zCct</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># use NPML instead of NPVI =&gt; don&#39;t use posterior sampling</span>
+    <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>  <span class="c1"># going to be more expensive</span>
+    <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
+    <span class="n">Decoder</span><span class="o">=</span><span class="n">discard_ith_arg</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">),</span>  <span class="c1"># use small decoder because already went through CNN</span>
+<span class="p">)</span>
+
+<span class="n">CNN_KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">ConvBlock</span><span class="o">=</span><span class="n">ResConvBlock</span><span class="p">,</span>
+    <span class="n">is_chan_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># all computations are done with channel last in our code</span>
+    <span class="n">n_conv_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">n_blocks</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+
+<span class="c1"># full translation equivariance</span>
+<span class="n">Padder</span> <span class="o">=</span> <span class="n">CircularPad2d</span>
+
+
+<span class="n">model_2d_extrap</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">GridConvLNP</span><span class="p">,</span>
+    <span class="n">x_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># for gridded conv it&#39;s the mask shape</span>
+    <span class="n">CNN</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">CNN</span><span class="p">,</span>
+        <span class="n">Normalization</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">,</span>
+        <span class="n">Conv</span><span class="o">=</span><span class="n">make_padded_conv</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span> <span class="n">Padder</span><span class="p">),</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># make first layer also padded (all arguments are defaults besides `make_padded_conv` given `Padder`)</span>
+    <span class="n">Conv</span><span class="o">=</span><span class="k">lambda</span> <span class="n">y_dim</span><span class="p">:</span> <span class="n">make_padded_conv</span><span class="p">(</span><span class="n">make_abs_conv</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">),</span> <span class="n">Padder</span><span class="p">)(</span>
+        <span class="n">y_dim</span><span class="p">,</span>
+        <span class="n">y_dim</span><span class="p">,</span>
+        <span class="n">groups</span><span class="o">=</span><span class="n">y_dim</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+        <span class="n">padding</span><span class="o">=</span><span class="mi">11</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># no global because multiple objects</span>
+    <span class="n">is_global</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For more details about all the possible parameters, refer to the docstrings of <code class="docutils literal notranslate"><span class="pre">ConvLNP</span></code> and <code class="docutils literal notranslate"><span class="pre">GridConvLNP</span></code> and the base class <code class="docutils literal notranslate"><span class="pre">NeuralProcessFamily</span></code>.</p>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ConvLNP Docstring</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ConvLNP</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Convolutional latent neural process [1].
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimension of features.
+
+    y_dim : int
+        Dimension of y values.
+
+    is_global : bool, optional
+        Whether to also use a global representation in addition to the latent one. Only if
+        encoded_path = `latent`.
+
+    CNNPostZ : Module, optional
+        CNN to use after the sampling. If `None` uses the same as before sampling. Note that computations
+        will be heavier after sampling (as performing on all the samples) so you might want to
+        make it smaller.
+
+    kwargs :
+        Additional arguments to `ConvCNP`.
+
+    References
+    ----------
+    [1] Foong, Andrew YK, et al. &quot;Meta-Learning Stationary Stochastic Process Prediction with
+    Convolutional Neural Processes.&quot; arXiv preprint arXiv:2007.01332 (2020).
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># GridConvLNP Docstring</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">GridConvLNP</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Spacial case of Convolutional Latent Neural Process [1] when the context, targets and
+    induced points points are on a grid of the same size. C.f. `GridConvCNP` for more details.
+
+    Parameters
+    ----------
+    x_dim : int
+        Dimension of features.
+
+    y_dim : int
+        Dimension of y values.
+
+    is_global : bool, optional
+        Whether to also use a global representation in addition to the latent one. Only if
+        encoded_path = `latent`.
+
+    CNNPostZ : Module, optional
+        CNN to use after the sampling. If `None` uses the same as before sampling. Note that computations
+        will be heavier after sampling (as performing on all the samples) so you might want to
+        make it smaller.
+
+    kwargs :
+        Additional arguments to `ConvCNP`.
+
+    References
+    ----------
+    [1] Gordon, Jonathan, et al. &quot;Convolutional conditional neural processes.&quot; arXiv preprint
+    arXiv:1910.13556 (2019).
+    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="training">
+<h3>Training<a class="headerlink" href="#training" title="Permalink to this headline">¶</a></h3>
+<p>The main function for training is <code class="docutils literal notranslate"><span class="pre">train_models</span></code> which trains a dictionary of models on a dictionary of datasets and returns all the trained models.
+See its docstring for possible parameters. As previously discussed, we will be using <code class="docutils literal notranslate"><span class="pre">NLLLossLNPF</span></code> (approximating maximum likelihood) instead of <code class="docutils literal notranslate"><span class="pre">ELBOLossLNPF</span></code>. This means a larger variance, so we will use gradient clipping to stabilize training.</p>
+<p>Computational Notes :</p>
+<ul class="simple">
+<li><p>the following will either train all the models (<code class="docutils literal notranslate"><span class="pre">is_retrain=True</span></code>) or load the pretrained models (<code class="docutils literal notranslate"><span class="pre">is_retrain=False</span></code>)</p></li>
+<li><p>the code will use a (single) GPU if available</p></li>
+<li><p>decrease the batch size if you don’t have enough memory</p></li>
+<li><p>30 epochs should give you descent results for the GP datasets (instead of 100)</p></li>
+<li><p>the model is much slower to train as there are multiple samples used during training. You can probably slightly decrease <code class="docutils literal notranslate"><span class="pre">n_z_samples_train</span></code> to accelerate training.</p></li>
+</ul>
+<div class="cell tag_hide-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">skorch</span>
+<span class="kn">from</span> <span class="nn">npf</span> <span class="kn">import</span> <span class="n">NLLLossLNPF</span>
+<span class="kn">from</span> <span class="nn">skorch.callbacks</span> <span class="kn">import</span> <span class="n">GradientNormClipping</span><span class="p">,</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">add_y_dim</span>
+<span class="kn">from</span> <span class="nn">utils.train</span> <span class="kn">import</span> <span class="n">train_models</span>
+
+<span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">is_retrain</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether to load precomputed model or retrain</span>
+    <span class="n">criterion</span><span class="o">=</span><span class="n">NLLLossLNPF</span><span class="p">,</span> <span class="c1"># NPML</span>
+    <span class="n">chckpnt_dirname</span><span class="o">=</span><span class="s2">&quot;results/pretrained/&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">decay_lr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>  <span class="c1"># smaller batch because multiple samples</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">GradientNormClipping</span><span class="p">(</span><span class="n">gradient_clip_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">],</span>  <span class="c1"># clipping gradients can stabilize training</span>
+<span class="p">)</span>
+
+
+
+
+<span class="c1"># replace the zsmm model</span>
+<span class="n">models_2d</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">models_extrap</span> <span class="o">=</span> <span class="n">add_y_dim</span><span class="p">({</span><span class="s2">&quot;ConvLNP&quot;</span><span class="p">:</span> <span class="n">model_2d_extrap</span><span class="p">},</span> <span class="n">img_datasets</span><span class="p">)</span>
+<span class="n">models_2d</span><span class="p">[</span><span class="s2">&quot;zsmms&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">models_extrap</span><span class="p">[</span><span class="s2">&quot;zsmms&quot;</span><span class="p">]</span>
+
+<span class="c1"># 2D</span>
+<span class="n">trainers_2d</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+    <span class="n">img_datasets</span><span class="p">,</span>
+    <span class="n">models_2d</span><span class="p">,</span>
+    <span class="n">test_datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span>
+    <span class="n">train_split</span><span class="o">=</span><span class="n">skorch</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">CVSplit</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span>  <span class="c1"># use 10% of training for valdiation</span>
+    <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
+    <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">KWARGS</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Training zsmms/ConvLNP/run_0 ---
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="image-dataset">
+<h4>Image Dataset<a class="headerlink" href="#image-dataset" title="Permalink to this headline">¶</a></h4>
+<p>Let us now look at images. We again will use the same plotting procedure as in <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">plot_multi_posterior_samples_imgs</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
+
+
+<span class="k">def</span> <span class="nf">multi_posterior_imgs_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">giffify</span><span class="p">(</span>
+        <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+        <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_imgs</span><span class="p">,</span>  <span class="c1"># core plotting</span>
+        <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>  
+            <span class="mf">0.005</span><span class="p">,</span>
+            <span class="mf">0.01</span><span class="p">,</span>
+            <span class="mf">0.02</span><span class="p">,</span>
+            <span class="mf">0.05</span><span class="p">,</span>
+            <span class="mf">0.1</span><span class="p">,</span>
+            <span class="mf">0.15</span><span class="p">,</span>
+            <span class="mf">0.2</span><span class="p">,</span>
+            <span class="mf">0.3</span><span class="p">,</span>
+            <span class="mf">0.5</span><span class="p">,</span>
+            <span class="s2">&quot;hhalf&quot;</span><span class="p">,</span>  <span class="c1"># horizontal half of the image</span>
+            <span class="s2">&quot;vhalf&quot;</span><span class="p">,</span>  <span class="c1"># vertival half of the image</span>
+        <span class="p">],</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="c1"># PLOTTING KWARGS</span>
+        <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
+        <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
+        <span class="n">n_plots</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># images per datasets</span>
+        <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot the predictive std</span>
+        <span class="c1">#pretty_renamer=PRETTY_RENAMER,  # pretiffy names of modulte + data</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;font_scale&quot;</span><span class="p">:</span><span class="mf">0.7</span><span class="p">},</span>
+        <span class="c1"># Fix formatting for coherent GIF</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">multi_posterior_imgs_gif</span><span class="p">(</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2d</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="figure align-default" id="convlnp-img">
+<a class="reference internal image-reference" href="../_images/ConvLNP_img.gif"><img alt="ConvLNP on images" src="../_images/ConvLNP_img.gif" style="width: 45em;" /></a>
+<p class="caption"><span class="caption-text">Mean and std of the posterior predictive of an ConvLNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#convlnp-img" title="Permalink to this image">¶</a></p>
+</div>
+<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">ConvLNP_img</span></code> we see that ConvLNP performs similarly to ConvCNP. Namely, well when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM), but has difficulties when the context set is very small or when it is structured, e.g., half images.
+Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.html#attnlnp-img"><span class="std std-numref">Fig. 67</span></a>) the variance of the posterior predictive for each sample seems much smaller. I.e. the variance is all modeled by the latent. This makes sense, as you can interpret the variance of the conditional posterior predictive to be the aleatoric uncertainty, which is probably homoskedastic (same for all pixels) in images.</p>
+<p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">PRETTY_RENAMER</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_qualitative_with_kde</span>
+
+<span class="n">n_trainers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trainers_2d</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">trainer</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trainers_2d</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">data_name</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">img_test_datasets</span><span class="p">[</span><span class="n">data_name</span><span class="p">]</span>
+
+    <span class="n">plot_qualitative_with_kde</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">PRETTY_RENAMER</span><span class="p">[</span><span class="n">model_name</span><span class="p">],</span> <span class="n">trainer</span><span class="p">],</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+        <span class="n">percentiles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>  <span class="c1"># desired test percentile</span>
+        <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>  <span class="c1"># kde / image ratio</span>
+        <span class="n">is_smallest_xrange</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># rescale X axis based on percentile</span>
+        <span class="n">h_pad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># padding</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">[</span><span class="n">data_name</span><span class="p">],</span>
+        <span class="n">upscale_factor</span><span class="o">=</span><span class="n">get_test_upscale_factor</span><span class="p">(</span><span class="n">data_name</span><span class="p">),</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvLNP-Copy1_17_0.png" src="../_images/ConvLNP-Copy1_17_0.png" />
+</div>
+</div>
+<p>We have seen that a latent variable enable coherent sampling and to “switch kernel”. Let us now see whether it enables a non Gaussian marginal posterior predictive.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.ntbks_helpers</span> <span class="kn">import</span> <span class="n">select_labels</span>
+<span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">plot_config</span><span class="p">,</span><span class="n">plot_img_marginal_pred</span>
+
+<span class="k">with</span> <span class="n">plot_config</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lines.linewidth&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}):</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_img_marginal_pred</span><span class="p">(</span>
+        <span class="n">trainers_2d</span><span class="p">[</span><span class="s2">&quot;mnist/ConvLNP/run_0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">module_</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span>
+        <span class="n">select_labels</span><span class="p">(</span><span class="n">img_test_datasets</span><span class="p">[</span><span class="s2">&quot;mnist&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># Selecting a 3</span>
+        <span class="n">GridCntxtTrgtGetter</span><span class="p">(</span>
+            <span class="n">RandomMasker</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">0.05</span><span class="p">),</span> <span class="n">target_masker</span><span class="o">=</span><span class="n">no_masker</span>
+        <span class="p">),</span>  <span class="c1"># 5% context</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">is_uniform_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># on the grid model</span>
+        <span class="n">n_marginals</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>  <span class="c1"># number of pixels posterior predictive</span>
+        <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="c1"># number of samples from the posterior pred</span>
+        <span class="n">n_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># number of columns for the sampled</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvLNP_marginal.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ConvLNP-Copy1_19_0.png" src="../_images/ConvLNP-Copy1_19_0.png" />
+</div>
+</div>
+<p>In the last figure, we see that, as desired, LNPFs can:</p>
+<ol class="simple">
+<li><p>Give rise to coherent but varied samples</p></li>
+<li><p>Model a marginal predictive distribution which is highly non Gaussian. Here we see a large spike for black pixels.</p></li>
+</ol>
+<p>Note that we are plotting a few (7) marginal posterior predictive that are multi modal by selecting the ones that have the largest <a class="reference external" href="https://en.wikipedia.org/wiki/Multimodal_distribution#Bimodality_coefficient">Sarle’s bimodality coefficient</a> <a class="bibtex reference internal" href="../zbibliography.html#ellison1987effect" id="id1">[Ell87]</a>.</p>
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./reproducibility"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Yann Dubois, Jonathan Gordon, ‪Andrew Foong<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="../_static/js/index.js"></script>
+    
+  </body>
+</html>
