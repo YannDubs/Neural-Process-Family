@@ -1,14 +1,14 @@
 - file: text/Intro
 
-- chapter: Sub-Families
-  sections:
+- part: Sub-Families
+  chapters:
   - file: text/CNPF
     title: Conditional NPF
   - file: text/LNPF
     title: Latent NPF
 
-- chapter: Reproducibility
-  sections:
+- part: Reproducibility
+  chapters:
   - file: reproducibility/Datasets
   - file: reproducibility/CNP
     title: CNP
@@ -25,8 +25,8 @@
   - file: reproducibility/Losses
     title: LNPF Losses
 
-- chapter: Reference
-  sections:
+- part: Reference
+  chapters:
   #- file: text/Related
   #  title: Related
   - file: zbibliography # need to add z because has to be processed last

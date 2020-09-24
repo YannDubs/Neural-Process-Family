@@ -2,16 +2,16 @@
 
 ## Overview
 
-```{figure} ../images/graph_model_CNPF.svg
+```{figure} ../images/graphical_model_CNPF.png
 ---
-width: 300em
+width: 20em
 name: graph_model_CNPF
 ---
 Probabilistic graphical model for the Conditional NPF.
 ```
 
 The key design choice for NPs is how to model the predictive distribution $p_{\theta}( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$.
-In particular, we require the predictive distributions to be consistent with each other for different $\mathbf{x}_\mathcal{T}$, as discussed on the {ref}`previous page <target_consistency>`.
+In particular, we require the predictive distributions to be consistent with each other for different $\mathbf{x}_\mathcal{T}$, as discussed on the {ref}`previous page <stochastic_processes>`.
 A simple way to ensure this is to use a predictive distribution that is *factorised* conditioned on the context set (as illustrated in {numref}`graph_model_CNPF`).
 In other words, conditioned on the context set $\mathcal{C}$, the prediction at each target location is _independent_ of predictions at other target locations.
 We can concisely express this assumption as:
@@ -25,33 +25,7 @@ p_{\theta}( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C}) = \pro
 \end{align}
 ```
 
-We refer to the sub-family of the NPF containing members that employ this factorisation assumption as the _conditional_ Neural Process (sub-)Family (CNPF).
-A typical (though not necessary) choice is to set each $p_{\theta} \left( y^{(t)} | x^{(t)}; \mathcal{C} \right)$ to be a Gaussian density.
-Now, recall that one guiding principle of the NPF is to encode the context set $\mathcal{C}$ into a global representation $R$, and then use a decoder to parametrise each $p_{\theta} \left( y^{(t)} | x^{(t)}; \mathcal{C} \right)$.
-Putting these together, we can express the predictive distribution of CNPF members as
-
-```{math}
-:label: formal
-\begin{align}
-p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
-&= p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; R) & \text{Encoding}  \\
-&= \prod_{t=1}^{T} p_{\theta}(y^{(t)} |  x^{(t)}; R)  & \text{Factorisation}\\
-&= \prod_{t=1}^{T} \mathcal{N} \left( y^{(t)};  \mu^{(t)}, \sigma^{2(t)} \right) & \text{Gaussianity}
-\end{align}
-```
-
-Where:
-
-$$
-\begin{align}
-R
-&:= \mathrm{Enc}_{\theta}\left(\mathcal{C} \right) & \text{Encoding} \\
-(\mu^{(t)},\sigma^{2(t)})
-&:= \mathrm{Dec}_{\theta}(x^{(t)},R) & \text{Decoding}
-\end{align}
-$$
-
-```{admonition} Advanced$\qquad$Factorisation $\implies$ consistency
+```{admonition} Advanced$\qquad$Factorisation $\implies$ Consistency
 ---
 class: hint, dropdown
 ---
@@ -83,6 +57,34 @@ which shows that the predictive distribution obtained by querying the CNPF membe
 
 ```
 
+We refer to the sub-family of the NPF containing members that employ this factorisation assumption as the _conditional_ Neural Process (sub-)Family (CNPF).
+A typical (though not necessary) choice is to set each $p_{\theta} \left( y^{(t)} | x^{(t)}; \mathcal{C} \right)$ to be a Gaussian density.
+Now, recall that one guiding principle of the NPF is to encode the context set $\mathcal{C}$ into a global representation $R$, and then use a decoder to parametrise each $p_{\theta} \left( y^{(t)} | x^{(t)}; \mathcal{C} \right)$.
+Putting these together, we can express the predictive distribution of CNPF members as
+
+```{math}
+:label: formal
+\begin{align}
+p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
+&= p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; R) & \text{Encoding}  \\
+&= \prod_{t=1}^{T} p_{\theta}(y^{(t)} |  x^{(t)}; R)  & \text{Factorisation}\\
+&= \prod_{t=1}^{T} \mathcal{N} \left( y^{(t)};  \mu^{(t)}, \sigma^{2(t)} \right) & \text{Gaussianity}
+\end{align}
+```
+
+Where:
+
+$$
+\begin{align}
+R
+&:= \mathrm{Enc}_{\theta}\left(\mathcal{C} \right) & \text{Encoding} \\
+(\mu^{(t)},\sigma^{2(t)})
+&:= \mathrm{Dec}_{\theta}(R,x^{(t)}) & \text{Decoding}
+\end{align}
+$$
+
+
+
 CNPF members make an important tradeoff.
 On one hand, the factorisation assumption places a severe restriction on the class of predictive stochastic processes we can model.
 As discussed at the end of this chapter, this has important consequences, such as the inability of the CNPF to produce coherent samples.
@@ -113,9 +115,9 @@ Typically, we parameterise $\mathrm{Dec}_{\theta}$ as outputting $(\mu^{(t)}, \l
 ```
 
 
-```{figure} ../images/computational_graph_CNPs.svg
+```{figure} ../images/computational_graph_CNPs.png
 ---
-width: 400em
+width: 25em
 name: computational_graph_CNPs_text
 alt: Computational graph CNP
 ---
@@ -221,7 +223,7 @@ It seems that the CNP has failed to learn the more complex structure of the opti
 
 
 Let's now test the CNP (same architecture) on a more interesting task, one where we do _not_ have access to the ground truth predictive distribution: image completion. 
-Note that NPs can be used to model images, as an image can be viewed as a function $I(\cdot)$ from pixel locations to pixel intensities or RGB channels--- expand the dropdown below if this is not obvious.
+Note that NPs can be used to model images, as an image can be viewed as a function from pixel locations to pixel intensities or RGB channels--- expand the dropdown below if this is not obvious.
 
 ````{admonition} Note$\qquad$Images as Functions
 ---
@@ -299,9 +301,9 @@ To summarise, the AttnCNP is defined by the following design choices (see {numre
 
 Note that, as for the CNP, the encoder is permutation invariant due to the commutativity of the sum operation.
 
-```{figure} ../images/computational_graph_AttnCNPs.svg
+```{figure} ../images/computational_graph_AttnCNPs.png
 ---
-width: 400em
+width: 25em
 name: computational_graph_AttnCNPs_text
 alt: Computational graph of AttnCNP
 ---
@@ -352,7 +354,7 @@ alt: AttnCNP on CelebA and MNIST
 Posterior predictive of an AttnCNP for CelebA $32\times32$ and MNIST.
 ```
 
-{numref}`AttnCNP_img_interp_text` illustrates the performance of the AttnCNP on image reconstruction tasks with CelebA (left) and MNIST (right). Note that the reconstructions are sharper than those for the CNP. Interestingly, when only a vertical or horizontal slice is shown, the ANP seems to 'blur' out its reconstruction somewhat.
+{numref}`AttnCNP_img_interp_text` illustrates the performance of the AttnCNP on image reconstruction tasks with CelebA (left) and MNIST (right). Note that the reconstructions are sharper than those for the CNP. Interestingly, when only a vertical or horizontal slice is shown, the ANP seems to "blur" out its reconstruction somewhat.
 
 
 <!-- The results are quite impressive, as the AttnCNP is able to learn complicated structure in the underlying process, and even produce descent reconstructions of structured obfuscation of the image that is different from the random context pixels seen during training.
@@ -513,9 +515,9 @@ Note that the SetConv operation is permutation invariant due to the sum operatio
 * The weight only depends on the distance $x^{(c)}-x$ rather than on their absolute values. This is the key for TE, which intuitively requires the mapping to only depend on relative positions rather than absolute ones.
 * We append a constant 1 to the value,  $\begin{bmatrix} 1 \\ y^{(c)} \end{bmatrix}$, which results in an additional _channel_. Intuitively, we can think of this additional channel --- referred to as the _density channel_ --- as keeping track of where data was observed in $\mathcal{C}$.
 
-```{admonition} Density Channel
+```{admonition} Note$\qquad$Density Channel
 ---
-class: note
+class: note, dropdown
 ---
 To better understand the role of the density channel, consider a context set containing a point $(x^{(c')}, y^{(c')})$, with $y^{(c')} = 0$. Without the density channel, this point would have no impact on the output of the SetConv:
 
@@ -550,7 +552,13 @@ $$
 Intuitively, this ensures that the magnitude of the signal channel doesn't blow up if there are a large number of context points at the same spot. The density channel of the ConvCNP encoder can be seen as (a scaled version of) a kernel density estimate, and the normalised signal channel can be seen as [Nadaraya-Watson kernel regression](https://en.wikipedia.org/wiki/Kernel_regression#Nadaraya%E2%80%93Watson_kernel_regression).
 ```
 
-Note that if $x^{(c)},x^{(t)}$ are discrete, the SetConv essentially recovers the standard convolutional layer, denoted Conv. For example, let $I$ be a $128\times128$ monochrome image, then $\mathrm{SetConv}(\{(x^{(c)},I(x^{(c)}))\}_{x^{(c)} \in \{0, \dots , 127\}^2 })(x^{(t)}) = \begin{bmatrix} 1 \\ \mathrm{Conv}(I)[x^{t}] \end{bmatrix}$ for all pixel locations $x^{(t)} \in \{0, \dots , 127\}^2 $, where $1$ comes from the fact that the density channel is always $1$ when their are no "missing values".
+Note that if $x^{(c)},x^{(t)}$ are discrete, the SetConv essentially recovers the standard convolutional layer, denoted Conv. For example, let $I$ be a $128\times128$ monochrome image, then 
+
+$$
+\mathrm{SetConv}(\{(x^{(c)},I(x^{(c)}))\}_{x^{(c)} \in \{0, \dots , 127\}^2 })(x^{(t)}) = \begin{bmatrix} 1 \\ \mathrm{Conv}(I)[x^{t}] \end{bmatrix}
+$$
+
+for all pixel locations $x^{(t)} \in \{0, \dots , 127\}^2 $, where $1$ comes from the fact that the density channel is always $1$ when their are no "missing values".
 ````
 
 Armed with this convolution mapping a set to continuous a function, we can use a CNN as our encoder by "wrapping it" around two SetConvs.
@@ -574,9 +582,9 @@ Putting everything together, we can define the ConvCNP using the following desig
 * Encoding: $R(\cdot) = \mathrm{Enc}_{\theta}(\mathcal{C}) = \mathrm{SetConv} \left( \mathrm{CNN}\left(\{ \mathrm{SetConv}\left( \mathcal{C} \right)(x^{(u)}) \}_{u=1}^U \right) \right)$ .
 * Decoding: $(\mu^{(t)}, \sigma^{2(t)}) = \mathrm{Dec}_{\theta}(R, x^{(t)}) =  \mathrm{MLP} \left( R(x^{(t)}) \right)$.
 
-```{figure} ../images/computational_graph_ConvCNPs.svg
+```{figure} ../images/computational_graph_ConvCNPs.png
 ---
-height: 300em
+width: 25em
 name: computational_graph_ConvCNPs_text
 alt: Computational graph ConvCNP
 ---
