@@ -530,7 +530,7 @@ $$
 \end{align}
 $$
 
-Hence, without a density channel, the encoder would be unable to distinguish between observing a context point with $y^{(c)} = 0$, and not observing a context point at all! With the density channel, the contribution of the point $c'$ becomes non-zero, specifically it contributes $\begin{bmatrix} w_{\theta} \left( x - x^{(c)} \right) \\ 0 \end{bmatrix} $  to the predictions. This turns out to be important in practice, as well as in the theoretical proofs regarding the expressivity of the ConvCNP.
+Hence, without a density channel, the encoder would be unable to distinguish between observing a context point with $y^{(c)} = 0$, and not observing a context point at all! With the density channel, the contribution of the point $c'$ becomes non-zero, specifically it contributes $\begin{bmatrix} w_{\theta} \left( x - x^{(c)} \right) \\ 0 \end{bmatrix}$  to the predictions. This turns out to be important in practice, as well as in the theoretical proofs regarding the expressivity of the ConvCNP.
 ```
 
 ```{admonition} Note$\qquad$Normalisation
@@ -541,11 +541,11 @@ It is common practice to use the density channel to _normalise_ the output of th
 
 $$
 \begin{align}
-\mathrm{density}(x) 
+\mathrm{density}(x)
 &= \sum_{c=1}^{C}  w_{\theta}(x^{(c)} - x)\\
-\mathrm{signal}(x) 
+\mathrm{signal}(x)
 &= \sum_{c=1}^{C} y^{(c)} w_{\theta}(x^{(c)} - x) \\
-\mathrm{SetConv}(\mathcal{C})(x) &=  \begin{bmatrix} \mathrm{density}(x) \\ \mathrm{signal}(x) / \mathrm{density}(x) \end{bmatrix} 
+\mathrm{SetConv}(\mathcal{C})(x) &=  \begin{bmatrix} \mathrm{density}(x) \\ \mathrm{signal}(x) / \mathrm{density}(x) \end{bmatrix}
 \end{align}
 $$
 
@@ -563,7 +563,7 @@ for all pixel locations $x^{(t)} \in \{0, \dots , 127\}^2 $, where $1$ comes fro
 
 Armed with this convolution mapping a set to continuous a function, we can use a CNN as our encoder by "wrapping it" around two SetConvs.
 Specifically, the encoder of the ConvCNP first uses a SetConv to ensure that the encoder can take the context set $\mathcal{C}$ as input.
-The output of the SetConv (a continuous function) is then _discretised_ --- by evaluating it at evenly spaced grid of input locations $\{ \mathrm{SetConv}\left( \mathcal{C} \right)(x^{(u)}) \}_{u=1}^U$ --- so that it can be  given as input to a CNN.
+The output of the SetConv (a continuous function) is then _discretised_ --- by evaluating it at an evenly spaced grid of input locations $\{ \mathrm{SetConv}\left( \mathcal{C} \right)(x^{(u)}) \}_{u=1}^U$ --- so that it can be  given as input to a CNN.
 Finally the output of the CNN (a discrete function) is passed through an additional SetConv to obtain a continuous functional representation $R$.
 
 ```{admonition} Warning
@@ -599,7 +599,7 @@ class: caution, dropdown
 Note that the separation of the ConvCNP into encoder and decoder is somewhat arbitrary. You could also view the encoder as the first SetConv, and the decoder as the CNN with the second SetConv, which is the view presented in the original ConvCNP paper.
 ```
 
-Importantly, if the CNN was a uniuversal function approximator (think about "infinite channels" in the CNN and $U \to \infty$) the ConvCNP would essentially be able to predict any mean $\mu^{(t)}$ and variance $\sigma^{2(t)}$ that can be predicted with a TE map (ConvDeepSets; {cite}`gordon2019convolutional`).
+Importantly, if the CNN was a universal function approximator (think about "infinite channels" in the CNN and $U \to \infty$) the ConvCNP would essentially be able to predict any mean $\mu^{(t)}$ and variance $\sigma^{2(t)}$ that can be predicted with a TE map (ConvDeepSets; {cite}`gordon2019convolutional`).
 
 ```{admonition} Advanced$\qquad$ConvDeepSets
 ---
