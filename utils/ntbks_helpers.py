@@ -411,7 +411,7 @@ def plot_multi_posterior_samples_1d(
             if curr_trainers is None:
                 continue
 
-            for i, (k, trainer) in enumerate(trainers.items()):
+            for i, (k, trainer) in enumerate(curr_trainers.items()):
                 data_name = k.split("/")[0]
                 model_name = k.split("/")[1]
                 dataset = datasets[data_name]
@@ -602,7 +602,7 @@ def gif_explain(
     seed=123,
     n_cntxt=10,
     fps=0.5,
-    length_scale_delta=0 # increases length scale to make it clearer that smoothing out
+    length_scale_delta=0,  # increases length scale to make it clearer that smoothing out
 ):
     figs = []
 
@@ -621,7 +621,9 @@ def gif_explain(
     top = bottom + height
 
     length_scale_param = model.cntxt_to_induced.radial_basis_func.length_scale_param
-    model.cntxt_to_induced.radial_basis_func.length_scale_param = torch.nn.Parameter(length_scale_param + length_scale_delta)
+    model.cntxt_to_induced.radial_basis_func.length_scale_param = torch.nn.Parameter(
+        length_scale_param + length_scale_delta
+    )
 
     # Only points
     with plot_config(plot_config_kwargs):
@@ -915,7 +917,9 @@ def gif_explain(
 
     figs.append(fig2img(plt.gcf()))
     plt.close()
-    model.cntxt_to_induced.radial_basis_func.length_scale_param = torch.nn.Parameter(length_scale_param)
+    model.cntxt_to_induced.radial_basis_func.length_scale_param = torch.nn.Parameter(
+        length_scale_param
+    )
 
     # apply CNN
     with plot_config(plot_config_kwargs):
