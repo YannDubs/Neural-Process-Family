@@ -327,8 +327,15 @@ The main idea is to introduce a latent variable <span class="math notranslate no
 This leads us to the second major branch of the NPF, which we refer to as the Latent Neural Process Sub-family, or LNPF for short.
 A graphical representation of the LNPF  is given in <a class="reference internal" href="#graph-model-lnps-text"><span class="std std-numref">Fig. 31</span></a>.</p>
 <div class="figure align-default" id="graph-model-lnps-text">
-<a class="reference internal image-reference" href="../_images/graph_model_LNPF.svg"><img alt="graphical model LNP" src="../_images/graph_model_LNPF.svg" width="300em" /></a>
+<a class="reference internal image-reference" href="../_images/graphical_model_LNPF.png"><img alt="graphical model LNP" src="../_images/graphical_model_LNPF.png" style="width: 20em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 31 </span><span class="caption-text">Probabilistic graphical model for LNPs.</span><a class="headerlink" href="#graph-model-lnps-text" title="Permalink to this image">¶</a></p>
+</div>
+<div class="caution dropdown admonition">
+<p class="admonition-title">Disclaimer<span class="math notranslate nohighlight">\(\qquad\)</span> (Latent) Neural Processes Family</p>
+<p>In this tutorial, we refer use the adjective “Latent” to distinguish the Latent NPF from the Conditional NPF.
+We then use term “neural process” to refer to both conditional neural processes and latent neural processes.
+In the literature, however, the term “neural process” is used to refer to “latent neural processes”.
+As a result the models that we will discuss and call LNP, AttnLNP, and ConvLNP are found in the literature under the abbreviations NP, AttnNP, ConvNP.</p>
 </div>
 <p>To specify this family of models, we must define a few components:</p>
 <ul class="simple">
@@ -345,7 +352,7 @@ p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
 &amp;= \int p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)  \prod_{t=1}^{T} \mathcal{N} \left( y^{(t)};  \mu^{(t)}, \sigma^{2(t)} \right) \mathrm{d}\mathbf{z} &amp; \text{Gaussianity}
 \end{align}\end{split}\]</div>
 <div class="hint dropdown admonition">
-<p class="admonition-title">Advanced<span class="math notranslate nohighlight">\(\qquad\)</span>Latent variable <span class="math notranslate nohighlight">\(\implies\)</span> consistency</p>
+<p class="admonition-title">Advanced<span class="math notranslate nohighlight">\(\qquad\)</span>Marginalisation and Factorisation <span class="math notranslate nohighlight">\(\implies\)</span> Consistency</p>
 <p>We show that like the CNPF, members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set <span class="math notranslate nohighlight">\(\mathcal{C}\)</span>.</p>
 <p>(Consistency under permutation) Let <span class="math notranslate nohighlight">\(\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T\)</span> be the target inputs and <span class="math notranslate nohighlight">\(\pi\)</span> be any permutation of <span class="math notranslate nohighlight">\(\{1, ..., T\}\)</span>. Then the predictive density is:</p>
 <div class="math notranslate nohighlight">
@@ -370,7 +377,7 @@ p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
 <p>which shows that the predictive distribution obtained by querying an LNPF member at <span class="math notranslate nohighlight">\(x^{(1)}\)</span> is the same as that obtained by querying it at <span class="math notranslate nohighlight">\(x^{(1)}, x^{(2)}\)</span> and then marginalising out the second target point. Of course, the same idea works with collections of any size, and marginalising any subset of the variables.</p>
 </div>
 <p>Now, you might be worried that we have still made both the factorisation and Gaussian assumptions!
-However, while the decoder likelihood <span class="math notranslate nohighlight">\(p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right)\)</span> is still factorised, the predictive distribution we are actually interested in, <span class="math notranslate nohighlight">\(p_\theta( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})\)</span>, is no longer due to the marginalisation of <span class="math notranslate nohighlight">\(\mathbf{z}\)</span>, thus addressing the first problem we associated with the CNPF.
+However, while <span class="math notranslate nohighlight">\(p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right)\)</span> is still factorised, the predictive distribution we are actually interested in, <span class="math notranslate nohighlight">\(p_\theta( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})\)</span>, is no longer due to the marginalisation of <span class="math notranslate nohighlight">\(\mathbf{z}\)</span>, thus addressing the first problem we associated with the CNPF.
 Moreover, the predictive distribution is no longer Gaussian either.
 In fact, since the predictive now has the form of an <em>infinite mixture of Gaussians</em>, potentially <em>any</em> predictive density can be represented (i.e. learned) by this form.
 This is great news, as it (conceptually) relieves us of the burden of choosing / designing a bespoke likelihood function when deploying the NPF for a new application!</p>
@@ -433,7 +440,7 @@ While this quantity is no longer tractable (as it was with members of the CNPF),
 \log p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
 &amp;= \log \int p_{\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \mathrm{d}\mathbf{z} &amp; \text{Marginalisation} \\
 &amp; \approx \log \left( \frac{1}{L} \sum_{l=1}^{L} \prod_{t=1}^{T} p_{\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z}_l \right) \right) &amp; \text{Monte-Carlo approximation} \\
-&amp; = \hat{\mathcal{L}}_{ML}
+&amp; = \hat{\mathcal{L}}_{\mathrm{ML}}
 \end{align}\end{split}\]</div>
 <p>where each <span class="math notranslate nohighlight">\(\mathbf{z}_l \sim p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)\)</span>.</p>
 <div class="dropdown admonition">
@@ -499,11 +506,10 @@ p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) = \frac{p_{\theta} \left(
 &amp; = \log \int p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \frac{p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)} p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \mathrm{d}\mathbf{z} &amp; \text{Importance Weight} \\
 &amp; \geq \int p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \left( \log p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) + \log \frac{p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)} \right) &amp; \text{Jensen's inequality} \\
 &amp; = \mathbb{E}_{\mathbf{z} \sim p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)} \left[ \log p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \right] - \mathrm{KL} \left( p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p_{ \theta} \left( \mathbf{z} | \mathcal{C} \right) \right) \\
-&amp; = \mathcal{L}_{VI}
+&amp; = \mathcal{L}_{\mathrm{VI}}
 \end{align}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathrm{KL}(p \| q)\)</span> is the Kullback-Liebler (KL) divergence between two distributions <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>, and we have used the shorthand <span class="math notranslate nohighlight">\(p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) = \prod_{t=1}^{T} p_{\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right)\)</span> to ease notation.
-Let’s consider what we have achieved in Eq. <a class="reference internal" href="#equation-npvi">(7)</a>.
-We have taken our original objective, and re-expressed it as an expectation with respect to <span class="math notranslate nohighlight">\(p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)\)</span>, which now has access to all of <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>, as opposed to the NPML objective, where the expectation was only with respect to <span class="math notranslate nohighlight">\(p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)\)</span>.</p>
+Let’s consider what we have achieved in Eq. <a class="reference internal" href="#equation-npvi">(7)</a>.</p>
 <div class="attention admonition">
 <p class="admonition-title">Test Time</p>
 <p>Of course, we can only sample from this approximate posterior during <em>training</em>, when we have access to both the context <em>and</em> target sets.
@@ -600,7 +606,7 @@ In particular, we next introduce the latent-variable variant of each of the cond
 <div class="section" id="latent-neural-process-lnp">
 <h2>Latent Neural Process (LNP)<a class="headerlink" href="#latent-neural-process-lnp" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-default" id="computational-graph-lnps-text">
-<a class="reference internal image-reference" href="../_images/computational_graph_LNPs1.svg"><img alt="Computational graph LNP" src="../_images/computational_graph_LNPs1.svg" width="400em" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_LNPs.png"><img alt="Computational graph LNP" src="../_images/computational_graph_LNPs.png" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 34 </span><span class="caption-text">Computational graph for LNPS.</span><a class="headerlink" href="#computational-graph-lnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>The latent neural process <a class="bibtex reference internal" href="../zbibliography.html#garnelo2018neural" id="id7">[GSR+18]</a> is the latent counterpart of the CNP, and the first member of the LNPF proposed in the literature.
@@ -678,7 +684,7 @@ Differently from the LNP, the AttnLNP <em>added</em> a “latent path” in addi
 The latent path is implemented with the same method as LNPs, i.e. a mean aggregation followed by a parametrization of a Gaussian.
 In other words, even though the deterministic representation <span class="math notranslate nohighlight">\(R^{(t)}\)</span> is target specific, the latent representation <span class="math notranslate nohighlight">\(\mathbf{z}\)</span>  is target independent as seen in the computational graph (<a class="reference internal" href="#computational-graph-attnlnps-text"><span class="std std-numref">Fig. 38</span></a>).</p>
 <div class="figure align-default" id="computational-graph-attnlnps-text">
-<a class="reference internal image-reference" href="../_images/computational_graph_AttnLNPs1.svg"><img alt="Computational graph AttnLNP" src="../_images/computational_graph_AttnLNPs1.svg" width="400em" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_AttnLNPs.png"><img alt="Computational graph AttnLNP" src="../_images/computational_graph_AttnLNPs.png" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 38 </span><span class="caption-text">Computational graph for AttnLNPS.</span><a class="headerlink" href="#computational-graph-attnlnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>Throughout the section we train AttnLNPs with NPVI as in the original paper.
@@ -724,7 +730,7 @@ In contrast with the AttnLNP, the latent path <em>replaces</em> the deterministi
 <p>Another way of viewing the ConvLNP, which is useful in gaining an intuitive understanding of the computational graph (see <a class="reference internal" href="#computational-graph-convlnps-cpnvcnps-text"><span class="std std-numref">Fig. 42</span></a>) is as consisting of two stacked ConvCNPs: the first takes in context sets and outputs a latent stochastic process.
 The second takes as input a sample from the latent process and models the posterior predictive conditioned on that sample.</p>
 <div class="figure align-default" id="computational-graph-convlnps-cpnvcnps-text">
-<a class="reference internal image-reference" href="../_images/computational_graph_ConvLNPs_ConvCNPs.svg"><img alt="Computational graph ConvLNP using two ConvCNPs" src="../_images/computational_graph_ConvLNPs_ConvCNPs.svg" width="400em" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_ConvLNPs_ConvCNPs.png"><img alt="Computational graph ConvLNP using two ConvCNPs" src="../_images/computational_graph_ConvLNPs_ConvCNPs.png" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 42 </span><span class="caption-text">Computational graph for ConvLNPs.</span><a class="headerlink" href="#computational-graph-convlnps-cpnvcnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <div class="note dropdown admonition">
@@ -736,7 +742,7 @@ The second CNN gets as input a sample from the first one, i.e., a discrete signa
 <p>The computational graph for this implementation is shown in <a class="reference internal" href="#computational-graph-convlnps-text"><span class="std std-numref">Fig. 43</span></a>.
 Importantly both are mathematically equivalent, but using two ConvCNPs can be easier to understand and more modular, while using two CNNs avoids unecessary computations.</p>
 <div class="figure align-default" id="computational-graph-convlnps-text">
-<a class="reference internal image-reference" href="../_images/computational_graph_ConvLNPs1.svg"><img alt="Computational graph ConvLNP" src="../_images/computational_graph_ConvLNPs1.svg" width="400em" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_ConvLNPs.png"><img alt="Computational graph ConvLNP" src="../_images/computational_graph_ConvLNPs.png" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 43 </span><span class="caption-text">Computational graph for ConvLNPs without using ConvCNPs.</span><a class="headerlink" href="#computational-graph-convlnps-text" title="Permalink to this image">¶</a></p>
 </div>
 </div>

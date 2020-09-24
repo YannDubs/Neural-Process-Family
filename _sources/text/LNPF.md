@@ -12,13 +12,23 @@ The main idea is to introduce a latent variable $\mathbf{z}$ into the definition
 This leads us to the second major branch of the NPF, which we refer to as the Latent Neural Process Sub-family, or LNPF for short.
 A graphical representation of the LNPF  is given in {numref}`graph_model_LNPs_text`.
 
-```{figure} ../images/graph_model_LNPF.svg
+```{figure} ../images/graphical_model_LNPF.png
 ---
-width: 300em
+width: 20em
 name: graph_model_LNPs_text
 alt: graphical model LNP
 ---
 Probabilistic graphical model for LNPs.
+```
+
+```{admonition} Disclaimer$\qquad$ (Latent) Neural Processes Family
+---
+class: caution, dropdown
+---
+In this tutorial, we refer use the adjective "Latent" to distinguish the Latent NPF from the Conditional NPF. 
+We then use term "neural process" to refer to both conditional neural processes and latent neural processes.
+In the literature, however, the term "neural process" is used to refer to "latent neural processes".
+As a result the models that we will discuss and call LNP, AttnLNP, and ConvLNP are found in the literature under the abbreviations NP, AttnNP, ConvNP.
 ```
 
 To specify this family of models, we must define a few components:
@@ -41,7 +51,7 @@ p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
 \end{align}
 ```
 
-```{admonition} Advanced$\qquad$Latent variable $\implies$ consistency
+```{admonition} Advanced$\qquad$Marginalisation and Factorisation $\implies$ Consistency
 ---
 class: hint, dropdown
 ---
@@ -74,7 +84,7 @@ which shows that the predictive distribution obtained by querying an LNPF member
 ```
 
 Now, you might be worried that we have still made both the factorisation and Gaussian assumptions!
-However, while the decoder likelihood $p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right)$ is still factorised, the predictive distribution we are actually interested in, $p_\theta( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$, is no longer due to the marginalisation of $\mathbf{z}$, thus addressing the first problem we associated with the CNPF.
+However, while $p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right)$ is still factorised, the predictive distribution we are actually interested in, $p_\theta( \mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})$, is no longer due to the marginalisation of $\mathbf{z}$, thus addressing the first problem we associated with the CNPF.
 Moreover, the predictive distribution is no longer Gaussian either.
 In fact, since the predictive now has the form of an _infinite mixture of Gaussians_, potentially _any_ predictive density can be represented (i.e. learned) by this form.
 This is great news, as it (conceptually) relieves us of the burden of choosing / designing a bespoke likelihood function when deploying the NPF for a new application!
@@ -141,7 +151,7 @@ While this quantity is no longer tractable (as it was with members of the CNPF),
 \log p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
 &= \log \int p_{\theta} \left( \mathbf{z} | \mathcal{C} \right) \prod_{t=1}^{T} p_{\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Marginalisation} \\
 & \approx \log \left( \frac{1}{L} \sum_{l=1}^{L} \prod_{t=1}^{T} p_{\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z}_l \right) \right) & \text{Monte-Carlo approximation} \\
-& = \hat{\mathcal{L}}_{ML}
+& = \hat{\mathcal{L}}_{\mathrm{ML}}
 \end{align}
 ```
 
@@ -237,13 +247,13 @@ We can now derive the final objective function, which is a _lower bound_ to the 
 & = \log \int p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \frac{p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)} p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \mathrm{d}\mathbf{z} & \text{Importance Weight} \\
 & \geq \int p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \left( \log p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) + \log \frac{p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)}{p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)} \right) & \text{Jensen's inequality} \\
 & = \mathbb{E}_{\mathbf{z} \sim p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)} \left[ \log p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) \right] - \mathrm{KL} \left( p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p_{ \theta} \left( \mathbf{z} | \mathcal{C} \right) \right) \\
-& = \mathcal{L}_{VI}
+& = \mathcal{L}_{\mathrm{VI}}
 \end{align}
 ```
 
 where $\mathrm{KL}(p \| q)$ is the Kullback-Liebler (KL) divergence between two distributions $p$ and $q$, and we have used the shorthand $p_{\theta} \left( \mathbf{y}_{\mathcal{T}} | \mathbf{x}_{\mathcal{T}}, \mathbf{z} \right) = \prod_{t=1}^{T} p_{\theta} \left( y^{(t)} | x^{(t)}, \mathbf{z} \right)$ to ease notation.
 Let's consider what we have achieved in Eq. {eq}`npvi`.
-We have taken our original objective, and re-expressed it as an expectation with respect to $p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)$, which now has access to all of $\mathcal{D}$, as opposed to the NPML objective, where the expectation was only with respect to $p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)$.
+% We have taken our original objective, and re-expressed it as an expectation with respect to $p_{\theta} \left( \mathbf{z} | \mathcal{D} \right)$, which now has access to all of $\mathcal{D}$, as opposed to the NPML objective, where the expectation was only with respect to $p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)$.
 
 
 ```{admonition} Test Time
@@ -383,9 +393,9 @@ In particular, we next introduce the latent-variable variant of each of the cond
 
 ## Latent Neural Process (LNP)
 
-```{figure} ../images/computational_graph_LNPs.svg
+```{figure} ../images/computational_graph_LNPs.png
 ---
-width: 400em
+width: 25em
 name: computational_graph_LNPs_text
 alt: Computational graph LNP
 ---
@@ -507,9 +517,9 @@ Differently from the LNP, the AttnLNP _added_ a "latent path" in addition to (ra
 The latent path is implemented with the same method as LNPs, i.e. a mean aggregation followed by a parametrization of a Gaussian.
 In other words, even though the deterministic representation $R^{(t)}$ is target specific, the latent representation $\mathbf{z}$  is target independent as seen in the computational graph ({numref}`computational_graph_AttnLNPs_text`).
 
-```{figure} ../images/computational_graph_AttnLNPs.svg
+```{figure} ../images/computational_graph_AttnLNPs.png
 ---
-width: 400em
+width: 25em
 name: computational_graph_AttnLNPs_text
 alt: Computational graph AttnLNP
 ---
@@ -586,9 +596,9 @@ In contrast with the AttnLNP, the latent path _replaces_ the deterministic one (
 Another way of viewing the ConvLNP, which is useful in gaining an intuitive understanding of the computational graph (see {numref}`computational_graph_ConvLNPs_CpnvCNPs_text`) is as consisting of two stacked ConvCNPs: the first takes in context sets and outputs a latent stochastic process.
 The second takes as input a sample from the latent process and models the posterior predictive conditioned on that sample.
 
-```{figure} ../images/computational_graph_ConvLNPs_ConvCNPs.svg
+```{figure} ../images/computational_graph_ConvLNPs_ConvCNPs.png
 ---
-width: 400em
+width: 25em
 name: computational_graph_ConvLNPs_CpnvCNPs_text
 alt: Computational graph ConvLNP using two ConvCNPs
 ---
@@ -607,9 +617,9 @@ The second CNN gets as input a sample from the first one, i.e., a discrete signa
 The computational graph for this implementation is shown in {numref}`computational_graph_ConvLNPs_text`.
 Importantly both are mathematically equivalent, but using two ConvCNPs can be easier to understand and more modular, while using two CNNs avoids unecessary computations.
 
-```{figure} ../images/computational_graph_ConvLNPs.svg
+```{figure} ../images/computational_graph_ConvLNPs.png
 ---
-width: 400em
+width: 25em
 name: computational_graph_ConvLNPs_text
 alt: Computational graph ConvLNP
 ---
