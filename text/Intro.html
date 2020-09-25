@@ -508,14 +508,14 @@ Typically the predictive distribution is Gaussian meaning that the decoder predi
 As we will later show, it is the factorisation assumptions in the decoder that ensure our consistency requirement.</p>
 <div class="note admonition">
 <p class="admonition-title">Concrete Example</p>
-<p>As a concrete example of what a Neural Process looks like, <code class="xref std std-numref docutils literal notranslate"><span class="pre">CNP</span></code> shows a schematic animation of the forward pass of a <em>Conditional Neural Process</em> (CNP), the simplest member of the CNPF.
+<p>As a concrete example of what a Neural Process looks like, <a class="reference internal" href="#cnp-gif"><span class="std std-numref">Fig. 4</span></a> shows a schematic animation of the forward pass of a <em>Conditional Neural Process</em> (CNP), the simplest member of the CNPF.
 We see that every <span class="math notranslate nohighlight">\((x, y)\)</span> pair in the context set (here with three datapoints) is passed through an MLP <span class="math notranslate nohighlight">\(e\)</span> to obtain a local encoding.
 The local encodings <span class="math notranslate nohighlight">\(\{r_1, r_2, r_3\}\)</span> are then aggregated by a mean pooling <span class="math notranslate nohighlight">\(a\)</span> to a representation <span class="math notranslate nohighlight">\(r\)</span>.
 Finally, the representation <span class="math notranslate nohighlight">\(r\)</span> is fed into another MLP <span class="math notranslate nohighlight">\(d\)</span> along with the target input to yield the mean and variance of the predictive distribution of the target output <span class="math notranslate nohighlight">\(y\)</span>.
 We’ll take a much more detailed look at the CNP <a class="reference internal" href="CNPF.html#cnp"><span class="std std-ref">later</span></a>.</p>
-<div class="figure align-default" id="cnp">
+<div class="figure align-default" id="cnp-gif">
 <a class="reference internal image-reference" href="../_images/NPFs.gif"><img alt="Schematic representation of CNP forward pass." src="../_images/NPFs.gif" style="width: 25em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Schematic representation of CNP forward pass taken from <a class="reference external" href="https://www.martagarnelo.com/conditional-neural-processes">Marta Garnelo</a>.</span><a class="headerlink" href="#cnp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Schematic representation of CNP forward pass taken from <a class="reference external" href="https://www.martagarnelo.com/conditional-neural-processes">Marta Garnelo</a>.</span><a class="headerlink" href="#cnp-gif" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <p>The forward pass for members of both the CNPF and LNPF is represented schematically in <a class="reference internal" href="#computational-graph-npfs"><span class="std std-numref">Fig. 5</span></a>.
@@ -547,7 +547,7 @@ As a teaser, we provide a very brief summary of the neural processes considered 
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../reproducibility/CNP.html"><span class="doc">Conditional NP</span></a><a class="footnote-reference brackets" href="#id9" id="id2">2</a>, <a class="reference internal" href="../reproducibility/LNP.html"><span class="doc">Latent NP</span></a><a class="footnote-reference brackets" href="#lnp" id="id3">3</a></p></th>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../reproducibility/CNP.html"><span class="doc">Conditional NP</span></a><a class="footnote-reference brackets" href="#cnp" id="id2">2</a>, <a class="reference internal" href="../reproducibility/LNP.html"><span class="doc">Latent NP</span></a><a class="footnote-reference brackets" href="#lnp" id="id3">3</a></p></th>
 <td><p>MLP + Mean-pooling</p></td>
 <td><p>No</p></td>
 <td><p>Underfits</p></td>
@@ -559,7 +559,7 @@ As a teaser, we provide a very brief summary of the neural processes considered 
 <td><p>Less underfitting, jagged samples</p></td>
 <td><p>None</p></td>
 </tr>
-<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../reproducibility/ConvCNP.html"><span class="doc">Convolutional CNP</span></a><a class="footnote-reference brackets" href="#convcnp" id="id6">6</a>, <a class="reference internal" href="../reproducibility/ConvLNP.html"><span class="doc">Convolutional LNP</span></a><a class="footnote-reference brackets" href="#id15" id="id7">7</a></p></th>
+<tr class="row-even"><th class="stub"><p><a class="reference internal" href="../reproducibility/ConvCNP.html"><span class="doc">Convolutional CNP</span></a><a class="footnote-reference brackets" href="#convcnp" id="id6">6</a>, <a class="reference internal" href="../reproducibility/ConvLNP.html"><span class="doc">Convolutional LNP</span></a><a class="footnote-reference brackets" href="#id14" id="id7">7</a></p></th>
 <td><p>SetConv + CNN + SetConv</p></td>
 <td><p>Yes</p></td>
 <td><p>Less underfitting, smooth samples</p></td>
@@ -663,23 +663,23 @@ We list a few examples here.
 <dt class="label" id="det"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>The general computational graph of the NPF actually has a latent variable <span class="math notranslate nohighlight">\(\mathbf{z}\)</span>. Indeed, the CNPF may be thought of as the LNPF in the case when the latent variable <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> is constrained to be deterministic (<span class="math notranslate nohighlight">\(p_{\theta}(\mathbf{z} | R)\)</span> is a Dirac delta function).</p>
 </dd>
-<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p><a class="bibtex reference internal" href="../zbibliography.html#garnelo2018conditional" id="id10">[GRM+18]</a>.</p>
+<dt class="label" id="cnp"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p><a class="bibtex reference internal" href="../zbibliography.html#garnelo2018conditional" id="id9">[GSR+18b]</a>.</p>
 </dd>
 <dt class="label" id="lnp"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p><a class="bibtex reference internal" href="../zbibliography.html#garnelo2018neural" id="id11">[GSR+18]</a> — in this paper and elsewhere in the Neural Process literature, the authors refer to latent neural processes simply as neural processes. In this tutorial we use the term “neural process” to refer to both conditional neural processes and latent neural processes. We reserve the term “latent neural process” specifically for the case when there is a stochastic latent variable <span class="math notranslate nohighlight">\(\mathbf{z}\)</span>.</p>
+<dd><p><a class="bibtex reference internal" href="../zbibliography.html#garnelo2018neural" id="id10">[GSR+18a]</a> — in this paper and elsewhere in the Neural Process literature, the authors refer to latent neural processes simply as neural processes. In this tutorial we use the term “neural process” to refer to both conditional neural processes and latent neural processes. We reserve the term “latent neural process” specifically for the case when there is a stochastic latent variable <span class="math notranslate nohighlight">\(\mathbf{z}\)</span>.</p>
 </dd>
 <dt class="label" id="attncnp"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
-<dd><p><a class="bibtex reference internal" href="../zbibliography.html#kim2019attentive" id="id12">[KMS+19]</a> — this paper only introduced the latent variable Attentive LNP, but one can easily drop the latent variable to obtain the Attentive CNP.</p>
+<dd><p><a class="bibtex reference internal" href="../zbibliography.html#kim2019attentive" id="id11">[KMS+19]</a> — this paper only introduced the latent variable Attentive LNP, but one can easily drop the latent variable to obtain the Attentive CNP.</p>
 </dd>
 <dt class="label" id="attnlnp"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
-<dd><p><a class="bibtex reference internal" href="../zbibliography.html#kim2019attentive" id="id13">[KMS+19]</a>.</p>
+<dd><p><a class="bibtex reference internal" href="../zbibliography.html#kim2019attentive" id="id12">[KMS+19]</a>.</p>
 </dd>
 <dt class="label" id="convcnp"><span class="brackets"><a class="fn-backref" href="#id6">6</a></span></dt>
-<dd><p><a class="bibtex reference internal" href="../zbibliography.html#gordon2019convolutional" id="id14">[GBF+19]</a>.</p>
+<dd><p><a class="bibtex reference internal" href="../zbibliography.html#gordon2019convolutional" id="id13">[GBF+20]</a>.</p>
 </dd>
-<dt class="label" id="id15"><span class="brackets"><a class="fn-backref" href="#id7">7</a></span></dt>
-<dd><p><a class="bibtex reference internal" href="../zbibliography.html#foong2020convnp" id="id16">[FBG+20]</a>.</p>
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id7">7</a></span></dt>
+<dd><p><a class="bibtex reference internal" href="../zbibliography.html#foong2020convnp" id="id15">[FBG+20]</a>.</p>
 </dd>
 <dt class="label" id="objective"><span class="brackets"><a class="fn-backref" href="#id8">8</a></span></dt>
 <dd><p>During training the performance is usually measured on both the context and target set, i.e. we append the context set to the target set.</p>

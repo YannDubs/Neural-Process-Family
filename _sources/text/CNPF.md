@@ -510,7 +510,7 @@ The SetConv layer extends this operation to sets, i.e., it takes as input a set 
 \end{align}
 ```
 
-Here, $w_{\theta}$ is a positive-definite Kernel function that maps the _distance between_ $x^{(c)}$ and $x$ to a real number.
+Here, $w_{\theta}$ is a function that maps the _distance between_ $x^{(c)}$ and $x$ to a real number.
 It is most often chosen to be an RBF: $w_{\theta}(r) = \exp(- \frac{\|r\|^2_2}{\ell^2} )$, where $\ell$ is a learnable lengthscale parameter. You can think of this operation as simply placing Gaussian bumps down at every datapoint, similar to [Kernel Density Estimation](https://en.wikipedia.org/wiki/Kernel_density_estimation).
 
 Note that the SetConv operation is permutation invariant due to the sum operation.Furthermore, it is very similar to an attention mechanism, the main difference being that:
