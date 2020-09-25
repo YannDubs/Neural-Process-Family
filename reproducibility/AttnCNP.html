@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-dropdown.css" />
     
   <link rel="preload" as="script" href="../_static/js/index.30270b6e4c972e43c488.js">
@@ -710,7 +711,7 @@ That being said, the results on the periodic kernel are still not great. Looking
 <p class="caption"><span class="caption-number">Fig. 53 </span><span class="caption-text">Same as <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 52</span></a> but with context points outside of the training regime (delimited by red dashes).</span><a class="headerlink" href="#attncnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
 </div>
 <p><a class="reference internal" href="#attncnp-single-gp-extrap"><span class="std std-numref">Fig. 53</span></a> shows that AttnCNP cannot perform well in this seemingly straightforward extension of <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 52</span></a>.
-The issue is two fold : (i) the network takes as input the <em>absolute</em> position of the features <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> even though the desired kernel is stationary and thus only depends on the relative position of features; (ii) the absolute positions are in the extrapolation regime, which usually breaks in neural networks <a class="bibtex reference internal" href="../zbibliography.html#dubois2019location" id="id2">[DDHB19]</a>.</p>
+The issue is two fold : (i) the network takes as input the <em>absolute</em> position of the features <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> even though the desired kernel is stationary and thus only depends on the relative position of features; (ii) the absolute positions are in the extrapolation regime, which usually breaks in neural networks <span class="bibtex" id="id2">[dubois2019location]</span>.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 1D PLOTS ######</span>

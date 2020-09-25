@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-dropdown.css" />
     
   <link rel="preload" as="script" href="../_static/js/index.30270b6e4c972e43c488.js">
@@ -389,7 +390,7 @@ This means we can employ a simple maximum-likelihood procedure to train the mode
 </div>
 <div class="section" id="conditional-neural-process-cnp">
 <span id="cnp"></span><h2>Conditional Neural Process (CNP)<a class="headerlink" href="#conditional-neural-process-cnp" title="Permalink to this headline">¶</a></h2>
-<p>The main idea of the Conditional Neural Process (CNP) <a class="bibtex reference internal" href="../zbibliography.html#garnelo2018conditional" id="id1">[GSR+18b]</a> is to enforce permutation invariance of the encoder by first <em>locally</em> encoding each context input-output pair into <span class="math notranslate nohighlight">\(R^{(c)}\)</span>, and then <em>aggregating</em> the local encodings into a global representation, <span class="math notranslate nohighlight">\(R\)</span>,  of the context set using a commutative operation.
+<p>The main idea of the Conditional Neural Process (CNP) <a class="bibtex reference internal" href="../zbibliography.html#garnelo2018conditional" id="id1">[GRM+18]</a> is to enforce permutation invariance of the encoder by first <em>locally</em> encoding each context input-output pair into <span class="math notranslate nohighlight">\(R^{(c)}\)</span>, and then <em>aggregating</em> the local encodings into a global representation, <span class="math notranslate nohighlight">\(R\)</span>,  of the context set using a commutative operation.
 Specifically, the local encoder is a feedforward multi-layer perceptron (MLP), while the aggregator is a mean pooling.
 The decoder is simply an MLP that takes as input the concatenation of the representation and the target input, <span class="math notranslate nohighlight">\([R; x^{(t)}]\)</span>, and outputs a predictive mean <span class="math notranslate nohighlight">\(\mu^{(t)}\)</span> and variance <span class="math notranslate nohighlight">\(\sigma^{2(t)}\)</span>.</p>
 <div class="dropdown admonition">
@@ -475,7 +476,7 @@ Note that NPs can be used to model images, as an image can be viewed as a functi
 Each input <span class="math notranslate nohighlight">\(x\)</span> is a two-dimensional vector denoting pixel location in the image, and each <span class="math notranslate nohighlight">\(y\)</span> is a real number representing pixel intensity (or a three-dimensional vector for RGB images). <a class="reference internal" href="#images-as-functions-text"><span class="std std-numref">Fig. 11</span></a> illustrates how to interpret an MNIST image as a function:</p>
 <div class="figure align-default" id="images-as-functions-text">
 <a class="reference internal image-reference" href="../_images/images_as_functions.png"><img alt="Viewing images as functions" src="../_images/images_as_functions.png" style="width: 30em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Viewing images as functions from <span class="math notranslate nohighlight">\(\mathbb{Z}^2 \to \mathbb{R}\)</span>. Figure from <a class="bibtex reference internal" href="../zbibliography.html#garnelo2018neural" id="id4">[GSR+18a]</a>.</span><a class="headerlink" href="#images-as-functions-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 11 </span><span class="caption-text">Viewing images as functions from <span class="math notranslate nohighlight">\(\mathbb{Z}^2 \to \mathbb{R}\)</span>. Figure from <a class="bibtex reference internal" href="../zbibliography.html#garnelo2018neural" id="id4">[GSR+18]</a>.</span><a class="headerlink" href="#images-as-functions-text" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <p>During meta-training, we treat each image as a sampled function, and split the image into context and target pixels. At test time, we can feed in a new context set and query the CNP at all the pixel locations, to interpolate the missing values / targets in the image. <a class="reference internal" href="#cnp-img-interp-text"><span class="std std-numref">Fig. 12</span></a> shows the results:</p>
