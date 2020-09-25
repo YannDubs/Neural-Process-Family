@@ -249,7 +249,7 @@ As we will later show, it is the factorisation assumptions in the decoder that e
 ---
 class: note
 ---
-As a concrete example of what a Neural Process looks like, {numref}`CNP` shows a schematic animation of the forward pass of a _Conditional Neural Process_ (CNP), the simplest member of the CNPF.
+As a concrete example of what a Neural Process looks like, {numref}`CNP_gif` shows a schematic animation of the forward pass of a _Conditional Neural Process_ (CNP), the simplest member of the CNPF.
 We see that every $(x, y)$ pair in the context set (here with three datapoints) is passed through an MLP $e$ to obtain a local encoding.
 The local encodings $\{r_1, r_2, r_3\}$ are then aggregated by a mean pooling $a$ to a representation $r$.
 Finally, the representation $r$ is fed into another MLP $d$ along with the target input to yield the mean and variance of the predictive distribution of the target output $y$.
@@ -258,7 +258,7 @@ We'll take a much more detailed look at the CNP {ref}`later <cnp>`.
 ```{figure} ../gifs/NPFs.gif
 ---
 width: 25em
-name: CNP
+name: CNP_gif
 alt: Schematic representation of CNP forward pass.
 ---
 Schematic representation of CNP forward pass taken from [Marta Garnelo](https://www.martagarnelo.com/conditional-neural-processes).
