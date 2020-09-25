@@ -421,7 +421,7 @@ Here is a brief summary / preview of both methods which are described in details
 <td><p>Variational Inference</p></td>
 <td><p>Yes</p></td>
 <td><p>Small</p></td>
-<td><p>Usually worst</p></td>
+<td><p>Usually worse</p></td>
 </tr>
 </tbody>
 </table>
@@ -559,7 +559,7 @@ In both cases, unfortunately, we do not have unbiased estimators of the quantity
 </div>
 <p>To better understand the NPVI objective, it is important to note — see the box below — that it can be rewritten as the difference between the desired log marginal likelihood and a KL divergence between approximate and true posterior:</p>
 <div class="math notranslate nohighlight" id="equation-npvi2">
-<span class="eqno">(8)<a class="headerlink" href="#equation-npvi2" title="Permalink to this equation">¶</a></span>\[\mathcal{L}_{VI} = \log p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C}) - \mathrm{KL} \left( p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) \right) \]</div>
+<span class="eqno">(8)<a class="headerlink" href="#equation-npvi2" title="Permalink to this equation">¶</a></span>\[\mathcal{L}_{VI} = \log p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C}) - \mathrm{KL} \left( p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) \right)\]</div>
 <p>The NPVI can thus be seen as maximizing the desired log marginal likelihood as well as forcing the approximate and true posterior to be similar.</p>
 <div class="hint dropdown admonition">
 <p class="admonition-title">Advanced<span class="math notranslate nohighlight">\(\qquad\)</span>Relationship between NPML and NPVI</p>

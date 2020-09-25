@@ -25,7 +25,7 @@ Probabilistic graphical model for LNPs.
 ---
 class: caution, dropdown
 ---
-In this tutorial, we refer use the adjective "Latent" to distinguish the Latent NPF from the Conditional NPF. 
+In this tutorial, we refer use the adjective "Latent" to distinguish the Latent NPF from the Conditional NPF.
 We then use term "neural process" to refer to both conditional neural processes and latent neural processes.
 In the literature, however, the term "neural process" is used to refer to "latent neural processes".
 As a result the models that we will discuss and call LNP, AttnLNP, and ConvLNP are found in the literature under the abbreviations NP, AttnNP, ConvNP.
@@ -55,7 +55,7 @@ p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}; \mathcal{C})
 ---
 class: hint, dropdown
 ---
-We show that like the CNPF, members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$. 
+We show that like the CNPF, members of the LNPF also specify consistent stochastic processes conditioned on a fixed context set $\mathcal{C}$.
 
 (Consistency under permutation) Let $\mathbf{x}_{\mathcal{T}} = \{ x^{(t)} \}_{t=1}^T$ be the target inputs and $\pi$ be any permutation of $\{1, ..., T\}$. Then the predictive density is:
 
@@ -67,7 +67,7 @@ $$
 \end{align}
 $$
 
-since multiplication is commutative. 
+since multiplication is commutative.
 
 (Consistency under marginalisation)  Consider two target inputs, $x^{(1)}, x^{(2)}$. Then by marginalising out the second target output, we get:
 
@@ -125,7 +125,7 @@ name: summary_training
   - Variational Inference
   - Yes
   - Small
-  - Usually worst
+  - Usually worse
 ```
 
 
@@ -155,13 +155,13 @@ While this quantity is no longer tractable (as it was with members of the CNPF),
 \end{align}
 ```
 
-where each $\mathbf{z}_l \sim p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)$. 
+where each $\mathbf{z}_l \sim p_{\theta} \left( \mathbf{z} | \mathcal{C} \right)$.
 
 ````{admonition} Implementation$\qquad$LogSumExp
 ---
 class: dropdown
 ---
-In practice, manipulating directly probabilities is prone to numerical instabilities, e.g., multiplying probabilities as in Eq.{eq}`npml` will often underflow. 
+In practice, manipulating directly probabilities is prone to numerical instabilities, e.g., multiplying probabilities as in Eq.{eq}`npml` will often underflow.
 As a result one should manipulate probabilities in the log domain:
 
 ```{math}
@@ -173,7 +173,7 @@ As a result one should manipulate probabilities in the log domain:
 \end{align}
 ```
 
-where numerical stable implementations of [LogSumExp](https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations) can be found in most frameworks. 
+where numerical stable implementations of [LogSumExp](https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations) can be found in most frameworks.
 ````
 
 Eq.{eq}`npml` provides a simple-to-compute objective function for training LNPF-members, which we can then use with standard optimisers to learn the model parameters $\theta$.
@@ -330,7 +330,7 @@ To better understand the NPVI objective, it is important to note --- see the box
 
 ```{math}
 :label: npvi2
-\mathcal{L}_{VI} = \log p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C}) - \mathrm{KL} \left( p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) \right) 
+\mathcal{L}_{VI} = \log p_{\theta}(\mathbf{y}_\mathcal{T} | \mathbf{x}_\mathcal{T}, \mathcal{C}) - \mathrm{KL} \left( p_{\theta} \left( \mathbf{z} | \mathcal{D} \right) \| p \left( \mathbf{z} | \mathcal{C}, \mathcal{T} \right) \right)
 ```
 
 The NPVI can thus be seen as maximizing the desired log marginal likelihood as well as forcing the approximate and true posterior to be similar.
@@ -466,7 +466,7 @@ Moreover, we can observe that beyond the $[-1, 1]$, the model seems to "give up"
 ````{admonition} Note$\qquad$NPVI vs NPML
 ---
 class: dropdown, note
---- 
+---
 In the main text we trained LNP with NPVI as in the original paper, we compare the results with NPML on different kernels below.
 
 ```{figure} ../gifs/singlegp_LNP_LatLBTrue_SigLBTrue.gif
@@ -524,7 +524,7 @@ width: 25em
 name: computational_graph_AttnLNPs_text
 alt: Computational graph AttnLNP
 ---
-Computational graph for AttnLNPS. 
+Computational graph for AttnLNPS.
 ```
 
 Throughout the section we train AttnLNPs with NPVI as in the original paper.
@@ -604,7 +604,7 @@ width: 25em
 name: computational_graph_ConvLNPs_CpnvCNPs_text
 alt: Computational graph ConvLNP using two ConvCNPs
 ---
-Computational graph for ConvLNPs. 
+Computational graph for ConvLNPs.
 ```
 
 ````{admonition} Implementation$\qquad$ConvLNP without ConvCNP
@@ -612,7 +612,7 @@ Computational graph for ConvLNPs.
 class: note, dropdown
 ---
 In our implementation we do not use two ConvCNPs to implement the ConvLNP.
-Instead, we use the same computational graph than for ConvCNPs but split the CNN into two. 
+Instead, we use the same computational graph than for ConvCNPs but split the CNN into two.
 The output of the first CNN is a mean and a (log) standard deviation at every position of the (discrete) signal, which are then used to parametrize independent Gaussian disitrubtions each positions.
 The second CNN gets as input a sample from the first one, i.e., a discrete signal.
 
@@ -625,7 +625,7 @@ width: 25em
 name: computational_graph_ConvLNPs_text
 alt: Computational graph ConvLNP
 ---
-Computational graph for ConvLNPs without using ConvCNPs. 
+Computational graph for ConvLNPs without using ConvCNPs.
 ```
 
 ````
