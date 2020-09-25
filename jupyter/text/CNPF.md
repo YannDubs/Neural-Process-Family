@@ -265,6 +265,7 @@ A more promising avenue, which we explore next, is to consider the _inductive bi
 class: note
 ---
 Model details and more plots, along with code for constructing and training CNPs, can be found in {doc}`CNP Notebook <../reproducibility/CNP>`.
+ We also provide pretrained models to play around with.
 ```
 
 (attncnp)=
@@ -367,7 +368,8 @@ Intuitively, we can think of NPF models as implicitly learning these properties,
 ---
 class: note
 ---
-Model details, training and more plots in {doc}`AttnCNP Notebook <../reproducibility/AttnCNP>`
+Model details, training and more plots in {doc}`AttnCNP Notebook <../reproducibility/AttnCNP>`.
+ We also provide pretrained models to play around with.
 ```
 
 (extrapolation)=
@@ -785,7 +787,7 @@ We see that the ConvCNP can indeed be used to increase the resolution of an imag
 ---
 class: note
 ---
-Model details, training and more plots are available in the {doc}`ConvCNP Notebook <../reproducibility/ConvCNP>`
+Model details, training and more plots are available in the {doc}`ConvCNP Notebook <../reproducibility/ConvCNP>`. We also provide pretrained models to play around with.
 ```
 
 (issues-cnpfs)=

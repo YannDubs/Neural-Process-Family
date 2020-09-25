@@ -505,7 +505,8 @@ As with the CNP, the LNP still underfits on images as is best illustrated when t
 ---
 class: note
 ---
-Model details, training and more plots in {doc}`LNP Notebook <../reproducibility/LNP>`
+Model details, training and more plots in {doc}`LNP Notebook <../reproducibility/LNP>`.
+ We also provide pretrained models to play around with.
 ```
 
 
@@ -584,7 +585,8 @@ However, as expected, the model "breaks" for ZSMM as it still cannot extrapolate
 ---
 class: note
 ---
-Model details, training and more plots in {doc}`AttnLNP Notebook <../reproducibility/AttnLNP>`
+Model details, training and more plots in {doc}`AttnLNP Notebook <../reproducibility/AttnLNP>`.
+ We also provide pretrained models to play around with.
 ```
 
 
@@ -707,7 +709,8 @@ However, as expected, the model "breaks" for ZSMM as it still cannot extrapolate
 ---
 class: note
 ---
-Model details, training and more plots in {doc}`AttnLNP Notebook <../reproducibility/AttnLNP>`
+Model details, training and more plots in {doc}`AttnLNP Notebook <../reproducibility/AttnLNP>`.
+ We also provide pretrained models to play around with.
 ```
 
 
