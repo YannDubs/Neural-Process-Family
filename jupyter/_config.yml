@@ -19,6 +19,8 @@ html:
   use_repository_button: true
   favicon: "favicon.ico"
   home_page_in_navbar: true
+  baseurl: https://yanndubs.github.io/Neural-Process-Family/
+  google_analytics_id: UA-108456313-2
 
 sphinx:
   extra_extensions:
