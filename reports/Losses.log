@@ -42,8 +42,8 @@ if IS_FORCE_CPU:
 torch.set_num_threads(N_THREADS)
 ------------------
 
-[0;31m-------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m         Traceback (most recent call last)
+[0;31m---------------------------------------[0m
+[0;31mModuleNotFoundError[0mTraceback (most recent call last)
 [0;32m<ipython-input-1-ad4da52f004f>[0m in [0;36m<module>[0;34m[0m
 [0;32m----> 1[0;31m [0mget_ipython[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mrun_line_magic[0m[0;34m([0m[0;34m'matplotlib'[0m[0;34m,[0m [0;34m'inline'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [0m[1;32m      2[0m [0mget_ipython[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mrun_line_magic[0m[0;34m([0m[0;34m'config'[0m[0;34m,[0m [0;34m"InlineBackend.figure_format = 'retina'"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m

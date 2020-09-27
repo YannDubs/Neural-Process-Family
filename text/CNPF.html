@@ -55,6 +55,7 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="canonical" href="https://yanndubs.github.io/Neural-Process-Family/text/CNPF.html" />
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -64,6 +65,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
 
+
+<!-- Opengraph tags -->
+<meta property="og:url"         content="https://yanndubs.github.io/Neural-Process-Family/text/CNPF.html" />
+<meta property="og:type"        content="article" />
+<meta property="og:title"       content="Conditional NPF" />
+<meta property="og:description" content="Conditional NPF  Overview    Probabilistic graphical model for the Conditional NPF.  The key design choice for NPs is how to model the predictive distribution p" />
+<meta property="og:image"       content="https://yanndubs.github.io/Neural-Process-Family/_static/logo.gif" />
+
+<meta name="twitter:card" content="summary" />
 
 
   </head>
@@ -398,7 +408,7 @@ The decoder is simply an MLP that takes as input the concatenation of the repres
 <p>Typically, we parameterise <span class="math notranslate nohighlight">\(\mathrm{Dec}_{\theta}\)</span> as outputting <span class="math notranslate nohighlight">\((\mu^{(t)}, \log \sigma^{(t)})\)</span>, i.e., the <em>log</em> standard deviation, so as to ensure that no negative variances occur.</p>
 </div>
 <div class="figure align-default" id="computational-graph-cnps-text">
-<a class="reference internal image-reference" href="../_images/computational_graph_CNPs.png"><img alt="Computational graph CNP" src="../_images/computational_graph_CNPs.png" style="width: 25em;" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_CNPs1.png"><img alt="Computational graph CNP" src="../_images/computational_graph_CNPs1.png" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 7 </span><span class="caption-text">Computational graph for CNPs.</span><a class="headerlink" href="#computational-graph-cnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>To summarise, the CNP is defined by the following design choices (see <a class="reference internal" href="#computational-graph-cnps-text"><span class="std std-numref">Fig. 7</span></a>):</p>
@@ -520,7 +530,7 @@ In the decoder, this function will be queried at the target position <span class
 </ul>
 <p>Note that, as for the CNP, the encoder is permutation invariant due to the commutativity of the sum operation.</p>
 <div class="figure align-default" id="computational-graph-attncnps-text">
-<a class="reference internal image-reference" href="../_images/computational_graph_AttnCNPs.png"><img alt="Computational graph of AttnCNP" src="../_images/computational_graph_AttnCNPs.png" style="width: 25em;" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_AttnCNPs1.png"><img alt="Computational graph of AttnCNP" src="../_images/computational_graph_AttnCNPs1.png" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 13 </span><span class="caption-text">Computational graph for AttnCNPs.</span><a class="headerlink" href="#computational-graph-attncnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <div class="dropdown note admonition">
@@ -719,7 +729,7 @@ The only difference with AttnCNP being that the MLP does not directly take <span
 <li><p>Decoding: <span class="math notranslate nohighlight">\((\mu^{(t)}, \sigma^{2(t)}) = \mathrm{Dec}_{\theta}(R, x^{(t)}) =  \mathrm{MLP} \left( R(x^{(t)}) \right)\)</span>.</p></li>
 </ul>
 <div class="figure align-default" id="computational-graph-convcnps-text">
-<a class="reference internal image-reference" href="../_images/computational_graph_ConvCNPs.png"><img alt="Computational graph ConvCNP" src="../_images/computational_graph_ConvCNPs.png" style="width: 25em;" /></a>
+<a class="reference internal image-reference" href="../_images/computational_graph_ConvCNPs1.png"><img alt="Computational graph ConvCNP" src="../_images/computational_graph_ConvCNPs1.png" style="width: 25em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 20 </span><span class="caption-text">Computational graph of ConvCNP.</span><a class="headerlink" href="#computational-graph-convcnps-text" title="Permalink to this image">¶</a></p>
 </div>
 <div class="caution dropdown admonition">
@@ -946,6 +956,16 @@ One such example is the use of Thompson sampling algorithms for e.g., contextual
   <script src="../_static/js/index.30270b6e4c972e43c488.js"></script>
 
 
+    
+    <!-- Google Analytics -->
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-108456313-2', 'auto');
+      ga('set', 'anonymizeIp', true);
+      ga('send', 'pageview');
+    </script>
+    <script async src='https://www.google-analytics.com/analytics.js'></script>
+    <!-- End Google Analytics -->
     
   </body>
 </html>
