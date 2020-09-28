@@ -5,6 +5,7 @@ from copy import deepcopy
 from functools import partial
 
 import numpy as np
+
 import skorch
 import torch
 from skorch import NeuralNet
@@ -62,7 +63,7 @@ def train_models(
     Parameters
     ----------
     datasets : dict
-        The datasets on which to train the models. 
+        The datasets on which to train the models.
 
     models : dict
         The models to train (initialized or not). Each model will be trained on
@@ -79,14 +80,14 @@ def train_models(
         in the checkpoint directory as `eval.csv`.
 
     valid_datasets : dict, optional
-        The validation datasets. 
+        The validation datasets.
 
     chckpnt_dirname : str, optional
         Directory where checkpoints will be saved. The best (if validation or train_split given)
         or last model will be saved.
 
     is_continue_train : bool, optional
-        Whether to continue training from the last checkpoint of the previous run. 
+        Whether to continue training from the last checkpoint of the previous run.
 
     is_retrain : bool, optional
         Whether to retrain the model. If not, `chckpnt_dirname` should be given
@@ -106,7 +107,7 @@ def train_models(
         should be a function or callable that is called with X and y
         data and should return the tuple ``dataset_train, dataset_valid``.
         The validation data may be None. Use `skorch.dataset.CVSplit` to randomly
-        split the data into train and validation. Only used for datasets that are not in 
+        split the data into train and validation. Only used for datasets that are not in
         `valid_datasets.`.
 
     device : str, optional
@@ -134,12 +135,12 @@ def train_models(
 
     decay_lr : float, optional
         Factor by which to decay the learning rate during training. For example if 100 then it
-        will decrease the learning rate with exponential decrease such that at the end of training 
+        will decrease the learning rate with exponential decrease such that at the end of training
         the learning rate decreased by a factot 100.
 
     is_reeval : bool, optional
         Whether to reevaluate the model even if already evaluated and `is_retrain` is False.
-    
+
     seed : int, optional
         Pseudo random seed to force deterministic results (on CUDA might still
         differ a little).
@@ -212,6 +213,7 @@ def train_models(
                     callbacks.extend([chckpt])
 
                 if is_continue_train:
+                    logger.info("Continuing training")
                     assert chckpnt_dirname is not None
                     # start from chckpt until LastCheckpoint is implemented
                     load_state = LoadInitState(chckpt)

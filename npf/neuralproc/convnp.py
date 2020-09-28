@@ -6,10 +6,9 @@ from functools import partial
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.distributions.independent import Independent
-
 from npf.architectures import CNN, ResConvBlock, SetConv, discard_ith_arg
 from npf.utils.initialization import weights_init
+from torch.distributions.independent import Independent
 
 from .base import LatentNeuralProcessFamily, NeuralProcessFamily
 from .helpers import (
