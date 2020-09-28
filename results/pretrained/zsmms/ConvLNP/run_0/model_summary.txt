@@ -13,47 +13,95 @@ GridConvLNP(
     (conv_blocks): ModuleList(
       (0): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
       (1): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
       (2): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
       (3): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
     )
   )
@@ -69,47 +117,95 @@ GridConvLNP(
     (conv_blocks): ModuleList(
       (0): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
       (1): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
       (2): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
       (3): ResConvBlock(
         (activation): ReLU()
-        (norm1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (norm1): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
         (conv1): DepthSepConv(
-          (depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-          (pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+          (depthwise): PaddedConv(
+            128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+            (padder): CircularPad2d()
+          )
+          (pointwise): PaddedConv(
+            128, 128, kernel_size=(1, 1), stride=(1, 1)
+            (padder): CircularPad2d()
+          )
         )
-        (norm2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
-        (conv2_depthwise): Conv2d(128, 128, kernel_size=(9, 9), stride=(1, 1), padding=(4, 4), groups=128)
-        (conv2_pointwise): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        (norm2): BatchNorm2d(128, eps=0.01, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2_depthwise): PaddedConv(
+          128, 128, kernel_size=(9, 9), stride=(1, 1), groups=128
+          (padder): CircularPad2d()
+        )
+        (conv2_pointwise): PaddedConv(
+          128, 128, kernel_size=(1, 1), stride=(1, 1)
+          (padder): CircularPad2d()
+        )
       )
     )
   )
