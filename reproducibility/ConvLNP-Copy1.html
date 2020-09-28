@@ -599,12 +599,10 @@ See its docstring for possible parameters. As previously discussed, we will be u
     <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>  <span class="c1"># smaller batch because multiple samples</span>
     <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">GradientNormClipping</span><span class="p">(</span><span class="n">gradient_clip_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">GradientNormClipping</span><span class="p">(</span><span class="n">gradient_clip_value</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">ProgressBar</span><span class="p">()</span>
     <span class="p">],</span>  <span class="c1"># clipping gradients can stabilize training</span>
 <span class="p">)</span>
-
-
-
 
 <span class="c1"># replace the zsmm model</span>
 <span class="n">models_2d</span> <span class="o">=</span> <span class="p">{}</span>
@@ -615,11 +613,12 @@ See its docstring for possible parameters. As previously discussed, we will be u
 <span class="n">trainers_2d</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
     <span class="n">img_datasets</span><span class="p">,</span>
     <span class="n">models_2d</span><span class="p">,</span>
-    <span class="n">test_datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span>
+    <span class="c1">#test_datasets=img_test_datasets,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="n">skorch</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">CVSplit</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span>  <span class="c1"># use 10% of training for valdiation</span>
     <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
     <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_2d</span><span class="p">,</span>
     <span class="n">max_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">is_continue_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1">#! DEV</span>
     <span class="o">**</span><span class="n">KWARGS</span>
 <span class="p">)</span>
 </pre></div>
@@ -627,22 +626,121 @@ See its docstring for possible parameters. As previously discussed, we will be u
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Training zsmms/ConvLNP/run_0 ---
-
-  epoch    train_loss    valid_loss    cp        dur
--------  ------------  ------------  ----  ---------
-      1     <span class=" -Color -Color-Cyan">1284.7985</span>    <span class=" -Color -Color-Green">-1375.8979</span>     +  9420.9936
-      2     <span class=" -Color -Color-Cyan">-112.5746</span>    <span class=" -Color -Color-Green">-1663.2122</span>     +  9400.0662
-      3    <span class=" -Color -Color-Cyan">-2057.0481</span>    <span class=" -Color -Color-Green">-2065.2632</span>     +  9398.4648
-      4     -592.4900    -1706.1236        9400.2449
-      5    <span class=" -Color -Color-Cyan">-2236.3472</span>    -1639.7361        9553.4425
-      6    <span class=" -Color -Color-Cyan">-2322.9325</span>    <span class=" -Color -Color-Green">-2137.2437</span>     +  9539.0745
 </pre></div>
 </div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "8b593acc9f4b47499b9215da0c13592d", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Re-initializing module.
+</pre></div>
 </div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="n">d6ec9940c221</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> 
+<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="c1"># 2D</span>
+<span class="ne">---&gt; </span><span class="mi">28</span> <span class="n">trainers_2d</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">29</span>     <span class="n">img_datasets</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">30</span>     <span class="n">models_2d</span><span class="p">,</span>
+
+<span class="nn">/Neural-Process-Family/utils/train.py</span> in <span class="ni">train_models</span><span class="nt">(datasets, models, criterion, test_datasets, valid_datasets, chckpnt_dirname, is_continue_train, is_retrain, runs, starting_run, train_split, device, max_epochs, batch_size, lr, optimizer, callbacks, patience, decay_lr, is_reeval, seed, datasets_kwargs, models_kwargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">260</span> 
+<span class="g g-Whitespace">    </span><span class="mi">261</span>                 <span class="c1"># load in all case =&gt; even when training loads the best checkpoint</span>
+<span class="ne">--&gt; </span><span class="mi">262</span>                 <span class="n">trainer</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">263</span>                 <span class="n">trainer</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">checkpoint</span><span class="o">=</span><span class="n">chckpt</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">264</span> 
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/net.py</span> in <span class="ni">initialize</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">537</span>         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_callbacks</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">538</span>         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_criterion</span><span class="p">()</span>
+<span class="ne">--&gt; </span><span class="mi">539</span>         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_module</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">540</span>         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_optimizer</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">541</span>         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_history</span><span class="p">()</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/net.py</span> in <span class="ni">initialize_module</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">465</span>                 <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">466</span> 
+<span class="ne">--&gt; </span><span class="mi">467</span>             <span class="n">module</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">468</span> 
+<span class="g g-Whitespace">    </span><span class="mi">469</span>         <span class="bp">self</span><span class="o">.</span><span class="n">module_</span> <span class="o">=</span> <span class="n">to_device</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+<span class="nn">/Neural-Process-Family/npf/neuralproc/gridconvnp.py</span> in <span class="ni">__init__</span><span class="nt">(self, x_dim, y_dim, CNNPostZ, encoded_path, is_global, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">221</span>         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">222</span>     <span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">223</span>         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">224</span>             <span class="n">x_dim</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">225</span>             <span class="n">y_dim</span><span class="p">,</span>
+
+<span class="nn">/Neural-Process-Family/npf/neuralproc/base.py</span> in <span class="ni">__init__</span><span class="nt">(self, is_q_zCct, n_z_samples_train, n_z_samples_test, LatentEncoder, LatentDistribution, q_z_loc_transformer, q_z_scale_transformer, z_dim, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">439</span>         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">440</span>     <span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">441</span>         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">442</span> 
+<span class="g g-Whitespace">    </span><span class="mi">443</span>         <span class="bp">self</span><span class="o">.</span><span class="n">is_q_zCct</span> <span class="o">=</span> <span class="n">is_q_zCct</span>
+
+<span class="nn">/Neural-Process-Family/npf/neuralproc/gridconvnp.py</span> in <span class="ni">__init__</span><span class="nt">(self, x_dim, y_dim, Conv, CNN, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">128</span>         <span class="p">)</span>  <span class="c1"># 2 because also confidence channels</span>
+<span class="g g-Whitespace">    </span><span class="mi">129</span> 
+<span class="ne">--&gt; </span><span class="mi">130</span>         <span class="bp">self</span><span class="o">.</span><span class="n">induced_to_induced</span> <span class="o">=</span> <span class="n">CNN</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_dim</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">131</span> 
+<span class="g g-Whitespace">    </span><span class="mi">132</span>         <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+
+<span class="nn">/Neural-Process-Family/npf/architectures/cnn.py</span> in <span class="ni">__init__</span><span class="nt">(self, n_channels, ConvBlock, n_blocks, is_chan_last, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">336</span>         <span class="bp">self</span><span class="o">.</span><span class="n">in_out_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_in_out_channels</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span>         <span class="bp">self</span><span class="o">.</span><span class="n">conv_blocks</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+<span class="ne">--&gt; </span><span class="mi">338</span>             <span class="p">[</span>
+<span class="g g-Whitespace">    </span><span class="mi">339</span>                 <span class="n">ConvBlock</span><span class="p">(</span><span class="n">in_chan</span><span class="p">,</span> <span class="n">out_chan</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">340</span>                 <span class="k">for</span> <span class="n">in_chan</span><span class="p">,</span> <span class="n">out_chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_out_channels</span>
+
+<span class="nn">/Neural-Process-Family/npf/architectures/cnn.py</span> in <span class="ni">&lt;listcomp&gt;</span><span class="nt">(.0)</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span>         <span class="bp">self</span><span class="o">.</span><span class="n">conv_blocks</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">338</span>             <span class="p">[</span>
+<span class="ne">--&gt; </span><span class="mi">339</span>                 <span class="n">ConvBlock</span><span class="p">(</span><span class="n">in_chan</span><span class="p">,</span> <span class="n">out_chan</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">340</span>                 <span class="k">for</span> <span class="n">in_chan</span><span class="p">,</span> <span class="n">out_chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_out_channels</span>
+<span class="g g-Whitespace">    </span><span class="mi">341</span>             <span class="p">]</span>
+
+<span class="nn">/Neural-Process-Family/npf/architectures/cnn.py</span> in <span class="ni">__init__</span><span class="nt">(self, in_chan, out_chan, Conv, kernel_size, activation, Normalization, is_bias, n_conv_layers)</span>
+<span class="g g-Whitespace">    </span><span class="mi">191</span>                 <span class="n">in_chan</span><span class="p">,</span> <span class="n">in_chan</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">is_bias</span>
+<span class="g g-Whitespace">    </span><span class="mi">192</span>             <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">193</span>         <span class="bp">self</span><span class="o">.</span><span class="n">norm2</span> <span class="o">=</span> <span class="n">Normalization</span><span class="p">(</span><span class="n">in_chan</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">194</span>         <span class="bp">self</span><span class="o">.</span><span class="n">conv2_depthwise</span> <span class="o">=</span> <span class="n">Conv</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">195</span>             <span class="n">in_chan</span><span class="p">,</span> <span class="n">in_chan</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">in_chan</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">is_bias</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/batchnorm.py</span> in <span class="ni">__init__</span><span class="nt">(self, num_features, eps, momentum, affine, track_running_stats)</span>
+<span class="g g-Whitespace">     </span><span class="mi">94</span>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_features</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">95</span>                  <span class="n">track_running_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">96</span>         <span class="nb">super</span><span class="p">(</span><span class="n">_BatchNorm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">97</span>             <span class="n">num_features</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">momentum</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">track_running_stats</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">98</span> 
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/batchnorm.py</span> in <span class="ni">__init__</span><span class="nt">(self, num_features, eps, momentum, affine, track_running_stats)</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span>             <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;running_var&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">54</span>             <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;num_batches_tracked&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">55</span>         <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">56</span> 
+<span class="g g-Whitespace">     </span><span class="mi">57</span>     <span class="k">def</span> <span class="nf">reset_running_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/batchnorm.py</span> in <span class="ni">reset_parameters</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">     </span><span class="mi">62</span> 
+<span class="g g-Whitespace">     </span><span class="mi">63</span>     <span class="k">def</span> <span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">64</span>         <span class="bp">self</span><span class="o">.</span><span class="n">reset_running_stats</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">65</span>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">66</span>             <span class="n">init</span><span class="o">.</span><span class="n">ones_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/batchnorm.py</span> in <span class="ni">reset_running_stats</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">     </span><span class="mi">58</span>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_running_stats</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">59</span>             <span class="bp">self</span><span class="o">.</span><span class="n">running_mean</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+<span class="ne">---&gt; </span><span class="mi">60</span>             <span class="bp">self</span><span class="o">.</span><span class="n">running_var</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">61</span>             <span class="bp">self</span><span class="o">.</span><span class="n">num_batches_tracked</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">62</span> 
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/module.py</span> in <span class="ni">__getattr__</span><span class="nt">(self, name)</span>
+<span class="g g-Whitespace">    </span><span class="mi">756</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_load_state_dict_pre_hooks</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">757</span> 
+<span class="ne">--&gt; </span><span class="mi">758</span>     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="s1">&#39;Module&#39;</span><span class="p">]:</span>
+<span class="g g-Whitespace">    </span><span class="mi">759</span>         <span class="k">if</span> <span class="s1">&#39;_parameters&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">760</span>             <span class="n">_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;_parameters&#39;</span><span class="p">]</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
@@ -734,7 +832,7 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP-Copy1_18_0.png" src="../_images/ConvLNP-Copy1_18_0.png" />
+<img alt="../_images/ConvLNP-Copy1_17_0.png" src="../_images/ConvLNP-Copy1_17_0.png" />
 </div>
 </div>
 <p>We have seen that a latent variable enable coherent sampling and to “switch kernel”. Let us now see whether it enables a non Gaussian marginal posterior predictive.</p>
@@ -762,7 +860,7 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP-Copy1_20_0.png" src="../_images/ConvLNP-Copy1_20_0.png" />
+<img alt="../_images/ConvLNP-Copy1_19_0.png" src="../_images/ConvLNP-Copy1_19_0.png" />
 </div>
 </div>
 <p>In the last figure, we see that, as desired, LNPFs can:</p>

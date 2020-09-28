@@ -742,7 +742,7 @@ mnist/ConvLNP/run_0 | best epoch: 49 | train loss: -2927.9383 | valid loss: -293
 
 --- Loading zsmms/ConvLNP/run_0 ---
 
-zsmms/ConvLNP/run_0 | best epoch: 7 | train loss: -2377.5672 | valid loss: -2259.4629 | test log likelihood: 3889.5058
+zsmms/ConvLNP/run_0 | best epoch: 22 | train loss: -2845.3602 | valid loss: -2871.9534 | test log likelihood: 3889.5058
 </pre></div>
 </div>
 </div>
@@ -941,16 +941,6 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="ch">#!DEV</span>
-<span class="n">multi_posterior_imgs_gif</span><span class="p">(</span>
-    <span class="s2">&quot;ConvLNP_img_test&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2d</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">multi_posterior_imgs_gif</span><span class="p">(</span>
     <span class="s2">&quot;ConvLNP_img&quot;</span><span class="p">,</span> <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2d</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">img_test_datasets</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
 <span class="p">)</span>
@@ -992,9 +982,9 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP_30_0.png" src="../_images/ConvLNP_30_0.png" />
-<img alt="../_images/ConvLNP_30_1.png" src="../_images/ConvLNP_30_1.png" />
-<img alt="../_images/ConvLNP_30_2.png" src="../_images/ConvLNP_30_2.png" />
+<img alt="../_images/ConvLNP_29_0.png" src="../_images/ConvLNP_29_0.png" />
+<img alt="../_images/ConvLNP_29_1.png" src="../_images/ConvLNP_29_1.png" />
+<img alt="../_images/ConvLNP_29_2.png" src="../_images/ConvLNP_29_2.png" />
 </div>
 </div>
 <p>We have seen that a latent variable enable coherent sampling and to “switch kernel”. Let us now see whether it enables a non Gaussian marginal posterior predictive.</p>
@@ -1022,7 +1012,7 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP_32_0.png" src="../_images/ConvLNP_32_0.png" />
+<img alt="../_images/ConvLNP_31_0.png" src="../_images/ConvLNP_31_0.png" />
 </div>
 </div>
 <p>In the last figure, we see that, as desired, LNPFs can:</p>

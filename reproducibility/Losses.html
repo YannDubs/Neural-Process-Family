@@ -576,7 +576,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
     <span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">is_q_zCct</span><span class="o">=</span><span class="ow">not</span> <span class="n">is_mle</span><span class="p">,</span>  <span class="c1"># use MLE instead of ELBO</span>
         <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">16</span> <span class="k">if</span> <span class="n">is_mle</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># going to be more expensive</span>
-        <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+        <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="c1">#! DEV</span>
         <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
         <span class="n">Decoder</span><span class="o">=</span><span class="n">discard_ith_arg</span><span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
@@ -626,7 +626,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
         <span class="n">min_sigma_pred</span><span class="o">=</span><span class="mf">0.01</span> <span class="k">if</span> <span class="n">is_sigma_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">min_lat</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">is_lat_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ConvLNP&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ConvLNP&quot;</span><span class="p">]</span> 
     <span class="k">for</span> <span class="n">is_elbo</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
@@ -642,7 +642,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>8
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24
 </pre></div>
 </div>
 </div>
@@ -694,518 +694,42 @@ See its docstring for possible parameters.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Training RBF_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Training RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
 </pre></div>
 </div>
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  epoch    train_loss    cp       dur
--------  ------------  ----  --------
-      1      <span class=" -Color -Color-Cyan">129.7038</span>     +  239.3549
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  epoch    train_loss    cp      dur
+-------  ------------  ----  -------
+      1      <span class=" -Color -Color-Cyan">173.9529</span>     +  26.9549
 </pre></div>
 </div>
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      2      <span class=" -Color -Color-Cyan">101.4122</span>     +  238.1240
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      2      <span class=" -Color -Color-Cyan">170.1521</span>     +  24.7637
 </pre></div>
 </div>
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      3       <span class=" -Color -Color-Cyan">97.4390</span>     +  238.3368
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      3      <span class=" -Color -Color-Cyan">161.9833</span>     +  26.0678
 </pre></div>
 </div>
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      4       <span class=" -Color -Color-Cyan">92.0397</span>     +  238.1451
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      4      <span class=" -Color -Color-Cyan">153.7762</span>     +  30.4803
 </pre></div>
 </div>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      5       <span class=" -Color -Color-Cyan">87.2336</span>     +  238.0833
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      6       <span class=" -Color -Color-Cyan">84.0536</span>     +  238.4104
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      7       <span class=" -Color -Color-Cyan">79.8557</span>     +  238.3659
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      8       83.7127     +  238.3537
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      9       81.0838     +  238.0101
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     10       80.6303     +  238.3044
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     11       <span class=" -Color -Color-Cyan">76.1241</span>     +  238.4895
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     12       <span class=" -Color -Color-Cyan">75.7715</span>     +  238.7090
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     13       <span class=" -Color -Color-Cyan">72.1939</span>     +  238.3308
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     14       <span class=" -Color -Color-Cyan">57.8714</span>     +  238.4733
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     15       <span class=" -Color -Color-Cyan">54.2789</span>     +  238.5238
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     16       <span class=" -Color -Color-Cyan">44.9809</span>     +  238.2171
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     17       <span class=" -Color -Color-Cyan">40.3735</span>     +  238.2151
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     18       <span class=" -Color -Color-Cyan">37.7643</span>     +  238.8333
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     19       <span class=" -Color -Color-Cyan">32.3731</span>     +  238.4594
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     20       <span class=" -Color -Color-Cyan">26.4459</span>     +  238.3471
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     21       30.2063     +  238.1728
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     22       <span class=" -Color -Color-Cyan">21.5765</span>     +  238.5040
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     23       29.4292     +  238.0256
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     24       26.3641     +  238.4433
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     25       30.0697     +  238.1362
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     26       <span class=" -Color -Color-Cyan">18.7951</span>     +  238.4706
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     27       27.3368     +  238.1425
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     28       19.0851     +  238.8775
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     29       <span class=" -Color -Color-Cyan">16.5148</span>     +  238.7939
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     30       20.4330     +  244.5869
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     31       18.0716     +  242.0035
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     32       <span class=" -Color -Color-Cyan">14.7289</span>     +  238.3282
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     33       18.4413     +  238.1761
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     34       23.1330     +  238.7662
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     35        <span class=" -Color -Color-Cyan">7.4369</span>     +  238.5179
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     36       22.0328     +  238.4506
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     37       18.8443     +  238.4743
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     38       12.9400     +  238.5806
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     39       12.1659     +  238.3955
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     40       16.9035     +  238.0642
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     41       <span class=" -Color -Color-Cyan">-1.1496</span>     +  238.0272
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     42       15.4954     +  238.4320
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     43        5.0167     +  238.4243
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     44       15.3910     +  238.3112
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     45       11.9266     +  237.9933
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     46       17.7535     +  238.7897
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     47       15.8736     +  238.8321
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     48       13.3900     +  238.4870
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     49       12.9759     +  238.4963
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     50        0.9926     +  238.4289
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     51       10.8183     +  238.2757
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     52        0.6480     +  238.7333
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     53       10.0863     +  238.6328
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     54        8.7167     +  238.8326
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     55        6.4785     +  238.6568
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     56        6.8276     +  238.2139
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     57        8.8167     +  238.5518
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     58        8.1628     +  238.4619
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     59        4.0275     +  238.5637
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     60        6.7623     +  238.2706
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     61        5.9025     +  238.2616
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     62        5.2453     +  238.3772
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     63        9.3041     +  238.3914
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     64        0.3898     +  238.4141
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     65        0.4236     +  238.8593
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     66        3.1711     +  238.4839
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     67        7.8289     +  238.6293
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     68        4.1811     +  238.3139
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     69       <span class=" -Color -Color-Cyan">-5.6372</span>     +  238.2651
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     70       -1.3111     +  238.5241
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     71        4.3642     +  238.3230
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     72       -2.0597     +  238.5121
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     73       -4.1778     +  238.6974
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     74       -3.6988     +  238.4022
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     75        2.4047     +  238.4325
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     76        5.9431     +  238.6175
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     77       -2.3961     +  238.3699
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     78       <span class=" -Color -Color-Cyan">-7.9538</span>     +  238.2562
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     79        2.3153     +  238.4240
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     80       -4.7170     +  238.5504
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     81       -0.3072     +  238.5983
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     82       -4.7691     +  238.5618
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     83       -3.7401     +  238.2080
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     84      <span class=" -Color -Color-Cyan">-15.8007</span>     +  238.4962
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     85       -5.2551     +  238.7403
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     86      -10.2924     +  238.5412
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     87       -0.8481     +  243.8790
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     88       -6.0228     +  245.8084
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     89      -13.6405     +  237.6706
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     90       -2.3882     +  238.7418
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     91       -2.2633     +  238.7118
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     92       -7.2702     +  238.5521
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     93       -8.4949     +  238.5709
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     94       -4.8103     +  238.1701
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     95       -8.1157     +  238.0129
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     96      -10.1068     +  237.8133
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     97       -9.7320     +  238.2391
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     98       -3.6467     +  238.4105
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     99       -6.8139     +  237.9917
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    100       -8.0791     +  238.7962
-Re-initializing module.
+{"model_id": "cae88db15a3f478bbb59ba7bdd516dea", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Re-initializing module.
 Re-initializing optimizer.
 </pre></div>
 </div>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "c419741829c2415b8c61e3cf469ce371", "version_major": 2, "version_minor": 0}
+{"model_id": "27c2ce28c3634c928645fbbeac19eb80", "version_major": 2, "version_minor": 0}
 </script><div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="mi">6</span><span class="n">f3f90499dc6</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">6</span><span class="n">f3f90499dc6</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">     </span><span class="mi">20</span> 
 <span class="g g-Whitespace">     </span><span class="mi">21</span> <span class="c1"># NPVI</span>
 <span class="ne">---&gt; </span><span class="mi">22</span> <span class="n">trainers_1d_NPVI</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
@@ -1213,18 +737,18 @@ Re-initializing optimizer.
 <span class="g g-Whitespace">     </span><span class="mi">24</span>     <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;ELBOTrue&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">},</span>
 
 <span class="nn">/Neural-Process-Family/utils/train.py</span> in <span class="ni">train_models</span><span class="nt">(datasets, models, criterion, test_datasets, valid_datasets, chckpnt_dirname, is_continue_train, is_retrain, runs, starting_run, train_split, device, max_epochs, batch_size, lr, optimizer, callbacks, patience, decay_lr, is_reeval, seed, datasets_kwargs, models_kwargs, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">263</span>                 <span class="c1"># return the training rather than testing history as dflt</span>
-<span class="g g-Whitespace">    </span><span class="mi">264</span>                 <span class="n">history</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">265</span>                 <span class="n">test_loglike</span> <span class="o">=</span> <span class="n">_eval_save_load</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">266</span>                     <span class="n">trainer</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">267</span>                     <span class="n">data_test</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">265</span>                 <span class="c1"># return the training rather than testing history as dflt</span>
+<span class="g g-Whitespace">    </span><span class="mi">266</span>                 <span class="n">history</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">267</span>                 <span class="n">test_loglike</span> <span class="o">=</span> <span class="n">_eval_save_load</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">268</span>                     <span class="n">trainer</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">269</span>                     <span class="n">data_test</span><span class="p">,</span>
 
 <span class="nn">/Neural-Process-Family/utils/train.py</span> in <span class="ni">_eval_save_load</span><span class="nt">(model, data_test, test_eval_file, is_force_rerun)</span>
-<span class="g g-Whitespace">    </span><span class="mi">312</span> 
-<span class="g g-Whitespace">    </span><span class="mi">313</span>         <span class="k">if</span> <span class="n">is_force_rerun</span> <span class="ow">or</span> <span class="n">test_loglike</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">314</span>             <span class="n">test_loglike</span> <span class="o">=</span> <span class="n">eval_loglike</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data_test</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">315</span> 
-<span class="g g-Whitespace">    </span><span class="mi">316</span>         <span class="k">if</span> <span class="n">test_eval_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">314</span> 
+<span class="g g-Whitespace">    </span><span class="mi">315</span>         <span class="k">if</span> <span class="n">is_force_rerun</span> <span class="ow">or</span> <span class="n">test_loglike</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">316</span>             <span class="n">test_loglike</span> <span class="o">=</span> <span class="n">eval_loglike</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data_test</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">317</span> 
+<span class="g g-Whitespace">    </span><span class="mi">318</span>         <span class="k">if</span> <span class="n">test_eval_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
 <span class="nn">/Neural-Process-Family/utils/evaluate.py</span> in <span class="ni">eval_loglike</span><span class="nt">(trainer, dataset, seed, **kwargs)</span>
 <span class="g g-Whitespace">     </span><span class="mi">21</span>         <span class="n">yi_res</span> <span class="o">=</span> <span class="n">yi</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">y_valid_is_ph</span> <span class="k">else</span> <span class="kc">None</span>
@@ -1234,62 +758,34 @@ Re-initializing optimizer.
 <span class="g g-Whitespace">     </span><span class="mi">25</span>         <span class="n">all_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">step</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">])</span>  <span class="c1"># use log likelihood instead of NLLL</span>
 
 <span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/net.py</span> in <span class="ni">validation_step</span><span class="nt">(self, Xi, yi, **fit_params)</span>
-<span class="g g-Whitespace">    </span><span class="mi">569</span>         <span class="bp">self</span><span class="o">.</span><span class="n">module_</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 <span class="g g-Whitespace">    </span><span class="mi">570</span>         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-<span class="ne">--&gt; </span><span class="mi">571</span>             <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">Xi</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">572</span>             <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">Xi</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">571</span>             <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">Xi</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">572</span>             <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loss</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">Xi</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">573</span>         <span class="k">return</span> <span class="p">{</span>
+<span class="g g-Whitespace">    </span><span class="mi">574</span>             <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
 
-<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/net.py</span> in <span class="ni">infer</span><span class="nt">(self, x, **fit_params)</span>
-<span class="g g-Whitespace">    </span><span class="mi">996</span>         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">997</span>             <span class="n">x_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_x_and_fit_params</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fit_params</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">998</span>             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_</span><span class="p">(</span><span class="o">**</span><span class="n">x_dict</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">999</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1000</span> 
+<span class="nn">/Neural-Process-Family/utils/train.py</span> in <span class="ni">get_loss</span><span class="nt">(self, y_pred, y_true, X, training)</span>
+<span class="g g-Whitespace">    </span><span class="mi">334</span> <span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">335</span>     <span class="sd">&quot;&quot;&quot;Return the loss for this batch.&quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">336</span>     <span class="n">y_true</span> <span class="o">=</span> <span class="n">to_tensor</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span> 
+<span class="g g-Whitespace">    </span><span class="mi">338</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">criterion_</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 
-<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/module.py</span> in <span class="ni">_call_impl</span><span class="nt">(self, *input, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">720</span>             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slow_forward</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">721</span>         <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">722</span>             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">723</span>         <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">724</span>                 <span class="n">_global_forward_hooks</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
+<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/utils.py</span> in <span class="ni">to_tensor</span><span class="nt">(X, device, accept_sparse)</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span> 
+<span class="g g-Whitespace">     </span><span class="mi">82</span>     <span class="k">if</span> <span class="n">is_torch_data_type</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">83</span>         <span class="k">return</span> <span class="n">to_device</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">84</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span>         <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">to_tensor_</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
-<span class="nn">/Neural-Process-Family/npf/neuralproc/base.py</span> in <span class="ni">forward</span><span class="nt">(self, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">492</span>             <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">493</span> 
-<span class="ne">--&gt; </span><span class="mi">494</span>         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">495</span> 
-<span class="g g-Whitespace">    </span><span class="mi">496</span>     <span class="k">def</span> <span class="nf">_validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_cntxt</span><span class="p">,</span> <span class="n">Y_cntxt</span><span class="p">,</span> <span class="n">X_trgt</span><span class="p">,</span> <span class="n">Y_trgt</span><span class="p">):</span>
+<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/utils.py</span> in <span class="ni">to_device</span><span class="nt">(X, device)</span>
+<span class="g g-Whitespace">    </span><span class="mi">150</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">!=</span> <span class="n">PackedSequence</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">151</span>         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">152</span>     <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">153</span> 
+<span class="g g-Whitespace">    </span><span class="mi">154</span> 
 
-<span class="nn">/Neural-Process-Family/npf/neuralproc/base.py</span> in <span class="ni">forward</span><span class="nt">(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt)</span>
-<span class="g g-Whitespace">    </span><span class="mi">236</span> 
-<span class="g g-Whitespace">    </span><span class="mi">237</span>         <span class="c1"># size = [n_z_samples, batch_size, *n_trgt, r_dim]</span>
-<span class="ne">--&gt; </span><span class="mi">238</span>         <span class="n">R_trgt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trgt_dependent_representation</span><span class="p">(</span><span class="n">X_cntxt</span><span class="p">,</span> <span class="n">z_samples</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">X_trgt</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">239</span> 
-<span class="g g-Whitespace">    </span><span class="mi">240</span>         <span class="c1"># p(y|cntxt,trgt)</span>
-
-<span class="nn">/Neural-Process-Family/npf/neuralproc/convnp.py</span> in <span class="ni">trgt_dependent_representation</span><span class="nt">(self, X_cntxt, z_samples, R_induced, X_trgt)</span>
-<span class="g g-Whitespace">    </span><span class="mi">295</span> 
-<span class="g g-Whitespace">    </span><span class="mi">296</span>             <span class="c1"># size = [n_z_samples * batch_size, n_trgt, r_dim]</span>
-<span class="ne">--&gt; </span><span class="mi">297</span>             <span class="n">R_trgt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">induced_to_trgt</span><span class="p">(</span><span class="n">X_induced</span><span class="p">,</span> <span class="n">X_trgt</span><span class="p">,</span> <span class="n">z_samples</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">298</span> 
-<span class="g g-Whitespace">    </span><span class="mi">299</span>         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoded_path</span> <span class="o">==</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/module.py</span> in <span class="ni">_call_impl</span><span class="nt">(self, *input, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">720</span>             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slow_forward</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">721</span>         <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">722</span>             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">723</span>         <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">724</span>                 <span class="n">_global_forward_hooks</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
-
-<span class="nn">/Neural-Process-Family/npf/architectures/setcnn.py</span> in <span class="ni">forward</span><span class="nt">(self, keys, queries, values)</span>
-<span class="g g-Whitespace">    </span><span class="mi">261</span> 
-<span class="g g-Whitespace">    </span><span class="mi">262</span>         <span class="c1"># size = [batch_size, n_queries, value_size]</span>
-<span class="ne">--&gt; </span><span class="mi">263</span>         <span class="n">targets</span> <span class="o">=</span> <span class="p">(</span><span class="n">weight</span> <span class="o">*</span> <span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">264</span> 
-<span class="g g-Whitespace">    </span><span class="mi">265</span>         <span class="c1"># size = [batch_size, n_queries, value_size+1]</span>
-
-<span class="ne">RuntimeError</span>: CUDA out of memory. Tried to allocate 24.00 GiB (GPU 0; 10.92 GiB total capacity; 420.09 MiB already allocated; 1.43 GiB free; 1.17 GiB reserved in total by PyTorch)
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
@@ -1352,6 +848,93 @@ Re-initializing optimizer.
                 <span class="n">title</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{model_name}</span><span class="s2"> | </span><span class="si">{data_name}</span><span class="s2"> | C=</span><span class="si">{n_cntxt}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">imgsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
             <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">14</span><span class="o">-</span><span class="mi">2152364</span><span class="n">a43b7</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+<span class="ne">----&gt; </span><span class="mi">8</span>             <span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>                 <span class="sa">f</span><span class="s2">&quot;test_singlegp_</span><span class="si">{</span><span class="n">lnpf</span><span class="si">}</span><span class="s2">_LatLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_lat_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">_SigLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_sigma_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>                 <span class="n">trainers</span><span class="o">=</span><span class="n">filter_npf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">,</span> <span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="o">=</span><span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="o">=</span><span class="n">is_sigma_LB</span><span class="p">),</span>
+
+<span class="nn">&lt;ipython-input-12-07b8e46c7ab1&gt;</span> in <span class="ni">multi_posterior_gp_gif</span><span class="nt">(filename, trainers, datasets, seed, **kwargs)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">6</span>     <span class="n">giffify</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
+
+<span class="nn">/Neural-Process-Family/utils/visualize/helpers.py</span> in <span class="ni">giffify</span><span class="nt">(save_filename, gen_single_fig, sweep_parameter, sweep_values, fps, quality, is_transparent, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">132</span>     <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="g g-Whitespace">    </span><span class="mi">133</span>     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sweep_values</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">134</span>         <span class="n">fig</span> <span class="o">=</span> <span class="n">gen_single_fig</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">sweep_parameter</span><span class="p">:</span> <span class="n">v</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">135</span>         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">136</span>         <span class="n">img</span> <span class="o">=</span> <span class="n">fig2img</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">is_transparent</span><span class="o">=</span><span class="n">is_transparent</span><span class="p">)</span>
+
+<span class="nn">/Neural-Process-Family/utils/ntbks_helpers.py</span> in <span class="ni">plot_multi_posterior_samples_1d</span><span class="nt">(trainers, datasets, n_cntxt, trainers_compare, plot_config_kwargs, title, left_extrap, right_extrap, pretty_renamer, is_plot_generator, imgsize, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">399</span> 
+<span class="g g-Whitespace">    </span><span class="mi">400</span>         <span class="n">n_col</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">trainers_compare</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">2</span>
+<span class="ne">--&gt; </span><span class="mi">401</span>         <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">402</span>             <span class="n">n_trainers</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">403</span>             <span class="n">n_col</span><span class="p">,</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/cbook/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span>                 <span class="s2">&quot;parameter will become keyword-only </span><span class="si">%(removal)s</span><span class="s2">.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">450</span>                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parameter of </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">451</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span> 
+<span class="g g-Whitespace">    </span><span class="mi">453</span>     <span class="k">return</span> <span class="n">wrapper</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/pyplot.py</span> in <span class="ni">subplots</span><span class="nt">(nrows, ncols, sharex, sharey, squeeze, subplot_kw, gridspec_kw, **fig_kw)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1270</span>     <span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1271</span><span class="sd">     fig = figure(**fig_kw)</span>
+<span class="ne">-&gt; </span><span class="mi">1272</span><span class="sd">     axs = fig.subplots(nrows=nrows, ncols=ncols, sharex=sharex, sharey=sharey,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1273</span><span class="sd">                        squeeze=squeeze, subplot_kw=subplot_kw,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1274</span><span class="sd">                        gridspec_kw=gridspec_kw)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/cbook/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span><span class="sd">                 &quot;parameter will become keyword-only %(removal)s.&quot;,</span>
+<span class="g g-Whitespace">    </span><span class="mi">450</span><span class="sd">                 name=name, obj_type=f&quot;parameter of {func.__name__}()&quot;)</span>
+<span class="ne">--&gt; </span><span class="mi">451</span><span class="sd">         return func(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">453</span><span class="sd">     return wrapper</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/figure.py</span> in <span class="ni">subplots</span><span class="nt">(self, nrows, ncols, sharex, sharey, squeeze, subplot_kw, gridspec_kw)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1520</span><span class="sd">         if gridspec_kw is None:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1521</span><span class="sd">             gridspec_kw = {}</span>
+<span class="ne">-&gt; </span><span class="mi">1522</span><span class="sd">         return (self.add_gridspec(nrows, ncols, figure=self, **gridspec_kw)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1523</span><span class="sd">                 .subplots(sharex=sharex, sharey=sharey, squeeze=squeeze,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1524</span><span class="sd">                           subplot_kw=subplot_kw))</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/figure.py</span> in <span class="ni">add_gridspec</span><span class="nt">(self, nrows, ncols, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2802</span><span class="sd"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">2803</span><span class="sd">         _ = kwargs.pop(&#39;figure&#39;, None)  # pop in case user has added this...</span>
+<span class="ne">-&gt; </span><span class="mi">2804</span><span class="sd">         gs = GridSpec(nrows=nrows, ncols=ncols, figure=self, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2805</span><span class="sd">         self._gridspecs.append(gs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2806</span><span class="sd">         return gs</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/gridspec.py</span> in <span class="ni">__init__</span><span class="nt">(self, nrows, ncols, figure, left, bottom, right, top, wspace, hspace, width_ratios, height_ratios)</span>
+<span class="g g-Whitespace">    </span><span class="mi">418</span><span class="sd">         self.figure = figure</span>
+<span class="g g-Whitespace">    </span><span class="mi">419</span><span class="sd"> </span>
+<span class="ne">--&gt; </span><span class="mi">420</span><span class="sd">         GridSpecBase.__init__(self, nrows, ncols,</span>
+<span class="g g-Whitespace">    </span><span class="mi">421</span><span class="sd">                               width_ratios=width_ratios,</span>
+<span class="g g-Whitespace">    </span><span class="mi">422</span><span class="sd">                               height_ratios=height_ratios)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/gridspec.py</span> in <span class="ni">__init__</span><span class="nt">(self, nrows, ncols, height_ratios, width_ratios)</span>
+<span class="g g-Whitespace">     </span><span class="mi">46</span><span class="sd">         &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">47</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">nrows</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">48</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">49</span>                 <span class="sa">f</span><span class="s2">&quot;Number of rows must be a positive integer, not </span><span class="si">{</span><span class="n">nrows</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ncols</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+
+<span class="ne">ValueError</span>: Number of rows must be a positive integer, not 0
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 864x0 with 0 Axes&gt;
 </pre></div>
 </div>
 </div>

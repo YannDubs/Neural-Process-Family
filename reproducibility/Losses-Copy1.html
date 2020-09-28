@@ -462,7 +462,6 @@ We will also investigate the effect and/or need of using a lower bound for the s
 <span class="n">get_cntxt_trgt_1d</span> <span class="o">=</span> <span class="n">cntxt_trgt_collate</span><span class="p">(</span>
     <span class="n">CntxtTrgtGetter</span><span class="p">(</span><span class="n">contexts_getter</span><span class="o">=</span><span class="n">GetRandomIndcs</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
 <span class="p">)</span>
-<span class="n">gp_datasets</span><span class="o">=</span> <span class="p">{</span><span class="s1">&#39;RBF_Kernel&#39;</span><span class="p">:</span> <span class="n">gp_datasets</span><span class="p">[</span><span class="s1">&#39;RBF_Kernel&#39;</span><span class="p">]}</span> 
 </pre></div>
 </div>
 </div>
@@ -575,12 +574,12 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
     <span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">is_q_zCct</span><span class="o">=</span><span class="ow">not</span> <span class="n">is_mle</span><span class="p">,</span>  <span class="c1"># use MLE instead of ELBO</span>
         <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">16</span> <span class="k">if</span> <span class="n">is_mle</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># going to be more expensive</span>
-        <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+        <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="c1">#! DEV</span>
         <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
         <span class="n">Decoder</span><span class="o">=</span><span class="n">discard_ith_arg</span><span class="p">(</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">),</span>  <span class="c1"># use small decoder because already went through CNN</span>
-        <span class="n">z_dim</span><span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">is_mle</span> <span class="k">else</span> <span class="mi">16</span><span class="p">,</span> <span class="c1">#! NPVI requires smaller number of latent channels due to the KL</span>
+        <span class="n">z_dim</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="c1">#! NPVI requires smaller number of latent channels due to the KL</span>
         <span class="o">**</span><span class="n">get_std_processing_kwargs</span><span class="p">(</span><span class="n">min_sigma_pred</span><span class="o">=</span><span class="n">min_sigma_pred</span><span class="p">,</span> <span class="n">min_lat</span><span class="o">=</span><span class="n">min_lat</span><span class="p">),</span>
     <span class="p">)</span>
 
@@ -604,7 +603,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
             <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">density_induced</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>  <span class="c1"># size of discretization</span>
-        <span class="n">is_global</span><span class="o">=</span><span class="n">is_mle</span><span class="p">,</span> <span class="c1">#! Global representation does not work well with NPVI</span>
+        <span class="n">is_global</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1">#! Global representation does not work well with NPVI</span>
         <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -625,10 +624,10 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
         <span class="n">min_sigma_pred</span><span class="o">=</span><span class="mf">0.01</span> <span class="k">if</span> <span class="n">is_sigma_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">min_lat</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">is_lat_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">]</span> 
     <span class="k">for</span> <span class="n">is_elbo</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -641,7 +640,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16
 </pre></div>
 </div>
 </div>
@@ -658,7 +657,7 @@ See its docstring for possible parameters.</p>
 <span class="kn">from</span> <span class="nn">utils.train</span> <span class="kn">import</span> <span class="n">train_models</span>
 
 <span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">is_retrain</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1">#! DEV # whether to load precomputed model or retrain</span>
+    <span class="n">is_retrain</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># whether to load precomputed model or retrain</span>
     <span class="n">chckpnt_dirname</span><span class="o">=</span><span class="s2">&quot;results/pretrained/&quot;</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># use GPU if available</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
@@ -693,16 +692,34 @@ See its docstring for possible parameters.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Loading RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
-
-RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: 167.646 | valid loss: None | test log likelihood: -37.1932
-
---- Loading RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 ---
-
-RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: 37.4266 | valid loss: None | test log likelihood: -42.7674
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Training RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
 </pre></div>
 </div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  epoch    train_loss    cp      dur
+-------  ------------  ----  -------
+      1      <span class=" -Color -Color-Cyan">173.9529</span>     +  63.5575
+</pre></div>
 </div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      2      <span class=" -Color -Color-Cyan">170.1521</span>     +  59.2941
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      3      <span class=" -Color -Color-Cyan">161.9833</span>     +  54.1403
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      4      <span class=" -Color -Color-Cyan">153.7762</span>     +  42.7098
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "f6a75c3be9cf4b34b49790c183e86ebd", "version_major": 2, "version_minor": 0}
+</script></div>
 </div>
 </div>
 <div class="section" id="plots">
@@ -750,11 +767,11 @@ RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train lo
     <span class="sd">&quot;&quot;&quot;Select only data form single GP.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">get_name</span><span class="p">(</span><span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="p">)</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
 
-<span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">]:</span>
-    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]:</span>
+<span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ConvLNP&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
             <span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;test_singlegp_</span><span class="si">{</span><span class="n">lnpf</span><span class="si">}</span><span class="s2">_LatLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_lat_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">_SigLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_sigma_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;singlegp_</span><span class="si">{</span><span class="n">lnpf</span><span class="si">}</span><span class="s2">_LatLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_lat_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">_SigLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_sigma_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">trainers</span><span class="o">=</span><span class="n">filter_npf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">,</span> <span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="o">=</span><span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="o">=</span><span class="n">is_sigma_LB</span><span class="p">),</span>
                 <span class="n">trainers_compare</span><span class="o">=</span><span class="n">filter_npf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">,</span> <span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="o">=</span><span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="o">=</span><span class="n">is_sigma_LB</span><span class="p">),</span>
                 <span class="n">datasets</span><span class="o">=</span><span class="n">gp_test_datasets</span><span class="p">,</span>
@@ -762,6 +779,93 @@ RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train lo
                 <span class="n">title</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{model_name}</span><span class="s2"> | </span><span class="si">{data_name}</span><span class="s2"> | C=</span><span class="si">{n_cntxt}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">imgsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
             <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">14</span><span class="o">-</span><span class="mi">2152364</span><span class="n">a43b7</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+<span class="ne">----&gt; </span><span class="mi">8</span>             <span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>                 <span class="sa">f</span><span class="s2">&quot;test_singlegp_</span><span class="si">{</span><span class="n">lnpf</span><span class="si">}</span><span class="s2">_LatLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_lat_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">_SigLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_sigma_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>                 <span class="n">trainers</span><span class="o">=</span><span class="n">filter_npf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">,</span> <span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="o">=</span><span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="o">=</span><span class="n">is_sigma_LB</span><span class="p">),</span>
+
+<span class="nn">&lt;ipython-input-12-07b8e46c7ab1&gt;</span> in <span class="ni">multi_posterior_gp_gif</span><span class="nt">(filename, trainers, datasets, seed, **kwargs)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">6</span>     <span class="n">giffify</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
+
+<span class="nn">/Neural-Process-Family/utils/visualize/helpers.py</span> in <span class="ni">giffify</span><span class="nt">(save_filename, gen_single_fig, sweep_parameter, sweep_values, fps, quality, is_transparent, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">132</span>     <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="g g-Whitespace">    </span><span class="mi">133</span>     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sweep_values</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">134</span>         <span class="n">fig</span> <span class="o">=</span> <span class="n">gen_single_fig</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">sweep_parameter</span><span class="p">:</span> <span class="n">v</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">135</span>         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">136</span>         <span class="n">img</span> <span class="o">=</span> <span class="n">fig2img</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">is_transparent</span><span class="o">=</span><span class="n">is_transparent</span><span class="p">)</span>
+
+<span class="nn">/Neural-Process-Family/utils/ntbks_helpers.py</span> in <span class="ni">plot_multi_posterior_samples_1d</span><span class="nt">(trainers, datasets, n_cntxt, trainers_compare, plot_config_kwargs, title, left_extrap, right_extrap, pretty_renamer, is_plot_generator, imgsize, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">399</span> 
+<span class="g g-Whitespace">    </span><span class="mi">400</span>         <span class="n">n_col</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">trainers_compare</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">2</span>
+<span class="ne">--&gt; </span><span class="mi">401</span>         <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">402</span>             <span class="n">n_trainers</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">403</span>             <span class="n">n_col</span><span class="p">,</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/cbook/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span>                 <span class="s2">&quot;parameter will become keyword-only </span><span class="si">%(removal)s</span><span class="s2">.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">450</span>                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parameter of </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">451</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span> 
+<span class="g g-Whitespace">    </span><span class="mi">453</span>     <span class="k">return</span> <span class="n">wrapper</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/pyplot.py</span> in <span class="ni">subplots</span><span class="nt">(nrows, ncols, sharex, sharey, squeeze, subplot_kw, gridspec_kw, **fig_kw)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1270</span>     <span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1271</span><span class="sd">     fig = figure(**fig_kw)</span>
+<span class="ne">-&gt; </span><span class="mi">1272</span><span class="sd">     axs = fig.subplots(nrows=nrows, ncols=ncols, sharex=sharex, sharey=sharey,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1273</span><span class="sd">                        squeeze=squeeze, subplot_kw=subplot_kw,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1274</span><span class="sd">                        gridspec_kw=gridspec_kw)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/cbook/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span><span class="sd">                 &quot;parameter will become keyword-only %(removal)s.&quot;,</span>
+<span class="g g-Whitespace">    </span><span class="mi">450</span><span class="sd">                 name=name, obj_type=f&quot;parameter of {func.__name__}()&quot;)</span>
+<span class="ne">--&gt; </span><span class="mi">451</span><span class="sd">         return func(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">453</span><span class="sd">     return wrapper</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/figure.py</span> in <span class="ni">subplots</span><span class="nt">(self, nrows, ncols, sharex, sharey, squeeze, subplot_kw, gridspec_kw)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1520</span><span class="sd">         if gridspec_kw is None:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1521</span><span class="sd">             gridspec_kw = {}</span>
+<span class="ne">-&gt; </span><span class="mi">1522</span><span class="sd">         return (self.add_gridspec(nrows, ncols, figure=self, **gridspec_kw)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1523</span><span class="sd">                 .subplots(sharex=sharex, sharey=sharey, squeeze=squeeze,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1524</span><span class="sd">                           subplot_kw=subplot_kw))</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/figure.py</span> in <span class="ni">add_gridspec</span><span class="nt">(self, nrows, ncols, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2802</span><span class="sd"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">2803</span><span class="sd">         _ = kwargs.pop(&#39;figure&#39;, None)  # pop in case user has added this...</span>
+<span class="ne">-&gt; </span><span class="mi">2804</span><span class="sd">         gs = GridSpec(nrows=nrows, ncols=ncols, figure=self, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2805</span><span class="sd">         self._gridspecs.append(gs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2806</span><span class="sd">         return gs</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/gridspec.py</span> in <span class="ni">__init__</span><span class="nt">(self, nrows, ncols, figure, left, bottom, right, top, wspace, hspace, width_ratios, height_ratios)</span>
+<span class="g g-Whitespace">    </span><span class="mi">418</span><span class="sd">         self.figure = figure</span>
+<span class="g g-Whitespace">    </span><span class="mi">419</span><span class="sd"> </span>
+<span class="ne">--&gt; </span><span class="mi">420</span><span class="sd">         GridSpecBase.__init__(self, nrows, ncols,</span>
+<span class="g g-Whitespace">    </span><span class="mi">421</span><span class="sd">                               width_ratios=width_ratios,</span>
+<span class="g g-Whitespace">    </span><span class="mi">422</span><span class="sd">                               height_ratios=height_ratios)</span>
+
+<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/gridspec.py</span> in <span class="ni">__init__</span><span class="nt">(self, nrows, ncols, height_ratios, width_ratios)</span>
+<span class="g g-Whitespace">     </span><span class="mi">46</span><span class="sd">         &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">47</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">nrows</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">48</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">49</span>                 <span class="sa">f</span><span class="s2">&quot;Number of rows must be a positive integer, not </span><span class="si">{</span><span class="n">nrows</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ncols</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+
+<span class="ne">ValueError</span>: Number of rows must be a positive integer, not 0
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 864x0 with 0 Axes&gt;
 </pre></div>
 </div>
 </div>
