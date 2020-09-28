@@ -478,9 +478,10 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
         return dflt_Modules
 
     def forward(self, *args, **kwargs):
+
         # make sure that only sampling oce per loop => cannot be a property
         try:
-            # if scipy random variable
+            # if scipy random variable, i.e., random number of samples
             self.n_z_samples = (
                 self.n_z_samples_train.rvs()
                 if self.training
@@ -507,14 +508,13 @@ class LatentNeuralProcessFamily(NeuralProcessFamily):
             # instead of q(z|cntxt). note that actually does q(z|trgt) because trgt has cntxt
             R_from_trgt = self.encode_globally(X_trgt, Y_trgt)
             q_zCct = self.infer_latent_dist(X_trgt, R_from_trgt)
-
-            # size = [n_z_samples, batch_size, *n_lat, z_dim]
-            z_samples = q_zCct.rsample([self.n_z_samples])
+            sampling_dist = q_zCct
         else:
             q_zCct = None
+            sampling_dist = q_zCc
 
-            # size = [n_z_samples, batch_size, *n_lat, z_dim]
-        z_samples = q_zCc.rsample([self.n_z_samples])
+        # size = [n_z_samples, batch_size, *n_lat, z_dim]
+        z_samples = sampling_dist.rsample([self.n_z_samples])
 
         return z_samples, q_zCc, q_zCct
 

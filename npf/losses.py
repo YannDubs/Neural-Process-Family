@@ -4,14 +4,13 @@ import math
 
 import torch
 import torch.nn as nn
-from torch.distributions.kl import kl_divergence
-
 from npf.utils.helpers import (
     LightTailPareto,
     dist_to_device,
     logcumsumexp,
     sum_from_nth_dim,
 )
+from torch.distributions.kl import kl_divergence
 
 __all__ = ["CNPFLoss", "ELBOLossLNPF", "SUMOLossLNPF", "NLLLossLNPF"]
 
