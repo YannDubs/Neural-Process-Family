@@ -72,6 +72,7 @@ Comparison between meta learning vs supervised learning, and modeling functions 
 
 In (deep) supervised learning, a neural network is trained to model a target function given some observations.
 Specifically, a network is trained on a single dataset $\mathcal{C} := \{(x^{(c)}, y^{(c)})\}_{c=1}^C$ (which we will refer to as a **context set**). The trained network is then used as a predictor, $f(x)$.
+
 A supervised learning algorithm can thus be seen as a map that takes datasets to a predictors $\mathcal{C} \mapsto f(x)$.
 At test time, a prediction at a target location $x^{(t)}$ can be made by feeding it into the predictor to obtain $f(x^{(t)})$.
 By doing so for all the test inputs (which we call **target inputs**) $\mathbf{x}_{\mathcal{T}} := \{x^{(t)}\}_{t=1}^T$, we get a set of predictions $f(\mathbf{x}_{\mathcal{T}}):= \{f(x^{(t)})\}_{t=1}^T$.
@@ -80,13 +81,13 @@ We will refer to a context and target set together as a *task*  $\mathcal{D} := 
 This standard supervised learning process is visualised in the upper left quadrant of {numref}`meta_learning_sp`.
 
 The idea of **meta-learning** is _learning to learn_, i.e., learning how to rapidly adapt to new supervised tasks.
-The key insight is that, as we just saw, a supervised learning algorithm is itself a function from $\mathcal{C} \mapsto f(x)$.
-As a result we can use supervised learning to model this function, hence the name *meta*.
+The key insight is that, as we just saw, a supervised learning algorithm is itself a function, because it maps datasets to predictors $\mathcal{C} \mapsto f(x)$.
+As a result we can model this function (the initial supervised learning algorithm) using another supervised learning algorithm, hence the name *meta*-learning.
 
 To train a meta-learner, we need a large collection $\mathcal{M}= \{ \mathcal{D_i} \}_{i=1}^{N_{\mathrm{tasks}}}$ of related datasets --- a meta-dataset.
 The result of meta-training on this meta-dataset is a supervised learning algorithm, i.e., a map $\mathcal{C} \mapsto f(x; \mathcal{C})$.
 At meta-test time, we'll adapt the predictor to a task it has never seen before by providing it a new context set $\mathcal{C}$.
-In this blog we will only consider cases where the map $\mathcal{C} \mapsto f(x; \mathcal{C})$ is parameterised by a neural network, meaning that the adaptation to a new task is done with a single forward pass, without any gradient updates!
+In this blog we will only consider cases where the map $\mathcal{C} \mapsto f(x; \mathcal{C})$ is parameterised by a neural network, meaning that the adaptation (meta-test time) to a new task is done with a single forward pass, without any gradient updates!
 The resulting predictor, $f(x; \mathcal{C})$, uses the information obtained during meta-learning to make predictions on this new task.
 The whole meta-learning process is illustrated in the bottom left quadrant of {numref}`meta_learning_sp`.
 
@@ -128,7 +129,7 @@ name: notation
 ### Stochastic Process Prediction
 
 We've seen that we can think of meta-learning as learning a map directly from context sets $\mathcal{C}$ to predictor functions $f(x; \mathcal{C})$.
-However, there are many situations where a single predictor without error-bars isn't good enough.
+However, there are many situations where a predictor $f(x; \mathcal{C})$ that cannot estimate its uncertainty with error-bars isn't good enough.
 Quantifying uncertainty is crucial for decision-making, and has many applications such as in model-based reinforcement learning, Bayesian optimisation and out-of-distribution detection.
 
 Given target inputs $\mathbf{x}_{\mathcal{T}}$, what we need is not a single prediction $f(\mathbf{x}_{\mathcal{T}}; \mathcal{C})$, but rather a _distribution over predictions_ $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})$.
@@ -250,7 +251,7 @@ As we will later show, it is the factorisation assumptions in the decoder that e
 class: note
 ---
 As a concrete example of what a Neural Process looks like, {numref}`CNP_gif` shows a schematic animation of the forward pass of a _Conditional Neural Process_ (CNP), the simplest member of the CNPF.
-We see that every $(x, y)$ pair in the context set (here with three datapoints) is passed through an MLP $e$ to obtain a local encoding.
+We see that every $(x, y)$ pair in the context set (here with three datapoints) is passed through an Multi-Layer Perceptron (MLP) $e$ to obtain a local encoding.
 The local encodings $\{r_1, r_2, r_3\}$ are then aggregated by a mean pooling $a$ to a representation $r$.
 Finally, the representation $r$ is fed into another MLP $d$ along with the target input to yield the mean and variance of the predictive distribution of the target output $y$.
 We'll take a much more detailed look at the CNP {ref}`later <cnp>`.
