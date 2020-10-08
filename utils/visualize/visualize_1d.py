@@ -309,6 +309,7 @@ def _plot_posterior_predefined_cntxt(
     is_plot_std=False,
     train_min_max=(-2, 2),
     model_label="Model",
+    scatter_label=None,
     alpha_init=1,
     mean_std_colors=("b", "tab:blue"),
     title=None,
@@ -372,7 +373,7 @@ def _plot_posterior_predefined_cntxt(
     kwargs_std : dict, optional
         Kwargs for plot std function (`fill_between` if smooth else `errorbar`).
 
-    kwargs : 
+    kwargs :
         Additional arguments to plt.show
     """
 
@@ -443,7 +444,7 @@ def _plot_posterior_predefined_cntxt(
                     mean_y - std_y,
                     mean_y + std_y,
                     color=std_color,
-                    **kwargs_new
+                    **kwargs_new,
                 )
             else:
                 kwargs_new = dict(alpha=alpha / 7, capsize=3, fmt="none", **kwargs)
@@ -473,6 +474,8 @@ def _plot_posterior_predefined_cntxt(
         y_max = max(y_max, Y_trgt.max())
 
     if is_conditioned:
+        if scatter_label is not None:
+            scatter_kwargs["label"] = scatter_label
         ax.scatter(X_cntxt_plot, Y_cntxt[0, :, 0].numpy(), c="k", **scatter_kwargs)
         x_min = min(min(X_cntxt_plot), x_min)
         x_max = max(max(X_cntxt_plot), x_max)

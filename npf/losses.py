@@ -63,6 +63,7 @@ class BaseLossNPF(nn.Module, abc.ABC):
         if self.training:
             loss = self.get_loss(p_yCc, z_samples, q_zCc, q_zCct, Y_trgt)
         else:
+            # always uses NPML for evaluation
             if self.is_force_mle_eval:
                 q_zCct = None
             loss = NLLLossLNPF.get_loss(self, p_yCc, z_samples, q_zCc, q_zCct, Y_trgt)
@@ -123,7 +124,7 @@ class CNPFLoss(BaseLossNPF):
 
 
 class ELBOLossLNPF(BaseLossNPF):
-    """Approximate (not lower bound) conditional ELBO [1].
+    """Approximate conditional ELBO [1].
 
     References
     ----------
@@ -131,9 +132,7 @@ class ELBOLossLNPF(BaseLossNPF):
         arXiv:1807.01622 (2018).
     """
 
-    def get_loss(self, p_yCc, z_samples, q_zCc, q_zCct, Y_trgt):
-
-        n_z_samples, batch_size, *n_trgt = p_yCc.batch_shape
+    def get_loss(self, p_yCc, _, q_zCc, q_zCct, Y_trgt):
 
         # first term in loss is E_{q(z|y_cntxt,y_trgt)}[\sum_t log p(y^t|z)]
         # \sum_t log p(y^t|z). size = [z_samples, batch_size]
@@ -142,16 +141,11 @@ class ELBOLossLNPF(BaseLossNPF):
         # E_{q(z|y_cntxt,y_trgt)}[...] . size = [batch_size]
         E_z_sum_log_p_yCz = sum_log_p_yCz.mean(0)
 
-        if q_zCct is not None:
-            # second term in loss is \sum_l KL[q(z^l|y_cntxt,y_trgt)||q(z^l|y_cntxt)]
-            # KL[q(z^l|y_cntxt,y_trgt)||q(z^l|y_cntxt)]. size = [batch_size, *n_lat]
-            kl_z = kl_divergence(q_zCct, q_zCc)
-            # \sum_l ... . size = [batch_size]
-            E_z_kl = sum_from_nth_dim(kl_z, 1)
-
-        else:
-            # during validation the kl will be 0 because we do not compute q_zCct
-            E_z_kl = 0
+        # second term in loss is \sum_l KL[q(z^l|y_cntxt,y_trgt)||q(z^l|y_cntxt)]
+        # KL[q(z^l|y_cntxt,y_trgt)||q(z^l|y_cntxt)]. size = [batch_size, *n_lat]
+        kl_z = kl_divergence(q_zCct, q_zCc)
+        # \sum_l ... . size = [batch_size]
+        E_z_kl = sum_from_nth_dim(kl_z, 1)
 
         return -(E_z_sum_log_p_yCz - E_z_kl)
 

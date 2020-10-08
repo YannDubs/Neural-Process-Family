@@ -15,7 +15,7 @@ from sklearn.gaussian_process.kernels import (
     WhiteKernel,
 )
 
-import skorch
+
 import torch
 from npf import GridConvCNP
 from npf.architectures import MLP, merge_flat_input
@@ -29,7 +29,7 @@ from npf.utils.datasplit import (
     half_masker,
     no_masker,
 )
-from skorch import NeuralNet
+
 from utils.data import DIR_DATA, GPDataset, get_train_test_img_dataset
 from utils.data.helpers import DatasetMerger
 from utils.data.imgs import SingleImage, get_test_upscale_factor
@@ -58,7 +58,7 @@ def get_img_datasets(datasets):
     return train_datasets, test_datasets
 
 
-def get_all_gp_datasets():
+def get_all_gp_datasets(**kwargs):
     """Return train / tets / valid sets for all GP experiments."""
     datasets, test_datasets, valid_datasets = dict(), dict(), dict()
 
@@ -67,7 +67,7 @@ def get_all_gp_datasets():
         get_datasets_variable_hyp_gp,
         get_datasets_variable_kernel_gp,
     ]:
-        _datasets, _test_datasets, _valid_datasets = f()
+        _datasets, _test_datasets, _valid_datasets = f(**kwargs)
         datasets.update(_datasets)
         test_datasets.update(_test_datasets)
         valid_datasets.update(_valid_datasets)
@@ -75,24 +75,7 @@ def get_all_gp_datasets():
     return datasets, test_datasets, valid_datasets
 
 
-def get_all_gp_datasets_old():
-    """Return train / tets / valid sets for all GP experiments."""
-    datasets, test_datasets, valid_datasets = dict(), dict(), dict()
-
-    for f in [
-        get_datasets_single_gp,
-        get_datasets_varying_hyp_gp,
-        get_datasets_variable_kernel_gp,
-    ]:
-        _datasets, _test_datasets, _valid_datasets = f()
-        datasets.update(_datasets)
-        test_datasets.update(_test_datasets)
-        valid_datasets.update(_valid_datasets)
-
-    return datasets, test_datasets, valid_datasets
-
-
-def get_datasets_single_gp():
+def get_datasets_single_gp(**kwargs):
     """Return train / tets / valid sets for 'Samples from a single GP'."""
     kernels = dict()
 
@@ -112,10 +95,11 @@ def get_datasets_single_gp():
         n_samples=50000,  # number of different context-target sets
         n_points=128,  # size of target U context set for each sample
         is_reuse_across_epochs=False,  # never see the same example twice
+        **kwargs,
     )
 
 
-def get_datasets_variable_hyp_gp():
+def get_datasets_variable_hyp_gp(**kwargs):
     """Return train / tets / valid sets for 'Samples from GPs with varying Kernel hyperparameters'."""
     kernels = dict()
 
@@ -127,13 +111,14 @@ def get_datasets_variable_hyp_gp():
         n_samples=50000,  # number of different context-target sets
         n_points=128,  # size of target U context set for each sample
         is_reuse_across_epochs=False,  # never see the same example twice
+        **kwargs,
     )
 
 
-def get_datasets_variable_kernel_gp():
+def get_datasets_variable_kernel_gp(**kwargs):
     """Return train / tets / valid sets for 'Samples from GPs with varying Kernels'."""
 
-    datasets, test_datasets, valid_datasets = get_datasets_single_gp()
+    datasets, test_datasets, valid_datasets = get_datasets_single_gp(**kwargs)
     return (
         dict(All_Kernels=DatasetMerger(datasets.values())),
         dict(All_Kernels=DatasetMerger(test_datasets.values())),
@@ -247,8 +232,8 @@ PRETTY_RENAMER = StrFormatter(
     },
     subtring_replace={
         "_": " ",
-        "Elbofalse": "MLE",
-        "Elbotrue": "ELBO",
+        "Elbofalse": "NPML",
+        "Elbotrue": "NPVI",
         "Latlbtrue": "LB_Z",
         "Latlbfalse": "",
         "Siglbtrue": "LB_P",
@@ -444,6 +429,7 @@ def plot_multi_posterior_samples_1d(
                     train_min_max=dataset.min_max,
                     title=curr_title,
                     ax=axes[i, j],
+                    scatter_label="Context Set",
                     **kwargs,
                 )
 
@@ -629,7 +615,6 @@ def gif_explain(
     with plot_config(plot_config_kwargs):
 
         model.forward = types.MethodType(forward_Rinduced, model)
-
         _plot_posterior_predefined_cntxt(
             model,
             X_cntxt,

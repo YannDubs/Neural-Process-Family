@@ -238,7 +238,7 @@ def plot_posterior_samples(
 
     get_cntxt_trgt : callable or dict
         Function that takes as input the features and tagrets `X`, `y` and return
-        the corresponding `X_cntxt, Y_cntxt, X_trgt, Y_trgt`. If dict should contain the correct 
+        the corresponding `X_cntxt, Y_cntxt, X_trgt, Y_trgt`. If dict should contain the correct
         `X_cntxt, Y_cntxt, X_trgt, Y_trgt`.
 
     model : nn.Module
@@ -263,18 +263,18 @@ def plot_posterior_samples(
 
     seed : int, optional
 
-    is_return : bool, optional  
+    is_return : bool, optional
         Whether to return the grid instead of plotting it.
 
     is_hrztl_cat : bool, optional
-        Whether to concatenate the plots horizontally instead of vertically. Only works well for 
+        Whether to concatenate the plots horizontally instead of vertically. Only works well for
         n_plots=1.
 
-    n_samples : int, optional   
+    n_samples : int, optional
         Number of samples to plot.
 
     outs : tuple of tensors, optional
-        Samples `(y_pred, mask_cntxt, Y_cntxt, mask_trgt)` to plot instead of using `get_posterior_samples`. 
+        Samples `(y_pred, mask_cntxt, Y_cntxt, mask_trgt)` to plot instead of using `get_posterior_samples`.
 
     is_select_different : bool, optional
         Whether to select the `n_samples` most different samples (in average L2 dist) instead of random.
@@ -286,14 +286,14 @@ def plot_posterior_samples(
     interp_baselines : list of {"linear","nearest","cubic"}, optional
         List of interpolating baselines to plot in addition to the prediction from the model.
 
-    is_add_annot : bool, optional   
+    is_add_annot : bool, optional
         Whether to add annotations *context, mean, ...).
 
     rotate_annot : float or {'vertical', 'horizontal'} or str, optional
         Rotation of annotation. If None automatic.
 
     is_mask_cntxt : bool, optional
-        Whether to mask the context. If false plors the entire image, this is especially usefull 
+        Whether to mask the context. If false plors the entire image, this is especially usefull
         when doing superresolution as all the image corresponds to the downscaled image. In this
         case, `get_cntxt_trgt` should be `SuperresolutionCntxtTrgtGetter`.
     """
@@ -488,7 +488,7 @@ def plot_qualitative_with_kde(
     named_trainer : list [name, NeuralNet]
         Trainer (model outputted of training) and the name under which it should be displayed.
 
-    dataset : 
+    dataset :
 
     named_trainer_compare : list [name, NeuralNet], optional
         Like `named_trainer` but for a model against which to compare.
@@ -508,24 +508,24 @@ def plot_qualitative_with_kde(
 
     height_ratios : int iterable of length = nrows, optional
         Height ratios of the rows.
-    
+
     font_size : int, optional
-    
+
     h_pad : int, optional
         Padding between kde plot and images
-    
+
     x_lim : dict, optional
         Dictionary containing one (or both) of "left", "right" correspomding to the x limit of kde plot.
-    
+
     is_smallest_xrange : bool, optional
         Whether to rescale the x axis based on the range of percentils.
-    
+
     kdeplot_kwargs : dict, optional
         Additional arguments to `sns.kdeplot`
 
     upscale_factor : float, optional
         Whether to upscale the image => extrapolation. Only if not uniform grid.
-    
+
     kwargs
 
     !VERY DIRTY
@@ -795,7 +795,9 @@ def get_img_toplot(
 
         # the second time is to get the mask (not the first one because in case not `is_mask`)
         # you still want to return the actual mask
-        _, mask = points_to_grid(mask, to_plot, data.shape[1:])
+        _, mask = points_to_grid(
+            mask, to_plot, data.shape[1:], downscale_factor=downscale_factor
+        )
 
     return out, mask
 

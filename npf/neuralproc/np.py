@@ -141,7 +141,7 @@ class LNP(LatentNeuralProcessFamily, CNP):
     def __init__(self, x_dim, y_dim, encoded_path="latent", **kwargs):
         super().__init__(x_dim, y_dim, encoded_path=encoded_path, **kwargs)
 
-    def trgt_dependent_representation(self, X_cntxt, z_samples, R, X_trgt):
+    def trgt_dependent_representation(self, _, z_samples, R, X_trgt):
 
         batch_size, n_trgt, _ = X_trgt.shape
         n_z_samples = z_samples.size(0)

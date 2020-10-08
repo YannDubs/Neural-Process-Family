@@ -105,28 +105,28 @@ def giffify(
     **kwargs,
 ):
     """Make a gif by calling `single_fig` with varying parameters.
-    
+
     Parameters
     ----------
     save_filename : str
         name fo the file for saving the gif.
-        
+
     gen_single_fig : callable
-        Function which returns a matplotlib figure. 
-        
+        Function which returns a matplotlib figure.
+
     sweep_parameter : str
         Name of the parameter to `single_fig` that will be swept over.
-        
+
     sweep_values : array-like
         Values to sweep over.
-        
+
     fps : int, optional
         Number of frame per second. I.e. speed of gif.
 
-    is_transparent: bool, optional  
+    is_transparent: bool, optional
         Whether to use a transparent background.
-        
-    kwargs : 
+
+    kwargs :
         Arguments to `single_fig` that should not be swept over.
     """
     figs = []

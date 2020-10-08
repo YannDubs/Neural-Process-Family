@@ -13,12 +13,11 @@ def cntxt_trgt_collate(get_cntxt_trgt, is_duplicate_batch=False, **kwargs):
         the corresponding `X_cntxt, Y_cntxt, X_trgt, Y_trgt`.
 
     is_duplicate_batch : bool, optional
-        Wether to repeat the batch to have 2 different context and target sets
+        Wether to repeat th`e batch to have 2 different context and target sets
         for every function. If so the batch will contain the concatenation of both.
     """
 
     def mycollate(batch):
-
         collated = torch.utils.data.dataloader.default_collate(batch)
         X = collated[0]
         y = collated[1]
