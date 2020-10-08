@@ -11,7 +11,7 @@ But before diving in, let's consider some tasks that the NPF is particularly wel
 Let's consider the task of restoring corrupted audio signals.
 We are given a dataset $\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N$, where $x$ are the inputs (time) and $y$ are the outputs (sound wave amplitude), and our goal is to reconstruct the signal conditioned on $\mathcal{D}$.
 If $\mathcal{D}$ is very sparse, there could be many reasonable reconstructions --- hence we should be wary of simply providing a single prediction, and instead include measures of uncertainty.
-{numref}`ConvLNP` shows a neural process being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.
+{numref}`ConvLNP` shows a NP being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.
 
 
 ```{figure} ../gifs/ConvLNP_norbf_gp_extrap.gif
@@ -20,22 +20,22 @@ width: 35em
 name: ConvLNP
 alt: Samples from ConvLNP trained on GPs
 ---
-Sample functions from the predictive distribution of ConvLNPs (blue) and the oracle GP (green) with periodic and noisy Matern kernels.
+Sample functions from the predictive distribution of ConvLNPs (the blue lines represent the predicted mean function and the shaded region shows a standard deviation on each side $[\mu-\sigma, \mu + \sigma]$)  and the oracle GP (green line represents the ground truth mean and the dashed line show a standard deviations on each side) with periodic (top) and noisy Matern kernels (bottom).  Each convLNP was trained on samples from the oracle GP.
 ```
 
 * **Interpolating image data with uncertainty.** Imagine that we are given a satellite image of a region obscured by cloud-cover.
 We might need to make predictions regarding what is "behind" the occlusions. For example, the [UNHCR](https://en.wikipedia.org/wiki/United_Nations_High_Commissioner_for_Refugees) might need to count the number of tents in a refugee camp to know how much food and healthcare supplies to send there.
 If clouds are obscuring a large part of the image, we might be interested not just in a single interpolation, but in the entire probability distribution over plausible interpolations.
 NPs can do exactly that.
-{numref}`ConvCNP_superes_intro` shows a NP upscaling the resolution of an image by treating pixel locations that are "in between" the pixels of the input images as occluded pixels, i.e., by interpolating between pixels. The NP also provides uncertainty estimates, which aren't shown here.
+{numref}`ConvCNP_celeba128` shows a NP performing image completion with varying percentage of occluded pixels. Compared to the cubic interpolation baseline, it performs better and provides uncertainty estimates.
 
-```{figure} ../images/ConvCNP_superes.png
+```{figure} ../images/ConvCNP_celeba128.png
 ---
 width: 35em
-name: ConvCNP_superes_intro
-alt: Increasing image resolution with ConvCNP
+name: ConvCNP_celeba128
+alt: Image completion with ConvCNP
 ---
-Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP.
+Image completion by a ConvCNP trained on CelebA to $128 \times 128$. The first row shows the input image / context set. The second row shows the most probable reconstruction predicted by the NP. The third row shows the uncertainty estimates of the NP. The final row shows a baseline completion performed by cubic interpolation.
 ```
 
 
@@ -65,7 +65,7 @@ width: 100%
 name: meta_learning_sp
 alt: Neural Processes as meta learning stochastic processes
 ---
-Comparison between meta learning vs supervised learning, and modeling functions vs modeling stochastic processes. Neural Processes are in the lower-right quadrant.
+Comparison between meta learning vs supervised learning, and modeling functions vs modeling stochastic processes. Neural Processes are in the lower-right quadrant. Dot are context points while stars are target points.
 ```
 
 ### Meta-learning
@@ -172,7 +172,7 @@ p(y^{(1)}, y^{(2)}| x^{(1)}, x^{(2)}) &= p(y^{(1)}| x^{(1)}) p(y^{(2)}| x^{(2)},
 $$
 
 This essentially states that the distribution over $y^{(1)}, y^{(2)}$ obtained by autoregressive sampling should be independent of the order in which the sampling is performed.
-Unfortunately, this is _not_ guaranteed to be the case NPs, i.e., it is possible that
+Unfortunately, this is _not_ guaranteed to be the case for NPs, i.e., it is possible that
 
 $$
 p(y^{(1)}| x^{(1)}) p(y^{(2)}| x^{(2)} ; \{x^{(1)},  y^{(1)} \} ) \neq p(y^{(2)}| x^{(2)}) p(y^{(1)}| x^{(1)} ; \{x^{(2)},  y^{(2)}\} ).
@@ -194,7 +194,7 @@ class: note, dropdown
 {numref}`ConvLNP` also shows the predictive mean and error-bars of the ground truth _Gaussian process_ (GP) used to generate the data.
 Unlike NPs, GPs require the user to specify a kernel function to model the data.
 GPs are attractive due to the fact that exact prediction in GPs can be done _in closed form_.
-However, this has computational complexity $\mathcal{O}(N^3)$ in the dataset size, which limits the application of exact GPs to large datasets.
+However, this has computational complexity $\mathcal{O}(N^3)$ in the dataset size, which limits the application of exact GPs for large datasets.
 Many accessible introductions to GPs are available online.
 Some prime examples are [Distill's visual exploration](https://distill.pub/2019/visual-exploration-gaussian-processes/), [Neil Lawrence's post](http://inverseprobability.com/talks/notes/gaussian-processes.html), or [David Mackay's video lecture](https://www.youtube.com/watch?v=NegVuuHwa8Q).
 
