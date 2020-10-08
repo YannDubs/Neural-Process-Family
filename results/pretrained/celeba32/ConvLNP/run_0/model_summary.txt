@@ -3,7 +3,6 @@ GridConvLNP(
   (decoder): DiscardIthArg(
     (destination): Linear(in_features=128, out_features=6, bias=True)
   )
-  (p_y_loc_transformer): Identity()
   (conv): AbsConv(3, 3, kernel_size=(11, 11), stride=(1, 1), padding=(5, 5), groups=3, bias=False)
   (resizer): Linear(in_features=6, out_features=128, bias=True)
   (induced_to_induced): CNN(
