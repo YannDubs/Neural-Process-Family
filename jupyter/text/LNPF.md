@@ -661,7 +661,7 @@ Further, as in the case of the ConvCNP, we see that the ConvLNP elegantly genera
 ---
 class: dropdown, note
 ---
-As with the LNP, we compare the performance of the ConvLNP when trained with NPVI and NPML. Note thatto make NPVI work with ConvLNP it is important to decrease the dimensionality of the latent functional representation. Here we thus use 16 latent channels (for NPVI and NPML) instead of the usual 128.
+As with the LNP, we compare the performance of the ConvLNP when trained with NPVI and NPML. Note that to train ConvLNP with make NPVI it is important to decrease the dimensionality of the latent functional representation to decrease the KL term. Here we use 16 latent channels (for NPVI and NPML) instead of the usual 128.
 
 ```{figure} ../gifs/singlegp_ConvLNP_LatLBTrue_SigLBTrue.gif
 ---
