@@ -20,7 +20,7 @@ width: 35em
 name: ConvLNP
 alt: Samples from ConvLNP trained on GPs
 ---
-Sample functions from the predictive distribution of ConvLNPs (the blue lines represent the predicted mean function and the shaded region shows a standard deviation on each side $[\mu-\sigma, \mu + \sigma]$)  and the oracle GP (green line represents the ground truth mean and the dashed line show a standard deviations on each side) with periodic (top) and noisy Matern kernels (bottom).  Each convLNP was trained on samples from the oracle GP.
+Sample functions from the predictive distribution of ConvLNPs (the blue lines represent the predicted mean function and the shaded region shows a standard deviation on each side $[\mu-\sigma, \mu + \sigma]$)  and oracle GPs (green line represents the ground truth mean and the dashed line show a standard deviations on each side) with periodic (top) and noisy Matern kernels (bottom).  Each convLNP was trained on samples from the oracle GP.
 ```
 
 * **Interpolating image data with uncertainty.** Imagine that we are given a satellite image of a region obscured by cloud-cover.
@@ -31,7 +31,7 @@ NPs can do exactly that.
 
 ```{figure} ../gifs/ConvCNP_celeba128.gif
 ---
-width: 35em
+width: 30em
 name: ConvCNP_celeba128
 alt: Image completion with ConvCNP
 ---
