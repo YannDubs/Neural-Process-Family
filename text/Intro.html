@@ -330,7 +330,7 @@ If <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> is very spa
 </ul>
 <div class="figure align-default" id="convlnp">
 <a class="reference internal image-reference" href="../_images/ConvLNP_norbf_gp_extrap.gif"><img alt="Samples from ConvLNP trained on GPs" src="../_images/ConvLNP_norbf_gp_extrap.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Sample functions from the predictive distribution of ConvLNPs (the blue lines represent the predicted mean function and the shaded region shows a standard deviation on each side <span class="math notranslate nohighlight">\([\mu-\sigma, \mu + \sigma]\)</span>)  and the oracle GP (green line represents the ground truth mean and the dashed line show a standard deviations on each side) with periodic (top) and noisy Matern kernels (bottom).  Each convLNP was trained on samples from the oracle GP.</span><a class="headerlink" href="#convlnp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Sample functions from the predictive distribution of ConvLNPs (the blue lines represent the predicted mean function and the shaded region shows a standard deviation on each side <span class="math notranslate nohighlight">\([\mu-\sigma, \mu + \sigma]\)</span>)  and oracle GPs (green line represents the ground truth mean and the dashed line show a standard deviations on each side) with periodic (top) and noisy Matern kernels (bottom).  Each convLNP was trained on samples from the oracle GP.</span><a class="headerlink" href="#convlnp" title="Permalink to this image">¶</a></p>
 </div>
 <ul class="simple">
 <li><p><strong>Interpolating image data with uncertainty.</strong> Imagine that we are given a satellite image of a region obscured by cloud-cover.
@@ -340,7 +340,7 @@ NPs can do exactly that.
 <a class="reference internal" href="#convcnp-celeba128"><span class="std std-numref">Fig. 2</span></a> shows a NP performing image completion with varying percentage of occluded pixels. Compared to the cubic interpolation baseline, it performs better and provides uncertainty estimates.</p></li>
 </ul>
 <div class="figure align-default" id="convcnp-celeba128">
-<a class="reference internal image-reference" href="../_images/ConvCNP_celeba128.gif"><img alt="Image completion with ConvCNP" src="../_images/ConvCNP_celeba128.gif" style="width: 35em;" /></a>
+<a class="reference internal image-reference" href="../_images/ConvCNP_celeba128.gif"><img alt="Image completion with ConvCNP" src="../_images/ConvCNP_celeba128.gif" style="width: 30em;" /></a>
 <p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Image completion by a ConvCNP trained on <span class="math notranslate nohighlight">\(128 \times 128\)</span> CelebA. The first row shows the occluded input image / context pixels. The second row shows the most probable reconstruction predicted by the NP. The third row shows the uncertainty estimates of the NP. The final row shows a baseline completion performed by cubic interpolation.</span><a class="headerlink" href="#convcnp-celeba128" title="Permalink to this image">¶</a></p>
 </div>
 <div class="note dropdown admonition">
