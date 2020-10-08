@@ -657,6 +657,24 @@ Samples Posterior predictive of ConvLNPs (Blue) and the oracle GP (Green) with R
 From {numref}`ConvLNP_single_gp_extrap_text` we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to {numref}`AttnLNP_single_gp_text`.
 Further, as in the case of the ConvCNP, we see that the ConvLNP elegantly generalises beyond the range in $X$-space on which it was trained.
 
+````{admonition} Note$\qquad$NPVI vs NPML
+---
+class: dropdown, note
+---
+As with the LNP, we compare the performance of the ConvLNP when trained with NPVI and NPML. Note thatto make NPVI work with ConvLNP it is important to decrease the dimensionality of the latent functional representation. Here we thus use 16 latent channels (for NPVI and NPML) instead of the usual 128.
+
+```{figure} ../gifs/singlegp_ConvLNP_LatLBTrue_SigLBTrue.gif
+---
+width: 35em
+name: ConvLNP_all_both_objectives_text
+alt: ConvLNP on all kernels with both objectives
+---
+Predictive distributions of ConvLNP (Blue) and the oracle GP (Green) with (top) RBF, (center) periodic, and (bottom) Noisy Matern kernels. Models were trained with (left) NPML and (right) NPVI.
+```
+
+We see that a ConvLNP trained with NPML seems to gives better uncertainty estimates than when trained with NPVI.
+````
+
 Next, we consider the more challenging problem of having the ConvLNP model a stochastic process whose posterior predictive is non Gaussian.
 We do so by having the following underlying generative process: first, sample one of the 3 kernels discussed above, and second, sample a function from the sampled kernel.
 Importantly, the data generating process is a mixture of GPs, and the true posterior predictive process (achieved by marginalising over the different kernels) is non-Gaussian.
