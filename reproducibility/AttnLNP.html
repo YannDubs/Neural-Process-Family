@@ -337,7 +337,7 @@
 <h1>Attentive Latent Neural Process (AttnLNP)<a class="headerlink" href="#attentive-latent-neural-process-attnlnp" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-default" id="computational-graph-attnlnps">
 <a class="reference internal image-reference" href="../_images/computational_graph_AttnLNPs.png"><img alt="Computational graph of AttnLNP" src="../_images/computational_graph_AttnLNPs.png" style="width: 25em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 65 </span><span class="caption-text">Computational graph for Attentive Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-attnlnps" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 66 </span><span class="caption-text">Computational graph for Attentive Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-attnlnps" title="Permalink to this image">¶</a></p>
 </div>
 <p>In this notebook we will show how to train a AttnLNP on samples from GPs and images using our framework, as well as how to make nice visualizations of sampled from AttnLNPs.
 We will follow quite closely the previous <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a> and <a class="reference internal" href="AttnCNP.html"><span class="doc">AttnCNP notebook</span></a>.</p>
@@ -424,7 +424,7 @@ We use the same as in <a class="reference internal" href="CNP.html"><span class=
 </div>
 </div>
 </div>
-<p>Let’s now define the models. We use the same architecture as in <a class="reference internal" href="AttnCNP.html"><span class="doc">AttnCNP notebook</span></a>. The only differences are that we replace <code class="docutils literal notranslate"><span class="pre">AttnCNP</span></code> with <code class="docutils literal notranslate"><span class="pre">AttnLNP</span></code>, as a result we will use two paths (<a class="reference internal" href="AttnCNP.html#computational-graph-attncnps"><span class="std std-numref">Fig. 51</span></a>):</p>
+<p>Let’s now define the models. We use the same architecture as in <a class="reference internal" href="AttnCNP.html"><span class="doc">AttnCNP notebook</span></a>. The only differences are that we replace <code class="docutils literal notranslate"><span class="pre">AttnCNP</span></code> with <code class="docutils literal notranslate"><span class="pre">AttnLNP</span></code>, as a result we will use two paths (<a class="reference internal" href="AttnCNP.html#computational-graph-attncnps"><span class="std std-numref">Fig. 52</span></a>):</p>
 <ul class="simple">
 <li><p><strong>Deterministic Path</strong>: this is the same  as in <a class="reference internal" href="AttnCNP.html"><span class="doc">AttnCNP notebook</span></a>.</p></li>
 <li><p><strong>Latent Path</strong>: this is the same as in <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a>.</p></li>
@@ -631,7 +631,7 @@ zsmms/AttnLNP/run_0 | best epoch: 1 | train loss: -631.6774 | valid loss: 1575.4
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
         <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
         <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -671,9 +671,9 @@ zsmms/AttnLNP/run_0 | best epoch: 1 | train loss: -631.6774 | valid loss: 1575.4
 </div>
 <div class="figure align-default" id="attnlnp-single-gp">
 <a class="reference internal image-reference" href="../_images/AttnLNP_single_gp.gif"><img alt="AttnLNP on single GP" src="../_images/AttnLNP_single_gp.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 66 </span><span class="caption-text">Posterior predictive of AttnLNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and AttnLNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#attnlnp-single-gp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 67 </span><span class="caption-text">Posterior predictive of AttnLNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and AttnLNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#attnlnp-single-gp" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#attnlnp-single-gp"><span class="std std-numref">Fig. 66</span></a> we see that although AttnLNP do not underfit like LNPs (<a class="reference internal" href="LNP.html#lnp-single-gp"><span class="std std-numref">Fig. 63</span></a>). The samples: (i) are not very smooth (the “kinks” seed in <a class="reference internal" href="AttnCNP.html#attncnp-single-gp"><span class="std std-numref">Fig. 52</span></a> are even more obvious when sampling); (ii) lack diversity and seem to be shifted versions of each other. In addition AttnLNP will not be able to extrapolate for the same reasons as AttnCNP.</p>
+<p>From <a class="reference internal" href="#attnlnp-single-gp"><span class="std std-numref">Fig. 67</span></a> we see that although AttnLNP do not underfit like LNPs (<a class="reference internal" href="LNP.html#lnp-single-gp"><span class="std std-numref">Fig. 64</span></a>). The samples: (i) are not very smooth (the “kinks” seed in <a class="reference internal" href="AttnCNP.html#attncnp-single-gp"><span class="std std-numref">Fig. 53</span></a> are even more obvious when sampling); (ii) lack diversity and seem to be shifted versions of each other. In addition AttnLNP will not be able to extrapolate for the same reasons as AttnCNP.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 1D PLOTS ######</span>
@@ -751,7 +751,7 @@ zsmms/AttnLNP/run_0 | best epoch: 1 | train loss: -631.6774 | valid loss: 1575.4
             <span class="s2">&quot;hhalf&quot;</span><span class="p">,</span>  <span class="c1"># horizontal half of the image</span>
             <span class="s2">&quot;vhalf&quot;</span><span class="p">,</span>  <span class="c1"># vertival half of the image</span>
         <span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -778,9 +778,9 @@ zsmms/AttnLNP/run_0 | best epoch: 1 | train loss: -631.6774 | valid loss: 1575.4
 </div>
 <div class="figure align-default" id="attnlnp-img">
 <a class="reference internal image-reference" href="../_images/AttnLNP_img.gif"><img alt="AttnLNP on CelebA, MNIST, ZSMM" src="../_images/AttnLNP_img.gif" style="width: 45em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 67 </span><span class="caption-text">3 samples (means conditioned on different samples from the latent) of the posterior predictive of a AttnLNP_img for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets. The last row shows the standard deviation of the posterior predictive corresponding to the last sample.</span><a class="headerlink" href="#attnlnp-img" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 68 </span><span class="caption-text">3 samples (means conditioned on different samples from the latent) of the posterior predictive of a AttnLNP_img for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets. The last row shows the standard deviation of the posterior predictive corresponding to the last sample.</span><a class="headerlink" href="#attnlnp-img" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#attnlnp-img"><span class="std std-numref">Fig. 67</span></a> shows descent sampling and good performances when the model does not require generalization (CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST) but breaks for ZSMM.</p>
+<p>From <a class="reference internal" href="#attnlnp-img"><span class="std std-numref">Fig. 68</span></a> shows descent sampling and good performances when the model does not require generalization (CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST) but breaks for ZSMM.</p>
 <p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">

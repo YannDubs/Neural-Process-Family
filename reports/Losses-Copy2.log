@@ -19,7 +19,6 @@ nbclient.exceptions.CellExecutionError: An error occurred while executing the fo
 ------------------
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
-
 import logging
 import os
 import warnings
@@ -42,14 +41,14 @@ if IS_FORCE_CPU:
 torch.set_num_threads(N_THREADS)
 ------------------
 
-[0;31m-------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m         Traceback (most recent call last)
-[0;32m<ipython-input-1-ad4da52f004f>[0m in [0;36m<module>[0;34m[0m
+[0;31m------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m        Traceback (most recent call last)
+[0;32m<ipython-input-1-a3358cf9353f>[0m in [0;36m<module>[0;34m[0m
 [0;32m----> 1[0;31m [0mget_ipython[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mrun_line_magic[0m[0;34m([0m[0;34m'matplotlib'[0m[0;34m,[0m [0;34m'inline'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [0m[1;32m      2[0m [0mget_ipython[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0mrun_line_magic[0m[0;34m([0m[0;34m'config'[0m[0;34m,[0m [0;34m"InlineBackend.figure_format = 'retina'"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      3[0m [0;34m[0m[0m
-[1;32m      4[0m [0;32mimport[0m [0mlogging[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      5[0m [0;32mimport[0m [0mos[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      3[0m [0;32mimport[0m [0mlogging[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      4[0m [0;32mimport[0m [0mos[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      5[0m [0;32mimport[0m [0mwarnings[0m[0;34m[0m[0;34m[0m[0m
 
 [0;32m~/anaconda3/envs/book/lib/python3.8/site-packages/IPython/core/interactiveshell.py[0m in [0;36mrun_line_magic[0;34m(self, magic_name, line, _stack_depth)[0m
 [1;32m   2324[0m                 [0mkwargs[0m[0;34m[[0m[0;34m'local_ns'[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mget_local_scope[0m[0;34m([0m[0mstack_depth[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m

@@ -366,10 +366,10 @@
 <h1>Convolutional Conditional Neural Process (ConvCNP)<a class="headerlink" href="#convolutional-conditional-neural-process-convcnp" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-default" id="computational-graph-convcnps">
 <a class="reference internal image-reference" href="../_images/computational_graph_ConvCNPs.png"><img alt="Computational graph ConvCNP" src="../_images/computational_graph_ConvCNPs.png" style="width: 25em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 55 </span><span class="caption-text">Computational graph for Convolutional Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-convcnps" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 56 </span><span class="caption-text">Computational graph for Convolutional Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-convcnps" title="Permalink to this image">¶</a></p>
 </div>
 <p>In this notebook we will show how to train a ConvCNP on samples from GPs and images using our framework, as well as how to make nice visualizations.
-ConvCNPs are CNPFs that use a SetCov+CNN+SetCov encoder (computational graph in <a class="reference internal" href="#computational-graph-convcnps"><span class="std std-numref">Fig. 55</span></a>).</p>
+ConvCNPs are CNPFs that use a SetCov+CNN+SetCov encoder (computational graph in <a class="reference internal" href="#computational-graph-convcnps"><span class="std std-numref">Fig. 56</span></a>).</p>
 <p>We will follow quite closely the previous <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a>, but will also run a larger model (on CelebA128) to test super resolution.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
@@ -614,17 +614,17 @@ Number Parameters (2D XL): 722,417
         Density of induced-inputs to use. The induced-inputs will be regularly sampled.
 
     Interpolator : callable or str, optional
-        Callable to use to compute cntxt / trgt to and from the induced points.  {(x^k, y^k)}, {x^q} -&gt; {y^q}. 
+        Callable to use to compute cntxt / trgt to and from the induced points.  {(x^k, y^k)}, {x^q} -&gt; {y^q}.
         It should be constructed via `Interpolator(x_dim, in_dim, out_dim)`. Example:
             - `SetConv` : uses a set convolution as in the paper.
             - `&quot;TransformerAttender&quot;` : uses a cross attention layer.
 
     CNN : nn.Module, optional
-        Convolutional model to use between induced points. It should be constructed via 
+        Convolutional model to use between induced points. It should be constructed via
         `CNN(r_dim)`. Important : the channel needs to be last dimension of input. Example:
-            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small 
+            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small
             ResNet.
-            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a 
+            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a
             UNet.
 
     kwargs :
@@ -632,7 +632,7 @@ Number Parameters (2D XL): 722,417
 
     References
     ----------
-    [1] Gordon, Jonathan, et al. &quot;Convolutional conditional neural processes.&quot; arXiv preprint 
+    [1] Gordon, Jonathan, et al. &quot;Convolutional conditional neural processes.&quot; arXiv preprint
     arXiv:1910.13556 (2019).
     
 </pre></div>
@@ -653,7 +653,7 @@ Number Parameters (2D XL): 722,417
 
     Notes
     -----
-    - Assumes that input, output and induced points are on the same grid. I.e. This cannot be used 
+    - Assumes that input, output and induced points are on the same grid. I.e. This cannot be used
     for sub-pixel interpolation / super resolution. I.e. in the code *n_rep = *n_cntxt = *n_trgt =* grid_shape.
     The real number of ontext and target will be determined by the masks.
     - Assumes that Y_cntxt is the grid values (y_dim / channels on last dim),
@@ -678,11 +678,11 @@ Number Parameters (2D XL): 722,417
         Convolution layer to use to map from context to induced points {(x^k, y^k)}, {x^q} -&gt; {y^q}.
 
     CNN : nn.Module, optional
-        Convolutional model to use between induced points. It should be constructed via 
+        Convolutional model to use between induced points. It should be constructed via
         `CNN(r_dim)`. Important : the channel needs to be last dimension of input. Example:
-            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small 
+            - `partial(CNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a small
             ResNet.
-            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a 
+            - `partial(UnetCNN,ConvBlock=ResConvBlock,Conv=nn.Conv2d,is_chan_last=True` : uses a
             UNet.
 
     kwargs :
@@ -690,7 +690,7 @@ Number Parameters (2D XL): 722,417
 
     References
     ----------
-    [1] Gordon, Jonathan, et al. &quot;Convolutional conditional neural processes.&quot; arXiv preprint 
+    [1] Gordon, Jonathan, et al. &quot;Convolutional conditional neural processes.&quot; arXiv preprint
     arXiv:1910.13556 (2019).
     
 </pre></div>
@@ -834,7 +834,7 @@ celeba128/ConvCNPXL/run_0 | best epoch: 29 | train loss: -82314.3706 | valid los
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
         <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
         <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -877,9 +877,9 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="figure align-default" id="convcnp-single-gp-extrap">
 <a class="reference internal image-reference" href="../_images/ConvCNP_single_gp_extrap.gif"><img alt="../_images/ConvCNP_single_gp_extrap.gif" src="../_images/ConvCNP_single_gp_extrap.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 56 </span><span class="caption-text">Posterior predictive of ConvCNPs (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and ConvCNP trained on samples for the corresponding GP. The interpolation and extrapolation regime is delimited delimited by red dashes.</span><a class="headerlink" href="#convcnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 57 </span><span class="caption-text">Posterior predictive of ConvCNPs (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and ConvCNP trained on samples for the corresponding GP. The interpolation and extrapolation regime is delimited delimited by red dashes.</span><a class="headerlink" href="#convcnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 56</span></a> shows that ConvCNP performs very well. Like AttnCNP (<a class="reference internal" href="AttnCNP.html#attncnp-single-gp"><span class="std std-numref">Fig. 52</span></a>) it does not suffer from underfitting, but it has the following advantages compared to AttnCNP:</p>
+<p><a class="reference internal" href="#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 57</span></a> shows that ConvCNP performs very well. Like AttnCNP (<a class="reference internal" href="AttnCNP.html#attncnp-single-gp"><span class="std std-numref">Fig. 53</span></a>) it does not suffer from underfitting, but it has the following advantages compared to AttnCNP:</p>
 <ol class="simple">
 <li><p>It can extrapolate outside of the training range due to its translation equivariance. Note that there is no free lunch, this only happens because the underlying stochastic process is stationary.</p></li>
 <li><p>It is quite smooth and does not have any “kinks”.</p></li>
@@ -904,9 +904,9 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="figure align-default" id="convcnp-periodic-large-extrap">
 <a class="reference internal image-reference" href="../_images/ConvCNP_periodic_large_extrap.gif"><img alt="ConvCNP on single images" src="../_images/ConvCNP_periodic_large_extrap.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 57 </span><span class="caption-text">Same as the 2nd row (Periodic Kernel) of <a class="reference internal" href="#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 56</span></a> but with a much larger target interval (<span class="math notranslate nohighlight">\([-2,14]\)</span> instead of <span class="math notranslate nohighlight">\([0,4]\)</span>).</span><a class="headerlink" href="#convcnp-periodic-large-extrap" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 58 </span><span class="caption-text">Same as the 2nd row (Periodic Kernel) of <a class="reference internal" href="#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 57</span></a> but with a much larger target interval (<span class="math notranslate nohighlight">\([-2,14]\)</span> instead of <span class="math notranslate nohighlight">\([0,4]\)</span>).</span><a class="headerlink" href="#convcnp-periodic-large-extrap" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#convcnp-periodic-large-extrap"><span class="std std-numref">Fig. 57</span></a> shows that ConvCNP can only model local periodicity, which depends on the receptive field of the CNN.</p>
+<p><a class="reference internal" href="#convcnp-periodic-large-extrap"><span class="std std-numref">Fig. 58</span></a> shows that ConvCNP can only model local periodicity, which depends on the receptive field of the CNN.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 1D PLOTS ######</span>
@@ -1031,10 +1031,10 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="figure align-default" id="convcnp-img">
 <a class="reference internal image-reference" href="../_images/ConvCNP_img.gif"><img alt="ConvCNP on CelebA, MNIST, ZSMM" src="../_images/ConvCNP_img.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 58 </span><span class="caption-text">Mean and std of the posterior predictive of an ConvCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#convcnp-img" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 59 </span><span class="caption-text">Mean and std of the posterior predictive of an ConvCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#convcnp-img" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#convcnp-img"><span class="std std-numref">Fig. 58</span></a> we see that ConvCNP performs quite well on all datasets when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM).
-However, it does not perform great when the context set is very small or when it is structured, e.g., half images. Note that seems more of an issue for ConvCNP compared to AttnCNP (<a class="reference internal" href="AttnCNP.html#attncnp-img"><span class="std std-numref">Fig. 54</span></a>). We hypothesize that this happens because the effective receptive field of the former is too small (even though the theoretic size is larger than the image, it does not need such a large receptive field during training so effectively reduces it). For AttnCNP it is harder for the model to change the receptive field during training. This issue can be alleviated by reducing the size of the context set seen during training (to force the model to have a large receptive field).</p>
+<p>From <a class="reference internal" href="#convcnp-img"><span class="std std-numref">Fig. 59</span></a> we see that ConvCNP performs quite well on all datasets when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM).
+However, it does not perform great when the context set is very small or when it is structured, e.g., half images. Note that seems more of an issue for ConvCNP compared to AttnCNP (<a class="reference internal" href="AttnCNP.html#attncnp-img"><span class="std std-numref">Fig. 55</span></a>). We hypothesize that this happens because the effective receptive field of the former is too small (even though the theoretic size is larger than the image, it does not need such a large receptive field during training so effectively reduces it). For AttnCNP it is harder for the model to change the receptive field during training. This issue can be alleviated by reducing the size of the context set seen during training (to force the model to have a large receptive field).</p>
 <p>You might wonder well these models work compared to standard baselines. Let’s visualize that on CelebA128:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1055,7 +1055,7 @@ However, it does not perform great when the context set is very small or when it
 </div>
 <div class="figure align-default" id="convcnp-img-baselines">
 <a class="reference internal image-reference" href="../_images/ConvCNP_img_baselines.gif"><img alt="ConvCNP on CelebA 128" src="../_images/ConvCNP_img_baselines.gif" style="width: 50em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 59 </span><span class="caption-text">Posterior predictive of an ConvCNP and of baseline iterpolation methods (nearest neighbour, linear, cubic) for CelebA <span class="math notranslate nohighlight">\(128\times128\)</span> different context sets.</span><a class="headerlink" href="#convcnp-img-baselines" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 60 </span><span class="caption-text">Posterior predictive of an ConvCNP and of baseline iterpolation methods (nearest neighbour, linear, cubic) for CelebA <span class="math notranslate nohighlight">\(128\times128\)</span> different context sets.</span><a class="headerlink" href="#convcnp-img-baselines" title="Permalink to this image">¶</a></p>
 </div>
 <p>From <a class="reference internal" href="../text/CNPF.html#convcnp-img-baselines"><span class="std std-numref">Fig. 25</span></a> shows that the results are very impressive and that ConvCNP performs much better than the baselines.</p>
 <p>Having seen that the model performs much better than baselines and can even generalize on some artificial dataset (ZSMM).
@@ -1138,9 +1138,9 @@ For the current “on the grid” implementation, this can also be achieved by u
 </div>
 <div class="figure align-default" id="convcnp-superes">
 <a class="reference internal image-reference" href="../_images/ConvCNP_superes.gif"><img alt="ConvCNP increasing resolution of images" src="../_images/ConvCNP_superes.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 60 </span><span class="caption-text">Increasing the resolution of CelebA to <span class="math notranslate nohighlight">\(128 \times 128\)</span> pixels by querying a ConvCNP a target positions between given pixels.</span><a class="headerlink" href="#convcnp-superes" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 61 </span><span class="caption-text">Increasing the resolution of CelebA to <span class="math notranslate nohighlight">\(128 \times 128\)</span> pixels by querying a ConvCNP a target positions between given pixels.</span><a class="headerlink" href="#convcnp-superes" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#convcnp-superes"><span class="std std-numref">Fig. 60</span></a> we see that NPFs can indeed be used to increase the resolution of an image, even though it was not trained to do so! Results can probably be improved by training NPFs in such setting.</p>
+<p>From <a class="reference internal" href="#convcnp-superes"><span class="std std-numref">Fig. 61</span></a> we see that NPFs can indeed be used to increase the resolution of an image, even though it was not trained to do so! Results can probably be improved by training NPFs in such setting.</p>
 <p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1219,6 +1219,20 @@ For the current “on the grid” implementation, this can also be achieved by u
              <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2dXL</span><span class="p">,</span> 
              <span class="n">datasets</span><span class="o">=</span><span class="n">imgXL_test_datasets</span><span class="p">,</span> 
              <span class="n">interp_baselines</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;linear&quot;</span><span class="p">])</span>
+
+<span class="c1">### Interpolation against cubic ###</span>
+
+<span class="n">multi_posterior_imgs_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvCNP_celeba128&quot;</span><span class="p">,</span> 
+    <span class="n">trainers</span><span class="o">=</span><span class="n">trainers_2dXL</span><span class="p">,</span> 
+    <span class="n">datasets</span><span class="o">=</span><span class="n">imgXL_test_datasets</span><span class="p">,</span> 
+    <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mf">0.005</span><span class="p">,</span><span class="mf">0.01</span><span class="p">,</span><span class="mf">0.03</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.1</span><span class="p">],</span>
+    <span class="n">interp_baselines</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cubic&quot;</span><span class="p">],</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span>
+    <span class="n">n_plots</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">fps</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+    <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1286,12 +1300,13 @@ For example, let us plot the posterior predictive of a few pixels in MNIST.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;RBF&quot;</span><span class="p">,</span><span class="s2">&quot;Noisy_Matern&quot;</span><span class="p">,</span><span class="s2">&quot;Periodic&quot;</span><span class="p">]:</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># for some reason breaks when running after the rest but not when from the begining</span>
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;RBF&quot;</span><span class="p">,</span><span class="s2">&quot;Noisy_Matern&quot;</span><span class="p">,</span><span class="s2">&quot;Periodic&quot;</span><span class="p">]:</span>
     <span class="k">for</span> <span class="n">cntxt</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">30</span><span class="p">]:</span>
         <span class="n">dataset</span> <span class="o">=</span> <span class="n">gp_test_datasets</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">_Kernel&#39;</span><span class="p">]</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">_Kernel/ConvCNP/run_0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">module_</span><span class="p">)</span>
         <span class="n">gif_explain</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/explain_convcnp_</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">cntxt</span><span class="si">}</span><span class="s2">cntxt.gif&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> 
-                    <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">n_cntxt</span><span class="o">=</span><span class="n">cntxt</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">n_cntxt</span><span class="o">=</span><span class="n">cntxt</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
                     <span class="n">length_scale_delta</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
 </pre></div>
 </div>

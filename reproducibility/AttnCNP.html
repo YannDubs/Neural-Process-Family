@@ -344,10 +344,10 @@
 <h1>Attentive Conditional Neural Process (AttnCNP)<a class="headerlink" href="#attentive-conditional-neural-process-attncnp" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-default" id="computational-graph-attncnps">
 <a class="reference internal image-reference" href="../_images/computational_graph_AttnCNPs.png"><img alt="Computational graph of AttnCNP" src="../_images/computational_graph_AttnCNPs.png" style="width: 25em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 51 </span><span class="caption-text">Computational graph for Attentive Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-attncnps" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 52 </span><span class="caption-text">Computational graph for Attentive Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-attncnps" title="Permalink to this image">¶</a></p>
 </div>
 <p>In this notebook we will show how to train a AttnCNP on samples from GPs and images using our framework, as well as how to make nice visualizations.
-AttnCNPs are CNPFs that use MLP+attention for the encoder (computational graph in <a class="reference internal" href="#computational-graph-attncnps"><span class="std std-numref">Fig. 51</span></a>).</p>
+AttnCNPs are CNPFs that use MLP+attention for the encoder (computational graph in <a class="reference internal" href="#computational-graph-attncnps"><span class="std std-numref">Fig. 52</span></a>).</p>
 <p>We will follow quite closely the previous <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a>, which thus contains a little more details than this notebook.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
@@ -529,7 +529,7 @@ Number Parameters (2D): 386,054
         Additional arguments to `SelfAttention`.
 
     is_self_attn : bool, optional
-        Whether to use self attention in the encoder. 
+        Whether to use self attention in the encoder.
 
     kwargs :
         Additional arguments to `NeuralProcessFamily`.
@@ -553,6 +553,7 @@ See its docstring for possible parameters.</p>
 <li><p>the code will use a (single) GPU if available</p></li>
 <li><p>decrease the batch size if you don’t have enough memory</p></li>
 <li><p>30 epochs should give you descent results for the GP datasets (instead of 100)</p></li>
+<li><p>the GP data is generated for every epoch and then saved. Make sure you use <code class="docutils literal notranslate"><span class="pre">get_all_gp_datasets(is_save=False)</span></code> if you use a large number of epochs.</p></li>
 </ul>
 <div class="cell tag_hide-output docutils container">
 <div class="cell_input docutils container">
@@ -658,7 +659,7 @@ zsmms/AttnCNP/run_0 | best epoch: 1 | train loss: -415.7267 | valid loss: 52463.
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
         <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
         <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -698,9 +699,9 @@ zsmms/AttnCNP/run_0 | best epoch: 1 | train loss: -415.7267 | valid loss: 52463.
 </div>
 <div class="figure align-default" id="attncnp-single-gp">
 <a class="reference internal image-reference" href="../_images/AttnCNP_single_gp.gif"><img alt="AttnCNP on single GPs" src="../_images/AttnCNP_single_gp.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 52 </span><span class="caption-text">Posterior predictive of AttnCNPs (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and AttnCNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#attncnp-single-gp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 53 </span><span class="caption-text">Posterior predictive of AttnCNPs (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and AttnCNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#attncnp-single-gp" title="Permalink to this image">¶</a></p>
 </div>
-<p>Compared to CNPs (<a class="reference internal" href="CNP.html#cnp-single-gp"><span class="std std-numref">Fig. 49</span></a>), <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 52</span></a> shows that the results are much better and that AttnCNP does not really suffer from underfitting.
+<p>Compared to CNPs (<a class="reference internal" href="CNP.html#cnp-single-gp"><span class="std std-numref">Fig. 50</span></a>), <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 53</span></a> shows that the results are much better and that AttnCNP does not really suffer from underfitting.
 That being said, the results on the periodic kernel are still not great. Looking carefully at the Matern and RBF kernel, we also see that AttnCNP has a posterior predictive with “kinks”, i.e., it is not very smooth. We believe that this happens because of the exponential in the attention. Namely the “kinks” appear when the AttnCNP the attention abruptly changes from one context point to the other. This hypothesis is supported by the fact that the kinks usually appear in the middle of 2 context points.</p>
 <p>Overall, AttnCNP performs quite well in this simple setting. Let us make the task slightly harder by conditioning on contexts points outside of the training regime.</p>
 <div class="cell docutils container">
@@ -718,9 +719,9 @@ That being said, the results on the periodic kernel are still not great. Looking
 </div>
 <div class="figure align-default" id="attncnp-single-gp-extrap">
 <a class="reference internal image-reference" href="../_images/AttnCNP_single_gp_extrap.gif"><img alt="AttnCNP on single GP" src="../_images/AttnCNP_single_gp_extrap.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 53 </span><span class="caption-text">Same as <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 52</span></a> but with context points outside of the training regime (delimited by red dashes).</span><a class="headerlink" href="#attncnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 54 </span><span class="caption-text">Same as <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 53</span></a> but with context points outside of the training regime (delimited by red dashes).</span><a class="headerlink" href="#attncnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#attncnp-single-gp-extrap"><span class="std std-numref">Fig. 53</span></a> shows that AttnCNP cannot perform well in this seemingly straightforward extension of <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 52</span></a>.
+<p><a class="reference internal" href="#attncnp-single-gp-extrap"><span class="std std-numref">Fig. 54</span></a> shows that AttnCNP cannot perform well in this seemingly straightforward extension of <a class="reference internal" href="#attncnp-single-gp"><span class="std std-numref">Fig. 53</span></a>.
 The issue is two fold : (i) the network takes as input the <em>absolute</em> position of the features <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> even though the desired kernel is stationary and thus only depends on the relative position of features; (ii) the absolute positions are in the extrapolation regime, which usually breaks in neural networks <span class="bibtex" id="id2">[dubois2019location]</span>.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
@@ -829,9 +830,9 @@ The issue is two fold : (i) the network takes as input the <em>absolute</em> pos
 </div>
 <div class="figure align-default" id="attncnp-img">
 <a class="reference internal image-reference" href="../_images/AttnCNP_img.gif"><img alt="CNP on CelebA and MNIST" src="../_images/AttnCNP_img.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 54 </span><span class="caption-text">Mean and std of the posterior predictive of an AttnCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#attncnp-img" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 55 </span><span class="caption-text">Mean and std of the posterior predictive of an AttnCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#attncnp-img" title="Permalink to this image">¶</a></p>
 </div>
-<p>Similarly to the case of GPs, <a class="reference internal" href="#attncnp-img"><span class="std std-numref">Fig. 54</span></a> shows that the AttnCNP performs quite well in when extrapolation is not needed (Celeba32 and MNIST) but fails otherwise (ZSMM).</p>
+<p>Similarly to the case of GPs, <a class="reference internal" href="#attncnp-img"><span class="std std-numref">Fig. 55</span></a> shows that the AttnCNP performs quite well in when extrapolation is not needed (Celeba32 and MNIST) but fails otherwise (ZSMM).</p>
 <p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">

@@ -455,6 +455,13 @@ We will also investigate the effect and/or need of using a lower bound for the s
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp_datasets</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">gp_datasets</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;RBF&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">npf.utils.datasplit</span> <span class="kn">import</span> <span class="n">CntxtTrgtGetter</span><span class="p">,</span> <span class="n">GetRandomIndcs</span>
 <span class="kn">from</span> <span class="nn">utils.data</span> <span class="kn">import</span> <span class="n">cntxt_trgt_collate</span>
 
@@ -503,9 +510,9 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">min_lat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;q_z_scale_transformer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y_scale</span><span class="p">:</span> <span class="n">min_lat</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;q_z_scale_transformer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z_scale</span><span class="p">:</span> <span class="n">min_lat</span> <span class="o">+</span> <span class="p">(</span>
             <span class="mi">1</span> <span class="o">-</span> <span class="n">min_lat</span>
-        <span class="p">)</span> <span class="o">*</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="n">y_scale</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="n">z_scale</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">kwargs</span>
 
@@ -516,7 +523,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
 
     <span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">is_q_zCct</span><span class="o">=</span><span class="ow">not</span> <span class="n">is_mle</span><span class="p">,</span>  <span class="c1"># use MLE instead of ELBO</span>
-        <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">32</span> <span class="k">if</span> <span class="n">is_mle</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># going to be more expensive</span>
+        <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">32</span> <span class="k">if</span> <span class="n">is_mle</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># going to be more expensive with MLE</span>
         <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
         <span class="n">XEncoder</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">MLP</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">),</span>
         <span class="n">Decoder</span><span class="o">=</span><span class="n">merge_flat_input</span><span class="p">(</span>  <span class="c1"># MLP takes single input but we give x and R so merge them</span>
@@ -603,7 +610,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
             <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">density_induced</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>  <span class="c1"># size of discretization</span>
-        <span class="n">is_global</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1">#! Global representation does not work well with NPVI</span>
+        <span class="n">is_global</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1">#! Global representation does not work well with NPVI because KL before pooling</span>
         <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -624,10 +631,10 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
         <span class="n">min_sigma_pred</span><span class="o">=</span><span class="mf">0.01</span> <span class="k">if</span> <span class="n">is_sigma_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">min_lat</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">is_lat_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">]</span> 
+    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">]</span> 
     <span class="k">for</span> <span class="n">is_elbo</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -640,7 +647,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
 </pre></div>
 </div>
 </div>
@@ -664,7 +671,7 @@ See its docstring for possible parameters.</p>
     <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
     <span class="n">decay_lr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># decrease learning rate by 10 during training</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
-    <span class="n">test_datasets</span><span class="o">=</span><span class="n">gp_test_datasets</span><span class="p">,</span>
+    <span class="c1">#test_datasets=gp_test_datasets,</span>
     <span class="n">train_split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># No need for validation as the training data is generated on the fly</span>
     <span class="n">iterator_train__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_1d</span><span class="p">,</span>
     <span class="n">iterator_valid__collate_fn</span><span class="o">=</span><span class="n">get_cntxt_trgt_1d</span><span class="p">,</span>
@@ -676,6 +683,7 @@ See its docstring for possible parameters.</p>
     <span class="n">gp_datasets</span><span class="p">,</span>
     <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;ELBOTrue&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">},</span>
     <span class="n">criterion</span><span class="o">=</span><span class="n">ELBOLossLNPF</span><span class="p">,</span>  <span class="c1"># NPVI</span>
+    <span class="n">is_continue_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">KWARGS</span>
 <span class="p">)</span>
 
@@ -687,6 +695,7 @@ See its docstring for possible parameters.</p>
     <span class="o">**</span><span class="n">KWARGS</span>
 <span class="p">)</span>
 
+
 <span class="n">trainers_1d</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">trainers_1d_NPML</span><span class="p">,</span> <span class="o">**</span><span class="n">trainers_1d_NPVI</span><span class="p">}</span>
 </pre></div>
 </div>
@@ -696,30 +705,41 @@ See its docstring for possible parameters.</p>
 </pre></div>
 </div>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  epoch    train_loss    cp      dur
--------  ------------  ----  -------
-      1      <span class=" -Color -Color-Cyan">173.9529</span>     +  63.5575
+{"model_id": "a7f2306397254e07b01398b0dcad72cc", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                    </span><span class=" -Color -Color-Blue">f&quot;Features during training should be in [-1,1]. {X_cntxt.min()} &lt;= X_cntxt &lt;= {X_cntxt.max()} ; {X_trgt.min()} &lt;= X_trgt &lt;= {X_trgt.max()}.&quot;</span>
+
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      2      <span class=" -Color -Color-Cyan">170.1521</span>     +  59.2941
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  self.reshaper_z
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      3      <span class=" -Color -Color-Cyan">161.9833</span>     +  54.1403
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** torch.nn.modules.module.ModuleAttributeError: &#39;LNP&#39; object has no attribute &#39;reshaper_z&#39;
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "", "version_major": 2, "version_minor": 0}
-</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      4      <span class=" -Color -Color-Cyan">153.7762</span>     +  42.7098
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  self.z_dim
 </pre></div>
 </div>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "f6a75c3be9cf4b34b49790c183e86ebd", "version_major": 2, "version_minor": 0}
-</script></div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>128
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  self.r_dim
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>128
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  self.encoded_path
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;latent&#39;
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="plots">
@@ -734,7 +754,7 @@ See its docstring for possible parameters.</p>
 <span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
 
 
-<span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">giffify</span><span class="p">(</span>
         <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
@@ -767,14 +787,14 @@ See its docstring for possible parameters.</p>
     <span class="sd">&quot;&quot;&quot;Select only data form single GP.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">get_name</span><span class="p">(</span><span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="p">)</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
 
-<span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ConvLNP&quot;</span><span class="p">]:</span>
-    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+<span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">]:</span>
             <span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;singlegp_</span><span class="si">{</span><span class="n">lnpf</span><span class="si">}</span><span class="s2">_LatLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_lat_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">_SigLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_sigma_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;test_singlegp_</span><span class="si">{</span><span class="n">lnpf</span><span class="si">}</span><span class="s2">_LatLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_lat_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">_SigLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_sigma_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">trainers</span><span class="o">=</span><span class="n">filter_npf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">,</span> <span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="o">=</span><span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="o">=</span><span class="n">is_sigma_LB</span><span class="p">),</span>
                 <span class="n">trainers_compare</span><span class="o">=</span><span class="n">filter_npf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">,</span> <span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="o">=</span><span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="o">=</span><span class="n">is_sigma_LB</span><span class="p">),</span>
-                <span class="n">datasets</span><span class="o">=</span><span class="n">gp_test_datasets</span><span class="p">,</span>
+                <span class="n">datasets</span><span class="o">=</span><span class="n">gp_datasets</span><span class="p">,</span>
                 <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>  <span class="c1"># 20 samples from the latent</span>
                 <span class="n">title</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{model_name}</span><span class="s2"> | </span><span class="si">{data_name}</span><span class="s2"> | C=</span><span class="si">{n_cntxt}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">imgsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
@@ -783,89 +803,1098 @@ See its docstring for possible parameters.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">14</span><span class="o">-</span><span class="mi">2152364</span><span class="n">a43b7</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
-<span class="ne">----&gt; </span><span class="mi">8</span>             <span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>                 <span class="sa">f</span><span class="s2">&quot;test_singlegp_</span><span class="si">{</span><span class="n">lnpf</span><span class="si">}</span><span class="s2">_LatLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_lat_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">_SigLB</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">is_sigma_LB</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span>                 <span class="n">trainers</span><span class="o">=</span><span class="n">filter_npf</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">,</span> <span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="o">=</span><span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="o">=</span><span class="n">is_sigma_LB</span><span class="p">),</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
 
-<span class="nn">&lt;ipython-input-12-07b8e46c7ab1&gt;</span> in <span class="ni">multi_posterior_gp_gif</span><span class="nt">(filename, trainers, datasets, seed, **kwargs)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> 
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">----&gt; </span><span class="mi">6</span>     <span class="n">giffify</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span>         <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
-
-<span class="nn">/Neural-Process-Family/utils/visualize/helpers.py</span> in <span class="ni">giffify</span><span class="nt">(save_filename, gen_single_fig, sweep_parameter, sweep_values, fps, quality, is_transparent, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">132</span>     <span class="n">figs</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="g g-Whitespace">    </span><span class="mi">133</span>     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sweep_values</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">134</span>         <span class="n">fig</span> <span class="o">=</span> <span class="n">gen_single_fig</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">sweep_parameter</span><span class="p">:</span> <span class="n">v</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">135</span>         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">136</span>         <span class="n">img</span> <span class="o">=</span> <span class="n">fig2img</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">is_transparent</span><span class="o">=</span><span class="n">is_transparent</span><span class="p">)</span>
-
-<span class="nn">/Neural-Process-Family/utils/ntbks_helpers.py</span> in <span class="ni">plot_multi_posterior_samples_1d</span><span class="nt">(trainers, datasets, n_cntxt, trainers_compare, plot_config_kwargs, title, left_extrap, right_extrap, pretty_renamer, is_plot_generator, imgsize, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">399</span> 
-<span class="g g-Whitespace">    </span><span class="mi">400</span>         <span class="n">n_col</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">trainers_compare</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">2</span>
-<span class="ne">--&gt; </span><span class="mi">401</span>         <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">402</span>             <span class="n">n_trainers</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">403</span>             <span class="n">n_col</span><span class="p">,</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/cbook/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">449</span>                 <span class="s2">&quot;parameter will become keyword-only </span><span class="si">%(removal)s</span><span class="s2">.&quot;</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">450</span>                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parameter of </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">451</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">452</span> 
-<span class="g g-Whitespace">    </span><span class="mi">453</span>     <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/pyplot.py</span> in <span class="ni">subplots</span><span class="nt">(nrows, ncols, sharex, sharey, squeeze, subplot_kw, gridspec_kw, **fig_kw)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1270</span>     <span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">   </span><span class="mi">1271</span><span class="sd">     fig = figure(**fig_kw)</span>
-<span class="ne">-&gt; </span><span class="mi">1272</span><span class="sd">     axs = fig.subplots(nrows=nrows, ncols=ncols, sharex=sharex, sharey=sharey,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1273</span><span class="sd">                        squeeze=squeeze, subplot_kw=subplot_kw,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1274</span><span class="sd">                        gridspec_kw=gridspec_kw)</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/cbook/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">449</span><span class="sd">                 &quot;parameter will become keyword-only %(removal)s.&quot;,</span>
-<span class="g g-Whitespace">    </span><span class="mi">450</span><span class="sd">                 name=name, obj_type=f&quot;parameter of {func.__name__}()&quot;)</span>
-<span class="ne">--&gt; </span><span class="mi">451</span><span class="sd">         return func(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">452</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">453</span><span class="sd">     return wrapper</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/figure.py</span> in <span class="ni">subplots</span><span class="nt">(self, nrows, ncols, sharex, sharey, squeeze, subplot_kw, gridspec_kw)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1520</span><span class="sd">         if gridspec_kw is None:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1521</span><span class="sd">             gridspec_kw = {}</span>
-<span class="ne">-&gt; </span><span class="mi">1522</span><span class="sd">         return (self.add_gridspec(nrows, ncols, figure=self, **gridspec_kw)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1523</span><span class="sd">                 .subplots(sharex=sharex, sharey=sharey, squeeze=squeeze,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1524</span><span class="sd">                           subplot_kw=subplot_kw))</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/figure.py</span> in <span class="ni">add_gridspec</span><span class="nt">(self, nrows, ncols, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2802</span><span class="sd"> </span>
-<span class="g g-Whitespace">   </span><span class="mi">2803</span><span class="sd">         _ = kwargs.pop(&#39;figure&#39;, None)  # pop in case user has added this...</span>
-<span class="ne">-&gt; </span><span class="mi">2804</span><span class="sd">         gs = GridSpec(nrows=nrows, ncols=ncols, figure=self, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2805</span><span class="sd">         self._gridspecs.append(gs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2806</span><span class="sd">         return gs</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/gridspec.py</span> in <span class="ni">__init__</span><span class="nt">(self, nrows, ncols, figure, left, bottom, right, top, wspace, hspace, width_ratios, height_ratios)</span>
-<span class="g g-Whitespace">    </span><span class="mi">418</span><span class="sd">         self.figure = figure</span>
-<span class="g g-Whitespace">    </span><span class="mi">419</span><span class="sd"> </span>
-<span class="ne">--&gt; </span><span class="mi">420</span><span class="sd">         GridSpecBase.__init__(self, nrows, ncols,</span>
-<span class="g g-Whitespace">    </span><span class="mi">421</span><span class="sd">                               width_ratios=width_ratios,</span>
-<span class="g g-Whitespace">    </span><span class="mi">422</span><span class="sd">                               height_ratios=height_ratios)</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/matplotlib/gridspec.py</span> in <span class="ni">__init__</span><span class="nt">(self, nrows, ncols, height_ratios, width_ratios)</span>
-<span class="g g-Whitespace">     </span><span class="mi">46</span><span class="sd">         &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">     </span><span class="mi">47</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">nrows</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">48</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="g g-Whitespace">     </span><span class="mi">49</span>                 <span class="sa">f</span><span class="s2">&quot;Number of rows must be a positive integer, not </span><span class="si">{</span><span class="n">nrows</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">50</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ncols</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ncols</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-
-<span class="ne">ValueError</span>: Number of rows must be a positive integer, not 0
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 864x0 with 0 Axes&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([], size=(1, 0, 1))
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_trgt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.9922],
+         [-0.9907],
+         [-0.9861],
+         [-0.9781],
+         [-0.9767],
+         [-0.9767],
+         [-0.9711],
+         [-0.9673],
+         [-0.9670],
+         [-0.9615],
+         [-0.9612],
+         [-0.9421],
+         [-0.9350],
+         [-0.9260],
+         [-0.9187],
+         [-0.9170],
+         [-0.9074],
+         [-0.8965],
+         [-0.8883],
+         [-0.8801],
+         [-0.8753],
+         [-0.8647],
+         [-0.8639],
+         [-0.8595],
+         [-0.8552],
+         [-0.8552],
+         [-0.8549],
+         [-0.8503],
+         [-0.8403],
+         [-0.8368],
+         [-0.8337],
+         [-0.8243],
+         [-0.8197],
+         [-0.8160],
+         [-0.8107],
+         [-0.8085],
+         [-0.8038],
+         [-0.7900],
+         [-0.7868],
+         [-0.7757],
+         [-0.7752],
+         [-0.7707],
+         [-0.7646],
+         [-0.7509],
+         [-0.7502],
+         [-0.7458],
+         [-0.7434],
+         [-0.7326],
+         [-0.7317],
+         [-0.7309],
+         [-0.7188],
+         [-0.7143],
+         [-0.7089],
+         [-0.6989],
+         [-0.6930],
+         [-0.6921],
+         [-0.6911],
+         [-0.6847],
+         [-0.6833],
+         [-0.6785],
+         [-0.6654],
+         [-0.6582],
+         [-0.6527],
+         [-0.6446],
+         [-0.6430],
+         [-0.6411],
+         [-0.6297],
+         [-0.6239],
+         [-0.6233],
+         [-0.6159],
+         [-0.6156],
+         [-0.6139],
+         [-0.5978],
+         [-0.5977],
+         [-0.5846],
+         [-0.5764],
+         [-0.5620],
+         [-0.5595],
+         [-0.5555],
+         [-0.5543],
+         [-0.5458],
+         [-0.5388],
+         [-0.5302],
+         [-0.5274],
+         [-0.5251],
+         [-0.5096],
+         [-0.5071],
+         [-0.5033],
+         [-0.5014],
+         [-0.4934],
+         [-0.4896],
+         [-0.4837],
+         [-0.4835],
+         [-0.4760],
+         [-0.4621],
+         [-0.4581],
+         [-0.4489],
+         [-0.4468],
+         [-0.4449],
+         [-0.4424],
+         [-0.4389],
+         [-0.4355],
+         [-0.4312],
+         [-0.4220],
+         [-0.4203],
+         [-0.4192],
+         [-0.4174],
+         [-0.4099],
+         [-0.3997],
+         [-0.3929],
+         [-0.3926],
+         [-0.3911],
+         [-0.3880],
+         [-0.3839],
+         [-0.3834],
+         [-0.3697],
+         [-0.3626],
+         [-0.3618],
+         [-0.3538],
+         [-0.3494],
+         [-0.3386],
+         [-0.3368],
+         [-0.3332],
+         [-0.3305],
+         [-0.3297],
+         [-0.3231],
+         [-0.3223],
+         [-0.3219],
+         [-0.3156],
+         [-0.3067],
+         [-0.3015],
+         [-0.2718],
+         [-0.2693],
+         [-0.2689],
+         [-0.2688],
+         [-0.2641],
+         [-0.2620],
+         [-0.2545],
+         [-0.2526],
+         [-0.2498],
+         [-0.2479],
+         [-0.2258],
+         [-0.2220],
+         [-0.2151],
+         [-0.2061],
+         [-0.2059],
+         [-0.2014],
+         [-0.1949],
+         [-0.1930],
+         [-0.1889],
+         [-0.1864],
+         [-0.1750],
+         [-0.1719],
+         [-0.1653],
+         [-0.1644],
+         [-0.1614],
+         [-0.1571],
+         [-0.1481],
+         [-0.1475],
+         [-0.1449],
+         [-0.1443],
+         [-0.1380],
+         [-0.1362],
+         [-0.1313],
+         [-0.1291],
+         [-0.1287],
+         [-0.1244],
+         [-0.1195],
+         [-0.1136],
+         [-0.1121],
+         [-0.1088],
+         [-0.1065],
+         [-0.1047],
+         [-0.1032],
+         [-0.1026],
+         [-0.0955],
+         [-0.0901],
+         [-0.0860],
+         [-0.0853],
+         [-0.0799],
+         [-0.0790],
+         [-0.0678],
+         [-0.0637],
+         [-0.0631],
+         [-0.0431],
+         [-0.0400],
+         [-0.0390],
+         [-0.0374],
+         [-0.0263],
+         [-0.0208],
+         [-0.0044],
+         [-0.0041],
+         [-0.0037],
+         [-0.0011],
+         [ 0.0126],
+         [ 0.0302],
+         [ 0.0339],
+         [ 0.0379],
+         [ 0.0381],
+         [ 0.0382],
+         [ 0.0542],
+         [ 0.0640],
+         [ 0.0701],
+         [ 0.0727],
+         [ 0.0762],
+         [ 0.0852],
+         [ 0.0938],
+         [ 0.0987],
+         [ 0.1133],
+         [ 0.1193],
+         [ 0.1229],
+         [ 0.1236],
+         [ 0.1326],
+         [ 0.1383],
+         [ 0.1404],
+         [ 0.1433],
+         [ 0.1473],
+         [ 0.1483],
+         [ 0.1483],
+         [ 0.1514],
+         [ 0.1538],
+         [ 0.1549],
+         [ 0.1627],
+         [ 0.1654],
+         [ 0.1660],
+         [ 0.1703],
+         [ 0.1769],
+         [ 0.1790],
+         [ 0.1864],
+         [ 0.2012],
+         [ 0.2022],
+         [ 0.2036],
+         [ 0.2039],
+         [ 0.2113],
+         [ 0.2158],
+         [ 0.2203],
+         [ 0.2221],
+         [ 0.2303],
+         [ 0.2420],
+         [ 0.2496],
+         [ 0.2514],
+         [ 0.2552],
+         [ 0.2614],
+         [ 0.2686],
+         [ 0.2716],
+         [ 0.2728],
+         [ 0.2754],
+         [ 0.2764],
+         [ 0.2852],
+         [ 0.2881],
+         [ 0.2882],
+         [ 0.2915],
+         [ 0.3009],
+         [ 0.3024],
+         [ 0.3131],
+         [ 0.3136],
+         [ 0.3145],
+         [ 0.3163],
+         [ 0.3227],
+         [ 0.3259],
+         [ 0.3273],
+         [ 0.3289],
+         [ 0.3303],
+         [ 0.3348],
+         [ 0.3458],
+         [ 0.3541],
+         [ 0.3560],
+         [ 0.3574],
+         [ 0.3625],
+         [ 0.3654],
+         [ 0.3664],
+         [ 0.3727],
+         [ 0.3755],
+         [ 0.3871],
+         [ 0.3905],
+         [ 0.3918],
+         [ 0.3961],
+         [ 0.3979],
+         [ 0.3988],
+         [ 0.4035],
+         [ 0.4063],
+         [ 0.4126],
+         [ 0.4137],
+         [ 0.4150],
+         [ 0.4269],
+         [ 0.4277],
+         [ 0.4375],
+         [ 0.4440],
+         [ 0.4523],
+         [ 0.4662],
+         [ 0.4849],
+         [ 0.4991],
+         [ 0.5099],
+         [ 0.5127],
+         [ 0.5156],
+         [ 0.5166],
+         [ 0.5183],
+         [ 0.5235],
+         [ 0.5250],
+         [ 0.5268],
+         [ 0.5271],
+         [ 0.5346],
+         [ 0.5350],
+         [ 0.5435],
+         [ 0.5463],
+         [ 0.5490],
+         [ 0.5491],
+         [ 0.5690],
+         [ 0.5720],
+         [ 0.5835],
+         [ 0.5847],
+         [ 0.5878],
+         [ 0.5878],
+         [ 0.5909],
+         [ 0.5972],
+         [ 0.5992],
+         [ 0.6033],
+         [ 0.6116],
+         [ 0.6173],
+         [ 0.6180],
+         [ 0.6262],
+         [ 0.6350],
+         [ 0.6367],
+         [ 0.6491],
+         [ 0.6578],
+         [ 0.6681],
+         [ 0.6760],
+         [ 0.6779],
+         [ 0.6821],
+         [ 0.6939],
+         [ 0.6977],
+         [ 0.7024],
+         [ 0.7095],
+         [ 0.7232],
+         [ 0.7382],
+         [ 0.7427],
+         [ 0.7461],
+         [ 0.7522],
+         [ 0.7555],
+         [ 0.7565],
+         [ 0.7587],
+         [ 0.7652],
+         [ 0.7688],
+         [ 0.7772],
+         [ 0.7882],
+         [ 0.7891],
+         [ 0.7947],
+         [ 0.8059],
+         [ 0.8086],
+         [ 0.8089],
+         [ 0.8133],
+         [ 0.8156],
+         [ 0.8158],
+         [ 0.8174],
+         [ 0.8302],
+         [ 0.8304],
+         [ 0.8336],
+         [ 0.8364],
+         [ 0.8413],
+         [ 0.8417],
+         [ 0.8651],
+         [ 0.8665],
+         [ 0.8806],
+         [ 0.8958],
+         [ 0.9018],
+         [ 0.9028],
+         [ 0.9053],
+         [ 0.9082],
+         [ 0.9128],
+         [ 0.9136],
+         [ 0.9356],
+         [ 0.9414],
+         [ 0.9468],
+         [ 0.9476],
+         [ 0.9495],
+         [ 0.9672],
+         [ 0.9677],
+         [ 0.9678],
+         [ 0.9845],
+         [ 0.9851],
+         [ 0.9881],
+         [ 0.9889],
+         [ 0.9929],
+         [ 0.9946]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([], size=(1, 0, 1))
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921],
+         [ 0.5115],
+         [-0.7023],
+         [-0.6110]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921],
+         [ 0.5115],
+         [-0.7023],
+         [-0.6110]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921],
+         [ 0.5115],
+         [-0.7023],
+         [-0.6110],
+         [-0.7904],
+         [-0.0267]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921],
+         [ 0.5115],
+         [-0.7023],
+         [-0.6110],
+         [-0.7904],
+         [-0.0267]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921],
+         [ 0.5115],
+         [-0.7023],
+         [-0.6110],
+         [-0.7904],
+         [-0.0267]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  c
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt; <span class=" -Color -Color-Green">/Neural-Process-Family/npf/neuralproc/base.py</span>(244)<span class=" -Color -Color-Cyan">_validate_inputs</span><span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">    242 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Blue">&quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;</span>
+<span class=" -Color -Color-Green">    243 </span><span class=" -Color -Color-Red">        </span>breakpoint<span class=" -Color -Color-Blue">()</span>
+<span class=" -Color -Color-Green">--&gt; 244 </span><span class=" -Color -Color-Red">        </span><span class=" -Color -Color-Green">if</span> self<span class=" -Color -Color-Blue">.</span>training<span class=" -Color -Color-Blue">:</span>
+<span class=" -Color -Color-Green">    245 </span><span class=" -Color -Color-Red">            </span><span class=" -Color -Color-Green">if</span> <span class=" -Color -Color-Green">not</span> <span class=" -Color -Color-Blue">(</span>isin_range<span class=" -Color -Color-Blue">(</span>X_cntxt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])</span> <span class=" -Color -Color-Green">and</span> isin_range<span class=" -Color -Color-Blue">(</span>X_trgt<span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Blue">[-</span><span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">,</span> <span class=" -Color -Color-Cyan">1</span><span class=" -Color -Color-Blue">])):</span>
+<span class=" -Color -Color-Green">    246 </span><span class=" -Color -Color-Red">                raise ValueError(</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_cntxt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.3275],
+         [ 0.8921],
+         [ 0.5115],
+         [-0.7023],
+         [-0.6110],
+         [-0.7904],
+         [-0.0267],
+         [-0.1213],
+         [-0.9772],
+         [ 0.7362]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  X_trgt
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([[[-0.9965],
+         [-0.9962],
+         [-0.9854],
+         [-0.9833],
+         [-0.9822],
+         [-0.9807],
+         [-0.9780],
+         [-0.9772],
+         [-0.9715],
+         [-0.9714],
+         [-0.9657],
+         [-0.9656],
+         [-0.9607],
+         [-0.9585],
+         [-0.9575],
+         [-0.9454],
+         [-0.9426],
+         [-0.9378],
+         [-0.9335],
+         [-0.9315],
+         [-0.9289],
+         [-0.9233],
+         [-0.9194],
+         [-0.9056],
+         [-0.9035],
+         [-0.9008],
+         [-0.8991],
+         [-0.8939],
+         [-0.8934],
+         [-0.8847],
+         [-0.8803],
+         [-0.8779],
+         [-0.8757],
+         [-0.8714],
+         [-0.8668],
+         [-0.8541],
+         [-0.8457],
+         [-0.8396],
+         [-0.8395],
+         [-0.8269],
+         [-0.8179],
+         [-0.8043],
+         [-0.8018],
+         [-0.7904],
+         [-0.7823],
+         [-0.7781],
+         [-0.7633],
+         [-0.7581],
+         [-0.7558],
+         [-0.7510],
+         [-0.7358],
+         [-0.7357],
+         [-0.7277],
+         [-0.7236],
+         [-0.7193],
+         [-0.7145],
+         [-0.7030],
+         [-0.7023],
+         [-0.6912],
+         [-0.6848],
+         [-0.6837],
+         [-0.6817],
+         [-0.6814],
+         [-0.6766],
+         [-0.6756],
+         [-0.6594],
+         [-0.6539],
+         [-0.6480],
+         [-0.6451],
+         [-0.6243],
+         [-0.6227],
+         [-0.6188],
+         [-0.6119],
+         [-0.6110],
+         [-0.6069],
+         [-0.6030],
+         [-0.5862],
+         [-0.5768],
+         [-0.5667],
+         [-0.5625],
+         [-0.5615],
+         [-0.5576],
+         [-0.5564],
+         [-0.5476],
+         [-0.5438],
+         [-0.5434],
+         [-0.5428],
+         [-0.5424],
+         [-0.5424],
+         [-0.5367],
+         [-0.5304],
+         [-0.5289],
+         [-0.5196],
+         [-0.5155],
+         [-0.5070],
+         [-0.5055],
+         [-0.5013],
+         [-0.5013],
+         [-0.4942],
+         [-0.4933],
+         [-0.4928],
+         [-0.4885],
+         [-0.4869],
+         [-0.4844],
+         [-0.4820],
+         [-0.4808],
+         [-0.4664],
+         [-0.4651],
+         [-0.4632],
+         [-0.4541],
+         [-0.4495],
+         [-0.4476],
+         [-0.4437],
+         [-0.4373],
+         [-0.4260],
+         [-0.4211],
+         [-0.4205],
+         [-0.4196],
+         [-0.4190],
+         [-0.4103],
+         [-0.3971],
+         [-0.3958],
+         [-0.3948],
+         [-0.3929],
+         [-0.3907],
+         [-0.3868],
+         [-0.3847],
+         [-0.3801],
+         [-0.3784],
+         [-0.3699],
+         [-0.3682],
+         [-0.3649],
+         [-0.3616],
+         [-0.3594],
+         [-0.3557],
+         [-0.3554],
+         [-0.3509],
+         [-0.3294],
+         [-0.3275],
+         [-0.3239],
+         [-0.3232],
+         [-0.3207],
+         [-0.3148],
+         [-0.3085],
+         [-0.3065],
+         [-0.2962],
+         [-0.2926],
+         [-0.2888],
+         [-0.2836],
+         [-0.2744],
+         [-0.2743],
+         [-0.2734],
+         [-0.2728],
+         [-0.2622],
+         [-0.2600],
+         [-0.2593],
+         [-0.2508],
+         [-0.2399],
+         [-0.2208],
+         [-0.2143],
+         [-0.2135],
+         [-0.2087],
+         [-0.2042],
+         [-0.2032],
+         [-0.2029],
+         [-0.1959],
+         [-0.1887],
+         [-0.1830],
+         [-0.1741],
+         [-0.1662],
+         [-0.1494],
+         [-0.1458],
+         [-0.1435],
+         [-0.1421],
+         [-0.1354],
+         [-0.1331],
+         [-0.1315],
+         [-0.1314],
+         [-0.1305],
+         [-0.1215],
+         [-0.1213],
+         [-0.1212],
+         [-0.1129],
+         [-0.1077],
+         [-0.0938],
+         [-0.0938],
+         [-0.0931],
+         [-0.0931],
+         [-0.0813],
+         [-0.0755],
+         [-0.0671],
+         [-0.0554],
+         [-0.0505],
+         [-0.0504],
+         [-0.0465],
+         [-0.0465],
+         [-0.0388],
+         [-0.0292],
+         [-0.0267],
+         [-0.0206],
+         [-0.0105],
+         [-0.0093],
+         [ 0.0018],
+         [ 0.0109],
+         [ 0.0197],
+         [ 0.0220],
+         [ 0.0310],
+         [ 0.0321],
+         [ 0.0334],
+         [ 0.0434],
+         [ 0.0560],
+         [ 0.0595],
+         [ 0.0640],
+         [ 0.0721],
+         [ 0.0734],
+         [ 0.0760],
+         [ 0.0841],
+         [ 0.0876],
+         [ 0.1000],
+         [ 0.1105],
+         [ 0.1189],
+         [ 0.1203],
+         [ 0.1216],
+         [ 0.1284],
+         [ 0.1303],
+         [ 0.1407],
+         [ 0.1439],
+         [ 0.1445],
+         [ 0.1449],
+         [ 0.1492],
+         [ 0.1510],
+         [ 0.1535],
+         [ 0.1596],
+         [ 0.1620],
+         [ 0.1735],
+         [ 0.1772],
+         [ 0.1775],
+         [ 0.1799],
+         [ 0.1827],
+         [ 0.1995],
+         [ 0.2018],
+         [ 0.2035],
+         [ 0.2115],
+         [ 0.2250],
+         [ 0.2363],
+         [ 0.2416],
+         [ 0.2488],
+         [ 0.2534],
+         [ 0.2568],
+         [ 0.2691],
+         [ 0.2698],
+         [ 0.2703],
+         [ 0.2796],
+         [ 0.2815],
+         [ 0.2822],
+         [ 0.2853],
+         [ 0.2898],
+         [ 0.2927],
+         [ 0.2931],
+         [ 0.2939],
+         [ 0.2982],
+         [ 0.3063],
+         [ 0.3097],
+         [ 0.3232],
+         [ 0.3317],
+         [ 0.3363],
+         [ 0.3456],
+         [ 0.3477],
+         [ 0.3521],
+         [ 0.3552],
+         [ 0.3741],
+         [ 0.3786],
+         [ 0.3787],
+         [ 0.3803],
+         [ 0.3830],
+         [ 0.3913],
+         [ 0.3923],
+         [ 0.3970],
+         [ 0.4026],
+         [ 0.4063],
+         [ 0.4095],
+         [ 0.4168],
+         [ 0.4174],
+         [ 0.4219],
+         [ 0.4308],
+         [ 0.4312],
+         [ 0.4327],
+         [ 0.4439],
+         [ 0.4561],
+         [ 0.4575],
+         [ 0.4580],
+         [ 0.4668],
+         [ 0.4678],
+         [ 0.4679],
+         [ 0.4679],
+         [ 0.4720],
+         [ 0.4726],
+         [ 0.4775],
+         [ 0.4781],
+         [ 0.5115],
+         [ 0.5209],
+         [ 0.5259],
+         [ 0.5363],
+         [ 0.5367],
+         [ 0.5454],
+         [ 0.5606],
+         [ 0.5683],
+         [ 0.5784],
+         [ 0.5795],
+         [ 0.5849],
+         [ 0.5873],
+         [ 0.5878],
+         [ 0.5979],
+         [ 0.6010],
+         [ 0.6041],
+         [ 0.6089],
+         [ 0.6151],
+         [ 0.6153],
+         [ 0.6267],
+         [ 0.6296],
+         [ 0.6297],
+         [ 0.6379],
+         [ 0.6400],
+         [ 0.6407],
+         [ 0.6446],
+         [ 0.6446],
+         [ 0.6562],
+         [ 0.6568],
+         [ 0.6688],
+         [ 0.6712],
+         [ 0.6718],
+         [ 0.6752],
+         [ 0.6809],
+         [ 0.6978],
+         [ 0.6999],
+         [ 0.7094],
+         [ 0.7215],
+         [ 0.7284],
+         [ 0.7285],
+         [ 0.7362],
+         [ 0.7491],
+         [ 0.7586],
+         [ 0.7605],
+         [ 0.7745],
+         [ 0.8020],
+         [ 0.8077],
+         [ 0.8095],
+         [ 0.8106],
+         [ 0.8113],
+         [ 0.8159],
+         [ 0.8337],
+         [ 0.8459],
+         [ 0.8521],
+         [ 0.8561],
+         [ 0.8564],
+         [ 0.8569],
+         [ 0.8580],
+         [ 0.8608],
+         [ 0.8795],
+         [ 0.8824],
+         [ 0.8851],
+         [ 0.8890],
+         [ 0.8921],
+         [ 0.8940],
+         [ 0.8966],
+         [ 0.9057],
+         [ 0.9101],
+         [ 0.9114],
+         [ 0.9157],
+         [ 0.9208],
+         [ 0.9310],
+         [ 0.9326],
+         [ 0.9335],
+         [ 0.9428],
+         [ 0.9492],
+         [ 0.9586],
+         [ 0.9589],
+         [ 0.9680],
+         [ 0.9710],
+         [ 0.9760],
+         [ 0.9762],
+         [ 0.9833],
+         [ 0.9901],
+         [ 0.9927]]])
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ipdb&gt;  q
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+BdbQuit                                   Traceback (most recent call last)
+&lt;ipython-input-9-2d73b6921062&gt; in &lt;module&gt;
+      6     for is_sigma_LB in [True]:
+      7         for is_lat_LB in [True]:
+----&gt; 8             multi_posterior_gp_gif(
+      9                 f&quot;test_singlegp_{lnpf}_LatLB{str(is_lat_LB)}_SigLB{str(is_sigma_LB)}&quot;,
+     10                 trainers=filter_npf(trainers_1d, lnpf, is_elbo=False, is_lat_LB=is_lat_LB, is_sigma_LB=is_sigma_LB),
+
+&lt;ipython-input-8-585666296566&gt; in multi_posterior_gp_gif(filename, trainers, datasets, seed, **kwargs)
+      4 
+      5 def multi_posterior_gp_gif(filename, trainers, datasets, seed=1234, **kwargs):
+----&gt; 6     giffify(
+      7         save_filename=f&quot;jupyter/gifs/{filename}.gif&quot;,
+      8         gen_single_fig=plot_multi_posterior_samples_1d,  # core plotting
+
+/Neural-Process-Family/utils/visualize/helpers.py in giffify(save_filename, gen_single_fig, sweep_parameter, sweep_values, fps, quality, is_transparent, **kwargs)
+    132     figs = []
+    133     for i, v in enumerate(sweep_values):
+--&gt; 134         fig = gen_single_fig(**{sweep_parameter: v}, **kwargs)
+    135         plt.close()
+    136         img = fig2img(fig, is_transparent=is_transparent)
+
+/Neural-Process-Family/utils/ntbks_helpers.py in plot_multi_posterior_samples_1d(trainers, datasets, n_cntxt, trainers_compare, plot_config_kwargs, title, left_extrap, right_extrap, pretty_renamer, is_plot_generator, imgsize, **kwargs)
+    421                 )  # use higher density for plotting
+    422 
+--&gt; 423                 plot_posterior_samples_1d(
+    424                     X,
+    425                     Y,
+
+/Neural-Process-Family/utils/visualize/visualize_1d.py in plot_posterior_samples_1d(X, Y, get_cntxt_trgt, model, compare_model, model_labels, generator, is_plot_real, train_min_max, ax, seed, is_fill_generator_std, y_lim, plot_config_kwargs, **kwargs)
+    169         alpha_init = 1 if compare_model is None else 0.5
+    170 
+--&gt; 171         ax = _plot_posterior_predefined_cntxt(
+    172             model,
+    173             X_cntxt,
+
+/Neural-Process-Family/utils/visualize/visualize_1d.py in _plot_posterior_predefined_cntxt(model, X_cntxt, Y_cntxt, X_trgt, Y_trgt, n_samples, is_plot_std, train_min_max, model_label, alpha_init, mean_std_colors, title, figsize, ax, is_smooth, scatter_kwargs, kwargs_std, **kwargs)
+    408         y_min, y_max = ax.get_ylim()
+    409 
+--&gt; 410     for i, (mean_y, std_y) in enumerate(
+    411         gen_p_y_pred(model, X_cntxt, Y_cntxt, X_trgt, n_samples)
+    412     ):
+
+/Neural-Process-Family/utils/visualize/visualize_1d.py in gen_p_y_pred(model, X_cntxt, Y_cntxt, X_trgt, n_samples)
+    280         old_n_z_samples_test = model.n_z_samples_test
+    281         model.n_z_samples_test = n_samples
+--&gt; 282         p_yCc, *_ = model.forward(X_cntxt, Y_cntxt, X_trgt)
+    283         model.n_z_samples_test = old_n_z_samples_test
+    284 
+
+/Neural-Process-Family/npf/neuralproc/base.py in forward(self, *args, **kwargs)
+    489 
+    490         return super().forward(*args, **kwargs)
+--&gt; 491 
+    492     def _validate_inputs(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt):
+    493         super()._validate_inputs(X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+
+/Neural-Process-Family/npf/neuralproc/base.py in forward(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+    210             or not training or not `is_q_zCct`.
+    211         &quot;&quot;&quot;
+--&gt; 212         self._validate_inputs(X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+    213 
+    214         # size = [batch_size, *n_cntxt, x_transf_dim]
+
+/Neural-Process-Family/npf/neuralproc/base.py in _validate_inputs(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+    492     def _validate_inputs(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt):
+    493         super()._validate_inputs(X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+--&gt; 494 
+    495     def latent_path(self, X_cntxt, R, X_trgt, Y_trgt):
+    496 
+
+/Neural-Process-Family/npf/neuralproc/base.py in _validate_inputs(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+    242         &quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;
+    243         if self.training:
+--&gt; 244             if not (isin_range(X_cntxt, [-1, 1]) and isin_range(X_trgt, [-1, 1])):
+    245                 raise ValueError(
+    246                     f&quot;Features during training should be in [-1,1]. {X_cntxt.min()} &lt;= X_cntxt &lt;= {X_cntxt.max()} ; {X_trgt.min()} &lt;= X_trgt &lt;= {X_trgt.max()}.&quot;
+
+/Neural-Process-Family/npf/neuralproc/base.py in _validate_inputs(self, X_cntxt, Y_cntxt, X_trgt, Y_trgt)
+    242         &quot;&quot;&quot;Validates the inputs by checking if features are rescaled to [-1,1] during training.&quot;&quot;&quot;
+    243         if self.training:
+--&gt; 244             if not (isin_range(X_cntxt, [-1, 1]) and isin_range(X_trgt, [-1, 1])):
+    245                 raise ValueError(
+    246                     f&quot;Features during training should be in [-1,1]. {X_cntxt.min()} &lt;= X_cntxt &lt;= {X_cntxt.max()} ; {X_trgt.min()} &lt;= X_trgt &lt;= {X_trgt.max()}.&quot;
+
+/usr/lib/python3.8/bdb.py in trace_dispatch(self, frame, event, arg)
+     86             return # None
+     87         if event == &#39;line&#39;:
+---&gt; 88             return self.dispatch_line(frame)
+     89         if event == &#39;call&#39;:
+     90             return self.dispatch_call(frame, arg)
+
+/usr/lib/python3.8/bdb.py in dispatch_line(self, frame)
+    111         if self.stop_here(frame) or self.break_here(frame):
+    112             self.user_line(frame)
+--&gt; 113             if self.quitting: raise BdbQuit
+    114         return self.trace_dispatch
+    115 
+
+BdbQuit: 
+</pre></div>
+</div>
+<img alt="../_images/Losses-Copy1_14_43.png" src="../_images/Losses-Copy1_14_43.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp_datasets</span><span class="p">[</span><span class="s1">&#39;RBF_Kernel&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">n_points</span> <span class="o">=</span> <span class="mi">40</span>
 </pre></div>
 </div>
 </div>

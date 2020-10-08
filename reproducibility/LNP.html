@@ -337,7 +337,7 @@
 <h1>Latent Neural Process (LNP)<a class="headerlink" href="#latent-neural-process-lnp" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-default" id="computational-graph-lnps">
 <a class="reference internal image-reference" href="../_images/computational_graph_LNPs.png"><img alt="Computational graph LNP" src="../_images/computational_graph_LNPs.png" style="width: 25em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 62 </span><span class="caption-text">Computational graph for Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-lnps" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 63 </span><span class="caption-text">Computational graph for Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-lnps" title="Permalink to this image">¶</a></p>
 </div>
 <p>In this notebook we will show how to train a LNP on samples from GPs and images using our framework, as well as how to make nice visualizations of sampled from LNPs.
 We will follow <a class="reference internal" href="CNP.html"><span class="doc">CNP notebook</span></a> but plot samples from the posterior predictive instead of posterior predictive.</p>
@@ -697,7 +697,7 @@ zsmms/LNP/run_0 | best epoch: 9 | train loss: -1923.4493 | valid loss: -1228.250
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
         <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
         <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -737,9 +737,9 @@ zsmms/LNP/run_0 | best epoch: 9 | train loss: -1923.4493 | valid loss: -1228.250
 </div>
 <div class="figure align-default" id="lnp-single-gp">
 <a class="reference internal image-reference" href="../_images/LNP_single_gp.gif"><img alt="LNP on single GPs" src="../_images/LNP_single_gp.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 63 </span><span class="caption-text">Posterior predictive of LNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and LNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#lnp-single-gp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 64 </span><span class="caption-text">Posterior predictive of LNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and LNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#lnp-single-gp" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#lnp-single-gp"><span class="std std-numref">Fig. 63</span></a> we see that LNPs are able to coherently sample functions from the marginal posterior predictive, by sampling different latent variable. It nevertheless suffer from the same underfitting issues as CNPs (<a class="reference internal" href="CNP.html#cnp-single-gp"><span class="std std-numref">Fig. 49</span></a>).</p>
+<p>From <a class="reference internal" href="#lnp-single-gp"><span class="std std-numref">Fig. 64</span></a> we see that LNPs are able to coherently sample functions from the marginal posterior predictive, by sampling different latent variable. It nevertheless suffer from the same underfitting issues as CNPs (<a class="reference internal" href="CNP.html#cnp-single-gp"><span class="std std-numref">Fig. 50</span></a>).</p>
 </div>
 <div class="section" id="image-dataset">
 <h4>Image Dataset<a class="headerlink" href="#image-dataset" title="Permalink to this headline">¶</a></h4>
@@ -769,7 +769,7 @@ zsmms/LNP/run_0 | best epoch: 9 | train loss: -1923.4493 | valid loss: -1228.250
             <span class="s2">&quot;hhalf&quot;</span><span class="p">,</span>  <span class="c1"># horizontal half of the image</span>
             <span class="s2">&quot;vhalf&quot;</span><span class="p">,</span>  <span class="c1"># vertival half of the image</span>
         <span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -805,9 +805,9 @@ zsmms/LNP/run_0 | best epoch: 9 | train loss: -1923.4493 | valid loss: -1228.250
 </div>
 <div class="figure align-default" id="lnp-img-interp">
 <a class="reference internal image-reference" href="../_images/LNP_img_interp.gif"><img alt="LNP on CelebA, MNIST" src="../_images/LNP_img_interp.gif" style="width: 30em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 64 </span><span class="caption-text">3 samples (means conditioned on different samples from the latent) of the posterior predictive of a LNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span> and MNIST for different context sets. The last row shows the standard deviation of the posterior predictive corresponding to the last sample.</span><a class="headerlink" href="#lnp-img-interp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 65 </span><span class="caption-text">3 samples (means conditioned on different samples from the latent) of the posterior predictive of a LNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span> and MNIST for different context sets. The last row shows the standard deviation of the posterior predictive corresponding to the last sample.</span><a class="headerlink" href="#lnp-img-interp" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#lnp-img-interp"><span class="std std-numref">Fig. 64</span></a> again shows underfitting but relatively coherent sampling.</p>
+<p>From <a class="reference internal" href="#lnp-img-interp"><span class="std std-numref">Fig. 65</span></a> again shows underfitting but relatively coherent sampling.</p>
 <p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

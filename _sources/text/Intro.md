@@ -11,7 +11,7 @@ But before diving in, let's consider some tasks that the NPF is particularly wel
 Let's consider the task of restoring corrupted audio signals.
 We are given a dataset $\mathcal{D} = \{(x^{(n)}, y^{(n)})\}_{n=1}^N$, where $x$ are the inputs (time) and $y$ are the outputs (sound wave amplitude), and our goal is to reconstruct the signal conditioned on $\mathcal{D}$.
 If $\mathcal{D}$ is very sparse, there could be many reasonable reconstructions --- hence we should be wary of simply providing a single prediction, and instead include measures of uncertainty.
-{numref}`ConvLNP` shows a neural process being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.
+{numref}`ConvLNP` shows a NP being used to sample plausible interpolations of simple time-series, both periodic and non-periodic.
 
 
 ```{figure} ../gifs/ConvLNP_norbf_gp_extrap.gif
@@ -20,22 +20,22 @@ width: 35em
 name: ConvLNP
 alt: Samples from ConvLNP trained on GPs
 ---
-Sample functions from the predictive distribution of ConvLNPs (blue) and the oracle GP (green) with periodic and noisy Matern kernels.
+Sample functions from the predictive distribution of ConvLNPs (the blue lines represent the predicted mean function and the shaded region shows a standard deviation on each side $[\mu-\sigma, \mu + \sigma]$)  and the oracle GP (green line represents the ground truth mean and the dashed line show a standard deviations on each side) with periodic (top) and noisy Matern kernels (bottom).  Each convLNP was trained on samples from the oracle GP.
 ```
 
 * **Interpolating image data with uncertainty.** Imagine that we are given a satellite image of a region obscured by cloud-cover.
 We might need to make predictions regarding what is "behind" the occlusions. For example, the [UNHCR](https://en.wikipedia.org/wiki/United_Nations_High_Commissioner_for_Refugees) might need to count the number of tents in a refugee camp to know how much food and healthcare supplies to send there.
 If clouds are obscuring a large part of the image, we might be interested not just in a single interpolation, but in the entire probability distribution over plausible interpolations.
 NPs can do exactly that.
-{numref}`ConvCNP_superes_intro` shows a NP upscaling the resolution of an image by treating pixel locations that are "in between" the pixels of the input images as occluded pixels, i.e., by interpolating between pixels. The NP also provides uncertainty estimates, which aren't shown here.
+{numref}`ConvCNP_celeba128` shows a NP performing image completion with varying percentage of occluded pixels. Compared to the cubic interpolation baseline, it performs better and provides uncertainty estimates.
 
-```{figure} ../images/ConvCNP_superes.png
+```{figure} ../images/ConvCNP_celeba128.png
 ---
 width: 35em
-name: ConvCNP_superes_intro
-alt: Increasing image resolution with ConvCNP
+name: ConvCNP_celeba128
+alt: Image completion with ConvCNP
 ---
-Increasing the resolution of $16 \times 16$ CelebA to $128 \times 128$ with a ConvCNP.
+Image completion by a ConvCNP trained on CelebA to $128 \times 128$. The first row shows the input image / context set. The second row shows the most probable reconstruction predicted by the NP. The third row shows the uncertainty estimates of the NP. The final row shows a baseline completion performed by cubic interpolation.
 ```
 
 
@@ -65,13 +65,14 @@ width: 100%
 name: meta_learning_sp
 alt: Neural Processes as meta learning stochastic processes
 ---
-Comparison between meta learning vs supervised learning, and modeling functions vs modeling stochastic processes. Neural Processes are in the lower-right quadrant.
+Comparison between meta learning vs supervised learning, and modeling functions vs modeling stochastic processes. Neural Processes are in the lower-right quadrant. Dot are context points while stars are target points.
 ```
 
 ### Meta-learning
 
 In (deep) supervised learning, a neural network is trained to model a target function given some observations.
 Specifically, a network is trained on a single dataset $\mathcal{C} := \{(x^{(c)}, y^{(c)})\}_{c=1}^C$ (which we will refer to as a **context set**). The trained network is then used as a predictor, $f(x)$.
+
 A supervised learning algorithm can thus be seen as a map that takes datasets to a predictors $\mathcal{C} \mapsto f(x)$.
 At test time, a prediction at a target location $x^{(t)}$ can be made by feeding it into the predictor to obtain $f(x^{(t)})$.
 By doing so for all the test inputs (which we call **target inputs**) $\mathbf{x}_{\mathcal{T}} := \{x^{(t)}\}_{t=1}^T$, we get a set of predictions $f(\mathbf{x}_{\mathcal{T}}):= \{f(x^{(t)})\}_{t=1}^T$.
@@ -80,13 +81,13 @@ We will refer to a context and target set together as a *task*  $\mathcal{D} := 
 This standard supervised learning process is visualised in the upper left quadrant of {numref}`meta_learning_sp`.
 
 The idea of **meta-learning** is _learning to learn_, i.e., learning how to rapidly adapt to new supervised tasks.
-The key insight is that, as we just saw, a supervised learning algorithm is itself a function from $\mathcal{C} \mapsto f(x)$.
-As a result we can use supervised learning to model this function, hence the name *meta*.
+The key insight is that, as we just saw, a supervised learning algorithm is itself a function, because it maps datasets to predictors $\mathcal{C} \mapsto f(x)$.
+As a result we can model this function (the initial supervised learning algorithm) using another supervised learning algorithm, hence the name *meta*-learning.
 
 To train a meta-learner, we need a large collection $\mathcal{M}= \{ \mathcal{D_i} \}_{i=1}^{N_{\mathrm{tasks}}}$ of related datasets --- a meta-dataset.
 The result of meta-training on this meta-dataset is a supervised learning algorithm, i.e., a map $\mathcal{C} \mapsto f(x; \mathcal{C})$.
 At meta-test time, we'll adapt the predictor to a task it has never seen before by providing it a new context set $\mathcal{C}$.
-In this blog we will only consider cases where the map $\mathcal{C} \mapsto f(x; \mathcal{C})$ is parameterised by a neural network, meaning that the adaptation to a new task is done with a single forward pass, without any gradient updates!
+In this blog we will only consider cases where the map $\mathcal{C} \mapsto f(x; \mathcal{C})$ is parameterised by a neural network, meaning that the adaptation (meta-test time) to a new task is done with a single forward pass, without any gradient updates!
 The resulting predictor, $f(x; \mathcal{C})$, uses the information obtained during meta-learning to make predictions on this new task.
 The whole meta-learning process is illustrated in the bottom left quadrant of {numref}`meta_learning_sp`.
 
@@ -128,7 +129,7 @@ name: notation
 ### Stochastic Process Prediction
 
 We've seen that we can think of meta-learning as learning a map directly from context sets $\mathcal{C}$ to predictor functions $f(x; \mathcal{C})$.
-However, there are many situations where a single predictor without error-bars isn't good enough.
+However, there are many situations where a predictor $f(x; \mathcal{C})$ that cannot estimate its uncertainty with error-bars isn't good enough.
 Quantifying uncertainty is crucial for decision-making, and has many applications such as in model-based reinforcement learning, Bayesian optimisation and out-of-distribution detection.
 
 Given target inputs $\mathbf{x}_{\mathcal{T}}$, what we need is not a single prediction $f(\mathbf{x}_{\mathcal{T}}; \mathcal{C})$, but rather a _distribution over predictions_ $p(\mathbf{y}_{\mathcal{T}}| \mathbf{x}_{\mathcal{T}}; \mathcal{C})$.
@@ -171,7 +172,7 @@ p(y^{(1)}, y^{(2)}| x^{(1)}, x^{(2)}) &= p(y^{(1)}| x^{(1)}) p(y^{(2)}| x^{(2)},
 $$
 
 This essentially states that the distribution over $y^{(1)}, y^{(2)}$ obtained by autoregressive sampling should be independent of the order in which the sampling is performed.
-Unfortunately, this is _not_ guaranteed to be the case NPs, i.e., it is possible that
+Unfortunately, this is _not_ guaranteed to be the case for NPs, i.e., it is possible that
 
 $$
 p(y^{(1)}| x^{(1)}) p(y^{(2)}| x^{(2)} ; \{x^{(1)},  y^{(1)} \} ) \neq p(y^{(2)}| x^{(2)}) p(y^{(1)}| x^{(1)} ; \{x^{(2)},  y^{(2)}\} ).
@@ -193,7 +194,7 @@ class: note, dropdown
 {numref}`ConvLNP` also shows the predictive mean and error-bars of the ground truth _Gaussian process_ (GP) used to generate the data.
 Unlike NPs, GPs require the user to specify a kernel function to model the data.
 GPs are attractive due to the fact that exact prediction in GPs can be done _in closed form_.
-However, this has computational complexity $\mathcal{O}(N^3)$ in the dataset size, which limits the application of exact GPs to large datasets.
+However, this has computational complexity $\mathcal{O}(N^3)$ in the dataset size, which limits the application of exact GPs for large datasets.
 Many accessible introductions to GPs are available online.
 Some prime examples are [Distill's visual exploration](https://distill.pub/2019/visual-exploration-gaussian-processes/), [Neil Lawrence's post](http://inverseprobability.com/talks/notes/gaussian-processes.html), or [David Mackay's video lecture](https://www.youtube.com/watch?v=NegVuuHwa8Q).
 
@@ -250,7 +251,7 @@ As we will later show, it is the factorisation assumptions in the decoder that e
 class: note
 ---
 As a concrete example of what a Neural Process looks like, {numref}`CNP_gif` shows a schematic animation of the forward pass of a _Conditional Neural Process_ (CNP), the simplest member of the CNPF.
-We see that every $(x, y)$ pair in the context set (here with three datapoints) is passed through an MLP $e$ to obtain a local encoding.
+We see that every $(x, y)$ pair in the context set (here with three datapoints) is passed through an Multi-Layer Perceptron (MLP) $e$ to obtain a local encoding.
 The local encodings $\{r_1, r_2, r_3\}$ are then aggregated by a mean pooling $a$ to a representation $r$.
 Finally, the representation $r$ is fed into another MLP $d$ along with the target input to yield the mean and variance of the predictive distribution of the target output $y$.
 We'll take a much more detailed look at the CNP {ref}`later <cnp>`.

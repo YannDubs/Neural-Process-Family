@@ -354,7 +354,7 @@
 <h1>Convolutional Latent Neural Process (ConvLNP)<a class="headerlink" href="#convolutional-latent-neural-process-convlnp" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-default" id="computational-graph-convlnps">
 <a class="reference internal image-reference" href="../_images/computational_graph_ConvLNPs.png"><img alt="Computational graph ConvLNP" src="../_images/computational_graph_ConvLNPs.png" style="height: 25em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 68 </span><span class="caption-text">Computational graph for Convolutional Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-convlnps" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 69 </span><span class="caption-text">Computational graph for Convolutional Latent Neural Processes.</span><a class="headerlink" href="#computational-graph-convlnps" title="Permalink to this image">¶</a></p>
 </div>
 <p>In this notebook we will show how to train a ConvLNP on samples from GPs and images using our framework, as well as how to make nice visualizations of sampled from ConvLNP.
 We will follow quite closely the previous <a class="reference internal" href="LNP.html"><span class="doc">LNP notebook</span></a> and <a class="reference internal" href="ConvCNP.html"><span class="doc">ConvCNP notebook</span></a>.</p>
@@ -738,11 +738,11 @@ celeba32/ConvLNP/run_0 | best epoch: 43 | train loss: -5108.3694 | valid loss: -
 
 --- Loading mnist/ConvLNP/run_0 ---
 
-mnist/ConvLNP/run_0 | best epoch: 49 | train loss: -2927.9383 | valid loss: -2930.0362 | test log likelihood: 2919.4071
+mnist/ConvLNP/run_0 | best epoch: 49 | train loss: -2927.9383 | valid loss: -2930.0362 | test log likelihood: 2919.4283
 
 --- Loading zsmms/ConvLNP/run_0 ---
 
-zsmms/ConvLNP/run_0 | best epoch: 22 | train loss: -2845.3602 | valid loss: -2871.9534 | test log likelihood: 3889.5058
+zsmms/ConvLNP/run_0 | best epoch: 46 | train loss: -2977.8948 | valid loss: -2944.4875 | test log likelihood: 3889.5058
 </pre></div>
 </div>
 </div>
@@ -766,7 +766,7 @@ zsmms/ConvLNP/run_0 | best epoch: 22 | train loss: -2845.3602 | valid loss: -287
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
         <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
         <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -810,9 +810,9 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="figure align-default" id="convlnp-single-gp-extrap">
 <a class="reference internal image-reference" href="../_images/ConvLNP_single_gp_extrap.gif"><img alt="ConvLNP on single GP" src="../_images/ConvLNP_single_gp_extrap.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 69 </span><span class="caption-text">Posterior predictive of ConvLNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and ConvCNP trained on samples for the corresponding GP. The interpolation and extrapolation regime is delimited delimited by red dashes.</span><a class="headerlink" href="#convlnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 70 </span><span class="caption-text">Posterior predictive of ConvLNPs conditioned on 20 different sampled latents (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma | z\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and ConvCNP trained on samples for the corresponding GP. The interpolation and extrapolation regime is delimited delimited by red dashes.</span><a class="headerlink" href="#convlnp-single-gp-extrap" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#convlnp-single-gp-extrap"><span class="std std-numref">Fig. 69</span></a> we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to <a class="reference internal" href="AttnLNP.html#attnlnp-single-gp"><span class="std std-numref">Fig. 66</span></a>.</p>
+<p>From <a class="reference internal" href="#convlnp-single-gp-extrap"><span class="std std-numref">Fig. 70</span></a> we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to <a class="reference internal" href="AttnLNP.html#attnlnp-single-gp"><span class="std std-numref">Fig. 67</span></a>.</p>
 </div>
 <div class="section" id="samples-from-gps-with-varying-kernels">
 <h5>Samples from GPs with varying Kernels<a class="headerlink" href="#samples-from-gps-with-varying-kernels" title="Permalink to this headline">¶</a></h5>
@@ -841,9 +841,9 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="figure align-default" id="convlnp-kernel-gp">
 <a class="reference internal image-reference" href="../_images/ConvLNP_kernel_gp.gif"><img alt="ConvLNP on GPs with discrete varying kernel" src="../_images/ConvLNP_kernel_gp.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 70 </span><span class="caption-text">Similar to <a class="reference internal" href="#convlnp-single-gp-extrap"><span class="std std-numref">Fig. 69</span></a> but the training was performed on all data simultaneously.</span><a class="headerlink" href="#convlnp-kernel-gp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 71 </span><span class="caption-text">Similar to <a class="reference internal" href="#convlnp-single-gp-extrap"><span class="std std-numref">Fig. 70</span></a> but the training was performed on all data simultaneously.</span><a class="headerlink" href="#convlnp-kernel-gp" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#convlnp-kernel-gp"><span class="std std-numref">Fig. 70</span></a> we see that ConvLNP performs quite well in this much harder setting. Indeed, it seems to model process using the periodic kernel when the number of context points is small but quickly (around 15 context points) recovers the correct underlying kernel. Note that we plot the posterior predictive of the actual underlying GP but the generating process is highly non Gaussian.</p>
+<p>From <a class="reference internal" href="#convlnp-kernel-gp"><span class="std std-numref">Fig. 71</span></a> we see that ConvLNP performs quite well in this much harder setting. Indeed, it seems to model process using the periodic kernel when the number of context points is small but quickly (around 15 context points) recovers the correct underlying kernel. Note that we plot the posterior predictive of the actual underlying GP but the generating process is highly non Gaussian.</p>
 </div>
 <div class="section" id="samples-from-gps-with-varying-kernel-hyperparameters">
 <h5>Samples from GPs with varying kernel hyperparameters<a class="headerlink" href="#samples-from-gps-with-varying-kernel-hyperparameters" title="Permalink to this headline">¶</a></h5>
@@ -869,9 +869,9 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="figure align-default" id="convlnp-vary-gp">
 <a class="reference internal image-reference" href="../_images/ConvLNP_vary_gp.gif"><img alt="ConvLNP on GPs with continuous varying kernel" src="../_images/ConvLNP_vary_gp.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 71 </span><span class="caption-text">Similar to the 2nd row (Noisy Matern Kernel) of <a class="reference internal" href="ConvCNP.html#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 56</span></a> but the training was performed on sampled from Noisy Matern Kernel with different length scales in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span>. The GP (in green) corresponds to the one with the length scale in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span> giving rise to the largest marginal likelihood.</span><a class="headerlink" href="#convlnp-vary-gp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 72 </span><span class="caption-text">Similar to the 2nd row (Noisy Matern Kernel) of <a class="reference internal" href="ConvCNP.html#convcnp-single-gp-extrap"><span class="std std-numref">Fig. 57</span></a> but the training was performed on sampled from Noisy Matern Kernel with different length scales in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span>. The GP (in green) corresponds to the one with the length scale in <span class="math notranslate nohighlight">\([0.01,0.3]\)</span> giving rise to the largest marginal likelihood.</span><a class="headerlink" href="#convlnp-vary-gp" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#convlnp-vary-gp"><span class="std std-numref">Fig. 71</span></a> we see that ConvLNP is still able to perform quite well, but it predicts in a very different way than the fitted GP. Namely it doesn’t really seem to change the kernel hyperparameter / global latent during training. This contrasts with the fitted GP which clearly shows that estimate of the length scale changes for different context set size.</p>
+<p>From <a class="reference internal" href="#convlnp-vary-gp"><span class="std std-numref">Fig. 72</span></a> we see that ConvLNP is still able to perform quite well, but it predicts in a very different way than the fitted GP. Namely it doesn’t really seem to change the kernel hyperparameter / global latent during training. This contrasts with the fitted GP which clearly shows that estimate of the length scale changes for different context set size.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 1D PLOTS ######</span>
@@ -923,7 +923,7 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
             <span class="s2">&quot;hhalf&quot;</span><span class="p">,</span>  <span class="c1"># horizontal half of the image</span>
             <span class="s2">&quot;vhalf&quot;</span><span class="p">,</span>  <span class="c1"># vertival half of the image</span>
         <span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -950,10 +950,10 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="figure align-default" id="convlnp-img">
 <a class="reference internal image-reference" href="../_images/ConvLNP_img.gif"><img alt="ConvLNP on images" src="../_images/ConvLNP_img.gif" style="width: 45em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 72 </span><span class="caption-text">Mean and std of the posterior predictive of an ConvLNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#convlnp-img" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 73 </span><span class="caption-text">Mean and std of the posterior predictive of an ConvLNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, and ZSMM for different context sets.</span><a class="headerlink" href="#convlnp-img" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <code class="xref std std-numref docutils literal notranslate"><span class="pre">ConvLNP_img</span></code> we see that ConvLNP performs similarly to ConvCNP. Namely, well when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM), but has difficulties when the context set is very small or when it is structured, e.g., half images.
-Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.html#attnlnp-img"><span class="std std-numref">Fig. 67</span></a>) the variance of the posterior predictive for each sample seems much smaller. I.e. the variance is all modeled by the latent. This makes sense, as you can interpret the variance of the conditional posterior predictive to be the aleatoric uncertainty, which is probably homoskedastic (same for all pixels) in images.</p>
+<p>From <a class="reference internal" href="#convlnp-img"><span class="std std-numref">Fig. 73</span></a> we see that ConvLNP performs similarly to ConvCNP. Namely, well when the context set is large enough and uniformly sampled, even when extrapolation is needed (ZSMM), but has difficulties when the context set is very small or when it is structured, e.g., half images.
+Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.html#attnlnp-img"><span class="std std-numref">Fig. 68</span></a>) the variance of the posterior predictive for each sample seems much smaller. I.e. the variance is all modeled by the latent. This makes sense, as you can interpret the variance of the conditional posterior predictive to be the aleatoric uncertainty, which is probably homoskedastic (same for all pixels) in images.</p>
 <p>Here are more samples, corresponding to specific percentiles of the test log loss.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

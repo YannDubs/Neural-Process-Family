@@ -776,30 +776,39 @@ This intuition is clearest when considering the mixture of GPs experiments discu
 </div>
 <p>From <a class="reference internal" href="#convlnp-single-gp-extrap-text"><span class="std std-numref">Fig. 44</span></a> we see that ConvLNP performs very well and the samples are reminiscent of those from a GP, i.e., with much richer variability compared to <a class="reference internal" href="#attnlnp-single-gp-text"><span class="std std-numref">Fig. 39</span></a>.
 Further, as in the case of the ConvCNP, we see that the ConvLNP elegantly generalises beyond the range in <span class="math notranslate nohighlight">\(X\)</span>-space on which it was trained.</p>
+<div class="dropdown note admonition">
+<p class="admonition-title">Note<span class="math notranslate nohighlight">\(\qquad\)</span>NPVI vs NPML</p>
+<p>As with the LNP, we compare the performance of the ConvLNP when trained with NPVI and NPML. Note thatto make NPVI work with ConvLNP it is important to decrease the dimensionality of the latent functional representation. Here we thus use 16 latent channels (for NPVI and NPML) instead of the usual 128.</p>
+<div class="figure align-default" id="convlnp-all-both-objectives-text">
+<a class="reference internal image-reference" href="../_images/singlegp_ConvLNP_LatLBTrue_SigLBTrue1.gif"><img alt="ConvLNP on all kernels with both objectives" src="../_images/singlegp_ConvLNP_LatLBTrue_SigLBTrue1.gif" style="width: 35em;" /></a>
+<p class="caption"><span class="caption-number">Fig. 45 </span><span class="caption-text">Predictive distributions of ConvLNP (Blue) and the oracle GP (Green) with (top) RBF, (center) periodic, and (bottom) Noisy Matern kernels. Models were trained with (left) NPML and (right) NPVI.</span><a class="headerlink" href="#convlnp-all-both-objectives-text" title="Permalink to this image">¶</a></p>
+</div>
+<p>We see that a ConvLNP trained with NPML seems to gives better uncertainty estimates than when trained with NPVI.</p>
+</div>
 <p>Next, we consider the more challenging problem of having the ConvLNP model a stochastic process whose posterior predictive is non Gaussian.
 We do so by having the following underlying generative process: first, sample one of the 3 kernels discussed above, and second, sample a function from the sampled kernel.
 Importantly, the data generating process is a mixture of GPs, and the true posterior predictive process (achieved by marginalising over the different kernels) is non-Gaussian.</p>
 <!-- Theoretically, this could still be modelled by a LNPF as the latent variables could represent the both the current kernel and its functions, but adding the global representation corresponds (intuitively) to allowing the ConvLNP to "switch" between kernels. -->
 <div class="figure align-default" id="convlnp-kernel-gp-text">
 <a class="reference internal image-reference" href="../_images/ConvLNP_kernel_gp1.gif"><img alt="ConvLNP trained on GPs with RBF,Matern,periodic kernel" src="../_images/ConvLNP_kernel_gp1.gif" style="width: 35em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 45 </span><span class="caption-text">Similar to <a class="reference internal" href="#convlnp-single-gp-extrap-text"><span class="std std-numref">Fig. 44</span></a> but the training was performed on all data simultaneously.</span><a class="headerlink" href="#convlnp-kernel-gp-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 46 </span><span class="caption-text">Similar to <a class="reference internal" href="#convlnp-single-gp-extrap-text"><span class="std std-numref">Fig. 44</span></a> but the training was performed on all data simultaneously.</span><a class="headerlink" href="#convlnp-kernel-gp-text" title="Permalink to this image">¶</a></p>
 </div>
-<p><a class="reference internal" href="#convlnp-kernel-gp-text"><span class="std std-numref">Fig. 45</span></a> demonstrates that ConvLNP performs quite well in this harder setting.
+<p><a class="reference internal" href="#convlnp-kernel-gp-text"><span class="std std-numref">Fig. 46</span></a> demonstrates that ConvLNP performs quite well in this harder setting.
 Indeed, it seems to model the predictive process using the periodic kernel when the number of context points is small but quickly (around 10 context points) recovers the correct underlying kernel.
 Note how in the middle plot, the ConvLNP becomes progressively more and more “confident” that the process is periodic as more data is observed.
-Note that in <a class="reference internal" href="#convlnp-kernel-gp-text"><span class="std std-numref">Fig. 45</span></a> we are plotting the posterior predictive for the sampled GP, rather than the actual, non-GP posterior predictive process.</p>
+Note that in <a class="reference internal" href="#convlnp-kernel-gp-text"><span class="std std-numref">Fig. 46</span></a> we are plotting the posterior predictive for the sampled GP, rather than the actual, non-GP posterior predictive process.</p>
 <p>Again, we consider the performance of the ConvLNP in the image setting.
-In <a class="reference internal" href="#convlnp-img-text"><span class="std std-numref">Fig. 46</span></a> we see that the ConvLNP does a reasonable job producing samples when the context sets are uniformly subsampled from images, but struggles with the “structured” context sets, e.g. when the left or bottom halves of the image are missing.
+In <a class="reference internal" href="#convlnp-img-text"><span class="std std-numref">Fig. 47</span></a> we see that the ConvLNP does a reasonable job producing samples when the context sets are uniformly subsampled from images, but struggles with the “structured” context sets, e.g. when the left or bottom halves of the image are missing.
 Moreover, the ConvLNP is able to produce samples in the generalisation setting (ZSMM), but these are not always coherent, and include some strange artifacts that seem more similar to sampling the MNIST “texture” than coherent digits.</p>
 <div class="figure align-default" id="convlnp-img-text">
 <a class="reference internal image-reference" href="../_images/ConvLNP_img1.gif"><img alt="ConvLNP on CelebA, MNIST, ZSMM" src="../_images/ConvLNP_img1.gif" style="width: 45em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 46 </span><span class="caption-text">Samples from posterior predictive of an ConvCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, ZSMM.</span><a class="headerlink" href="#convlnp-img-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 47 </span><span class="caption-text">Samples from posterior predictive of an ConvCNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST, ZSMM.</span><a class="headerlink" href="#convlnp-img-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>As discussed in  <a class="reference internal" href="CNPF.html#issues-cnpfs"><span class="std std-ref">the ‘Issues with the CNPF’ section</span></a>, members of the CNPF could not be used to generate coherent samples, nor model non-Gaussian posterior predictive distributions.
-In contrast, <a class="reference internal" href="#convlnp-marginal-text"><span class="std std-numref">Fig. 47</span></a> (right) demonstrates that, as expected, ConvLNP is able to produce non-Gaussian predictives for pixels, with interesting bi-modal and heavy-tailed behaviours.</p>
+In contrast, <a class="reference internal" href="#convlnp-marginal-text"><span class="std std-numref">Fig. 48</span></a> (right) demonstrates that, as expected, ConvLNP is able to produce non-Gaussian predictives for pixels, with interesting bi-modal and heavy-tailed behaviours.</p>
 <div class="figure align-default" id="convlnp-marginal-text">
 <a class="reference internal image-reference" href="../_images/ConvLNP_marginal.png"><img alt="Samples from ConvLNP on MNIST and posterior of different pixels" src="../_images/ConvLNP_marginal.png" style="width: 20em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 47 </span><span class="caption-text">Samples form the posterior predictive of ConvCNPs on MNIST (left) and posterior predictive of some pixels (right).</span><a class="headerlink" href="#convlnp-marginal-text" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 48 </span><span class="caption-text">Samples form the posterior predictive of ConvCNPs on MNIST (left) and posterior predictive of some pixels (right).</span><a class="headerlink" href="#convlnp-marginal-text" title="Permalink to this image">¶</a></p>
 </div>
 <p>From <a class="reference internal" href="#attnlnp-img-text"><span class="std std-numref">Fig. 41</span></a> we see that AttnLNP generates quite impressive samples, and exhibits descent sampling and good performances when the model does not require generalisation (CelebA <span class="math notranslate nohighlight">\(32\times32\)</span>, MNIST).
 However, as expected, the model “breaks” for ZSMM as it still cannot extrapolate.</p>

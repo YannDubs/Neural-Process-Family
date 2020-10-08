@@ -337,10 +337,10 @@
 <h1>Conditional Neural Process (CNP)<a class="headerlink" href="#conditional-neural-process-cnp" title="Permalink to this headline">¶</a></h1>
 <div class="figure align-default" id="computational-graph-cnps">
 <a class="reference internal image-reference" href="../_images/computational_graph_CNPs.png"><img alt="Computational graph CNP" src="../_images/computational_graph_CNPs.png" style="width: 25em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 48 </span><span class="caption-text">Computational graph for Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-cnps" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 49 </span><span class="caption-text">Computational graph for Conditional Neural Processes.</span><a class="headerlink" href="#computational-graph-cnps" title="Permalink to this image">¶</a></p>
 </div>
 <p>In this notebook we will show how to train a CNP on samples from GPs and images using our framework, as well as how to make nice visualizations.
-CNPs are CNPFs that use a MLP+mean encoder (computational graph in <a class="reference internal" href="#computational-graph-cnps"><span class="std std-numref">Fig. 48</span></a>).</p>
+CNPs are CNPFs that use a MLP+mean encoder (computational graph in <a class="reference internal" href="#computational-graph-cnps"><span class="std std-numref">Fig. 49</span></a>).</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
@@ -525,15 +525,15 @@ Number Parameters (2D): 367,750
         Encoder module which maps {x_transf_i, y_i} -&gt; {r_i}. It should be constructable
         via `XYEncoder(x_transf_dim, y_dim, n_out)`. If you have an encoder that maps
         [x;y] -&gt; r you can convert it via `merge_flat_input(Encoder)`. `None` uses
-        MLP. In the computational model this corresponds to `h` (with XEncoder). 
+        MLP. In the computational model this corresponds to `h` (with XEncoder).
         Example:
             - `merge_flat_input(MLP, is_sum_merge=False)` : learn representation
             with MLP. `merge_flat_input` concatenates (or sums) X and Y inputs.
-            - `merge_flat_input(SelfAttention, is_sum_merge=True)` : self attention mechanisms as 
+            - `merge_flat_input(SelfAttention, is_sum_merge=True)` : self attention mechanisms as
             [4]. For more parameters (attention type, number of layers ...) refer to its docstrings.
             - `discard_ith_arg(MLP, 0)` if want the encoding to only depend on Y.
 
-    kwargs : 
+    kwargs :
         Additional arguments to `NeuralProcessFamily`
 
     References
@@ -560,7 +560,7 @@ Number Parameters (2D): 367,750
     Notes
     -----
     - when writing size of vectors something like `size=[batch_size,*n_cntxt,y_dim]` means that the
-    first dimension is the batch, the last is the target values and everything in the middle are context 
+    first dimension is the batch, the last is the target values and everything in the middle are context
     points. We use `*n_cntxt` as it can  be a single flattened dimension or many (for example on the grid).
 
     Parameters
@@ -584,11 +584,11 @@ Number Parameters (2D): 367,750
         Dimension of the encoded X. If `-1` uses `r_dim`. if `None` uses `x_dim`.
 
     is_heteroskedastic : bool, optional
-        Whether the posterior predictive std can depend on the target features. If using in conjuction 
+        Whether the posterior predictive std can depend on the target features. If using in conjuction
         to `NllLNPF`, it might revert to a *CNP model (collapse of latents). If the flag is False, it
-        pools all the scale parameters of the posterior distribution. This trick is only exactly 
-        recovers heteroskedasticity when the set target features are always the same (e.g. 
-        predicting values on a predefined grid) but is a good approximation even when not. 
+        pools all the scale parameters of the posterior distribution. This trick is only exactly
+        recovers heteroskedasticity when the set target features are always the same (e.g.
+        predicting values on a predefined grid) but is a good approximation even when not.
 
     XEncoder : nn.Module, optional
         Spatial encoder module which maps {x^i}_i -&gt; {x_trnsf^i}_i. It should be
@@ -599,8 +599,8 @@ Number Parameters (2D): 367,750
     Decoder : nn.Module, optional
         Decoder module which maps {(x^t, r^t)}_t -&gt; {p_y_suffstat^t}_t. It should be constructable
         via `decoder(x_dim, r_dim, n_out)`. If you have an decoder that maps
-        [r;x] -&gt; y you can convert it via `merge_flat_input(Decoder)`. `None` uses MLP. In the 
-        computational model this corresponds to `g`. 
+        [r;x] -&gt; y you can convert it via `merge_flat_input(Decoder)`. `None` uses MLP. In the
+        computational model this corresponds to `g`.
         Example:
             - `merge_flat_input(MLP)` : predict with MLP.
             - `merge_flat_input(SelfAttention, is_sum_merge=True)` : predict
@@ -610,8 +610,8 @@ Number Parameters (2D): 367,750
             - `discard_ith_arg(MLP, 0)` if want the decoding to only depend on r.
 
     PredictiveDistribution : torch.distributions.Distribution, optional
-        Predictive distribution. The input to the constructor are currently two values of the same 
-        shape : `loc` and `scale`, that are preprocessed by `p_y_loc_transformer` and 
+        Predictive distribution. The input to the constructor are currently two values of the same
+        shape : `loc` and `scale`, that are preprocessed by `p_y_loc_transformer` and
         `pred_scale_transformer`.
 
     p_y_loc_transformer : callable, optional
@@ -654,7 +654,7 @@ See its docstring for possible parameters.</p>
     Parameters
     ----------
     datasets : dict
-        The datasets on which to train the models. 
+        The datasets on which to train the models.
 
     models : dict
         The models to train (initialized or not). Each model will be trained on
@@ -671,14 +671,14 @@ See its docstring for possible parameters.</p>
         in the checkpoint directory as `eval.csv`.
 
     valid_datasets : dict, optional
-        The validation datasets. 
+        The validation datasets.
 
     chckpnt_dirname : str, optional
         Directory where checkpoints will be saved. The best (if validation or train_split given)
         or last model will be saved.
 
     is_continue_train : bool, optional
-        Whether to continue training from the last checkpoint of the previous run. 
+        Whether to continue training from the last checkpoint of the previous run.
 
     is_retrain : bool, optional
         Whether to retrain the model. If not, `chckpnt_dirname` should be given
@@ -698,7 +698,7 @@ See its docstring for possible parameters.</p>
         should be a function or callable that is called with X and y
         data and should return the tuple ``dataset_train, dataset_valid``.
         The validation data may be None. Use `skorch.dataset.CVSplit` to randomly
-        split the data into train and validation. Only used for datasets that are not in 
+        split the data into train and validation. Only used for datasets that are not in
         `valid_datasets.`.
 
     device : str, optional
@@ -726,12 +726,12 @@ See its docstring for possible parameters.</p>
 
     decay_lr : float, optional
         Factor by which to decay the learning rate during training. For example if 100 then it
-        will decrease the learning rate with exponential decrease such that at the end of training 
+        will decrease the learning rate with exponential decrease such that at the end of training
         the learning rate decreased by a factot 100.
 
     is_reeval : bool, optional
         Whether to reevaluate the model even if already evaluated and `is_retrain` is False.
-    
+
     seed : int, optional
         Pseudo random seed to force deterministic results (on CUDA might still
         differ a little).
@@ -756,6 +756,7 @@ See its docstring for possible parameters.</p>
 <li><p>the code will use a (single) GPU if available</p></li>
 <li><p>decrease the batch size if you don’t have enough memory</p></li>
 <li><p>30 epochs should give you descent results for the GP datasets (instead of 100)</p></li>
+<li><p>the GP data is generated for every epoch and then saved. Make sure you use <code class="docutils literal notranslate"><span class="pre">get_all_gp_datasets(is_save=False)</span></code> if you use a large number of epochs.</p></li>
 </ul>
 <div class="cell tag_hide-output docutils container">
 <div class="cell_input docutils container">
@@ -869,7 +870,7 @@ For each dataset-model pair it plots the posterior distribution for various cont
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
         <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
         <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -908,9 +909,9 @@ For each dataset-model pair it plots the posterior distribution for various cont
 </div>
 <div class="figure align-default" id="cnp-single-gp">
 <a class="reference internal image-reference" href="../_images/CNP_single_gp.gif"><img alt="CNP on single GPs" src="../_images/CNP_single_gp.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 49 </span><span class="caption-text">Posterior predictive of CNPs (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and CNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#cnp-single-gp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 50 </span><span class="caption-text">Posterior predictive of CNPs (Blue line with shaded area for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) and the oracle GP (Green line with dashes for <span class="math notranslate nohighlight">\(\mu \pm \sigma\)</span>) when conditioned on contexts points (Black) from an underlying function sampled from a GP. Each row corresponds to a different kernel and CNP trained on samples for the corresponding GP.</span><a class="headerlink" href="#cnp-single-gp" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#cnp-single-gp"><span class="std std-numref">Fig. 49</span></a> we see that CNP captures some information from the underlying GP, but (i) it suffers from underfitting in the case of RBF and Matern kernel; (ii) it is not able to model the periodic kernel.</p>
+<p>From <a class="reference internal" href="#cnp-single-gp"><span class="std std-numref">Fig. 50</span></a> we see that CNP captures some information from the underlying GP, but (i) it suffers from underfitting in the case of RBF and Matern kernel; (ii) it is not able to model the periodic kernel.</p>
 <div class="cell tag_hide-input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###### ADDITIONAL 1D PLOTS ######</span>
@@ -1009,7 +1010,7 @@ For each dataset-model pair it plots the posterior distribution for various cont
             <span class="s2">&quot;hhalf&quot;</span><span class="p">,</span>  <span class="c1"># horizontal half of the image</span>
             <span class="s2">&quot;vhalf&quot;</span><span class="p">,</span>  <span class="c1"># vertival half of the image</span>
         <span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
@@ -1044,9 +1045,9 @@ For each dataset-model pair it plots the posterior distribution for various cont
 </div>
 <div class="figure align-default" id="cnp-img-interp">
 <a class="reference internal image-reference" href="../_images/CNP_img_interp.gif"><img alt="CNP on CelebA and MNIST" src="../_images/CNP_img_interp.gif" style="width: 40em;" /></a>
-<p class="caption"><span class="caption-number">Fig. 50 </span><span class="caption-text">Mean and std of the posterior predictive of a CNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span> and MNIST for different context sets.</span><a class="headerlink" href="#cnp-img-interp" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-number">Fig. 51 </span><span class="caption-text">Mean and std of the posterior predictive of a CNP for CelebA <span class="math notranslate nohighlight">\(32\times32\)</span> and MNIST for different context sets.</span><a class="headerlink" href="#cnp-img-interp" title="Permalink to this image">¶</a></p>
 </div>
-<p>From <a class="reference internal" href="#cnp-img-interp"><span class="std std-numref">Fig. 50</span></a> we see that the CNPs again underfit, to the point where it cannot even predict well when conditioned on the entire image (see MNIST).</p>
+<p>From <a class="reference internal" href="#cnp-img-interp"><span class="std std-numref">Fig. 51</span></a> we see that the CNPs again underfit, to the point where it cannot even predict well when conditioned on the entire image (see MNIST).</p>
 <p>To make sure that the samples are representative / not cherry picked, we can explicitly sample images and context sets that reached a given percentile of the test log likelihood.
 This is done using <code class="docutils literal notranslate"><span class="pre">plot_qualitative_with_kde</span></code>.</p>
 <div class="cell tag_hide-input docutils container">
