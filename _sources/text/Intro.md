@@ -29,7 +29,7 @@ If clouds are obscuring a large part of the image, we might be interested not ju
 NPs can do exactly that.
 {numref}`ConvCNP_celeba128` shows a NP performing image completion with varying percentage of occluded pixels. Compared to the cubic interpolation baseline, it performs better and provides uncertainty estimates.
 
-```{figure} ../images/ConvCNP_celeba128.gif
+```{figure} ../gifs/ConvCNP_celeba128.gif
 ---
 width: 35em
 name: ConvCNP_celeba128
