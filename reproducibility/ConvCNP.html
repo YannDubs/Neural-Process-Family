@@ -167,11 +167,6 @@
    ConvLNP
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Losses.html">
-   LNPF Losses
-  </a>
- </li>
 </ul>
 <p class="caption">
  <span class="caption-text">
@@ -1233,6 +1228,47 @@ For the current “on the grid” implementation, this can also be achieved by u
     <span class="n">fps</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
     <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
 <span class="p">)</span>
+
+<span class="c1">### Superres png ###</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_multi_posterior_samples_imgs</span><span class="p">(</span>
+    <span class="n">trainers_2dXL</span><span class="p">,</span>
+    <span class="n">imgXL_test_datasets</span><span class="p">,</span>
+    <span class="mi">1</span> <span class="o">/</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="n">is_superresolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+    <span class="n">interp_baselines</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cubic&quot;</span><span class="p">],</span>
+    <span class="n">n_plots</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Upscaling </span><span class="si">{data_name}</span><span class="s2"> 8x8 -&gt; 128x128&quot;</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="s2">&quot;ConvCNP&quot;</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="s2">&quot;Cubic Interp.&quot;</span><span class="p">),</span>
+    <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.7</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvCNP_superes_little.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+
+<span class="c1">### Zero Shot no baseline ####</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;jupyter/images/ellen_selfie_oscars.jpeg&quot;</span><span class="p">)</span>
+
+<span class="n">oscar_datasets</span> <span class="o">=</span> <span class="n">SingleImage</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="p">(</span><span class="mi">288</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">missing_px_color</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]))</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="s2">&quot;celeba128/ConvCNPXL/run_0&quot;</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plot_multi_posterior_samples_imgs</span><span class="p">(</span>
+    <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;celeba128&quot;</span><span class="p">,</span> <span class="s2">&quot;oscars&quot;</span><span class="p">):</span> <span class="n">trainers_2dXL</span><span class="p">[</span><span class="n">k</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;oscars&quot;</span><span class="p">:</span> <span class="n">oscar_datasets</span><span class="p">},</span>
+    <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ConvCNP Zero Shot Interpolation | Context=5% pixels&quot;</span><span class="p">,</span>
+    <span class="n">interp_baselines</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span>
+    <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.2</span><span class="p">),</span>
+    <span class="n">labels</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="s2">&quot;ConvCNP Interpolation&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="s2">&quot;Uncertainty Estimates&quot;</span><span class="p">),</span>
+    <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;jupyter/images/ConvCNP_img_zeroshot_nobaseline.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

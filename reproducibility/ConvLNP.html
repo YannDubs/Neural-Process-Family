@@ -59,7 +59,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Criteria for LNPF" href="Losses.html" />
+    <link rel="next" title="Bibliography" href="../zbibliography.html" />
     <link rel="prev" title="Attentive Latent Neural Process (AttnLNP)" href="AttnLNP.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -165,11 +165,6 @@
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    ConvLNP
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Losses.html">
-   LNPF Losses
   </a>
  </li>
 </ul>
@@ -760,25 +755,33 @@ zsmms/ConvLNP/run_0 | best epoch: 46 | train loss: -2977.8948 | valid loss: -294
 <span class="kn">from</span> <span class="nn">utils.visualize</span> <span class="kn">import</span> <span class="n">giffify</span>
 
 
-<span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="c1"># Fix formatting for coherent GIF</span>
+<span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;legend.loc&quot;</span><span class="p">:</span> <span class="s2">&quot;upper right&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">multi_posterior_gp_gif</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">trainers</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> 
+                           <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> 
+                           <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="n">plot_config_kwargs</span><span class="p">,</span> 
+                           <span class="n">is_plot_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                           <span class="n">fps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">giffify</span><span class="p">(</span>
         <span class="n">save_filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;jupyter/gifs/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span>
         <span class="n">gen_single_fig</span><span class="o">=</span><span class="n">plot_multi_posterior_samples_1d</span><span class="p">,</span>  <span class="c1"># core plotting</span>
         <span class="n">sweep_parameter</span><span class="o">=</span><span class="s2">&quot;n_cntxt&quot;</span><span class="p">,</span>  <span class="c1"># param over which to sweep</span>
-        <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>  <span class="c1"># gif speed</span>
+        <span class="n">sweep_values</span><span class="o">=</span><span class="n">sweep_values</span><span class="p">,</span>
+        <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">,</span>  <span class="c1"># gif speed</span>
         <span class="c1"># PLOTTING KWARGS</span>
         <span class="n">trainers</span><span class="o">=</span><span class="n">trainers</span><span class="p">,</span>
         <span class="n">datasets</span><span class="o">=</span><span class="n">datasets</span><span class="p">,</span>
-        <span class="n">is_plot_generator</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot underlying GP</span>
+        <span class="n">is_plot_generator</span><span class="o">=</span><span class="n">is_plot_generator</span><span class="p">,</span>  <span class="c1"># plot underlying GP</span>
         <span class="n">is_plot_real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># don&#39;t plot sampled / underlying function</span>
         <span class="n">is_plot_std</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># plot the predictive std</span>
         <span class="n">is_fill_generator_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># do not fill predictive of GP</span>
         <span class="n">pretty_renamer</span><span class="o">=</span><span class="n">PRETTY_RENAMER</span><span class="p">,</span>  <span class="c1"># pretiffy names of modulte + data</span>
-        <span class="c1"># Fix formatting for coherent GIF</span>
-        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;legend.loc&quot;</span><span class="p">:</span> <span class="s2">&quot;upper right&quot;</span><span class="p">}</span>
-        <span class="p">),</span>
+        <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="n">plot_config_kwargs</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
@@ -794,7 +797,6 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_single_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;All&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;Variable&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
-
 
 <span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
     <span class="s2">&quot;ConvLNP_single_gp_extrap&quot;</span><span class="p">,</span>
@@ -889,6 +891,44 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
     <span class="n">right_extrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># shift signal 2 to the right for extrapolation</span>
     <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="c1">### Simplistic ###</span>
+
+
+<span class="k">def</span> <span class="nf">filter_noisy</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Noisy&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+
+<span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="s2">&quot;ConvLNP_noisy_simple&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_noisy</span><span class="p">(</span><span class="n">trainers_1d</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_noisy</span><span class="p">(</span><span class="n">gp_test_datasets</span><span class="p">),</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">is_plot_generator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  
+    <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]),</span> <span class="n">is_ax_off</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">is_legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="n">fps</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span>  
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;ConvLNP_kernel_gp_simple&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">replicated_trainers</span><span class="p">,</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">single_gp_datasets</span><span class="p">,</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">is_plot_generator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  
+    <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]),</span> <span class="n">is_ax_off</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">is_legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Data: </span><span class="si">{data_name}</span><span class="s2"> | Num. Context: </span><span class="si">{n_cntxt}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="n">fps</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>  
+    <span class="n">seed</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -982,9 +1022,9 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP_29_0.png" src="../_images/ConvLNP_29_0.png" />
-<img alt="../_images/ConvLNP_29_1.png" src="../_images/ConvLNP_29_1.png" />
-<img alt="../_images/ConvLNP_29_2.png" src="../_images/ConvLNP_29_2.png" />
+<img alt="../_images/ConvLNP_30_0.png" src="../_images/ConvLNP_30_0.png" />
+<img alt="../_images/ConvLNP_30_1.png" src="../_images/ConvLNP_30_1.png" />
+<img alt="../_images/ConvLNP_30_2.png" src="../_images/ConvLNP_30_2.png" />
 </div>
 </div>
 <p>We have seen that a latent variable enable coherent sampling and to “switch kernel”. Let us now see whether it enables a non Gaussian marginal posterior predictive.</p>
@@ -1012,7 +1052,7 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP_31_0.png" src="../_images/ConvLNP_31_0.png" />
+<img alt="../_images/ConvLNP_32_0.png" src="../_images/ConvLNP_32_0.png" />
 </div>
 </div>
 <p>In the last figure, we see that, as desired, LNPFs can:</p>
@@ -1055,7 +1095,7 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
     <div class='prev-next-bottom'>
         
     <a class='left-prev' id="prev-link" href="AttnLNP.html" title="previous page">Attentive Latent Neural Process (AttnLNP)</a>
-    <a class='right-next' id="next-link" href="Losses.html" title="next page">Criteria for LNPF</a>
+    <a class='right-next' id="next-link" href="../zbibliography.html" title="next page">Bibliography</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

@@ -59,8 +59,6 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Bibliography" href="../zbibliography.html" />
-    <link rel="prev" title="Convolutional Latent Neural Process (ConvLNP)" href="ConvLNP.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -131,7 +129,7 @@
   Reproducibility
  </span>
 </p>
-<ul class="current nav sidenav_l1">
+<ul class="nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="Datasets.html">
    Datasets
@@ -165,11 +163,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="ConvLNP.html">
    ConvLNP
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   LNPF Losses
   </a>
  </li>
 </ul>
@@ -575,7 +568,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
 <span class="p">):</span>
     <span class="n">KWARGS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">is_q_zCct</span><span class="o">=</span><span class="ow">not</span> <span class="n">is_mle</span><span class="p">,</span>  <span class="c1"># use MLE instead of ELBO</span>
-        <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">16</span> <span class="k">if</span> <span class="n">is_mle</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># going to be more expensive</span>
+        <span class="n">n_z_samples_train</span><span class="o">=</span><span class="mi">8</span> <span class="k">if</span> <span class="n">is_mle</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># going to be more expensive</span>
         <span class="n">n_z_samples_test</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="c1">#! DEV</span>
         <span class="n">r_dim</span><span class="o">=</span><span class="n">R_DIM</span><span class="p">,</span>
         <span class="n">Decoder</span><span class="o">=</span><span class="n">discard_ith_arg</span><span class="p">(</span>
@@ -605,7 +598,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
             <span class="o">**</span><span class="n">CNN_KWARGS</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">density_induced</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>  <span class="c1"># size of discretization</span>
-        <span class="n">is_global</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1">#! Global representation does not work well with NPVI</span>
+        <span class="n">is_global</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1">#! Global representation does not work well with NPVI because KL before pooling</span>
         <span class="o">**</span><span class="n">KWARGS</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -626,7 +619,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
         <span class="n">min_sigma_pred</span><span class="o">=</span><span class="mf">0.01</span> <span class="k">if</span> <span class="n">is_sigma_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
         <span class="n">min_lat</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">is_lat_LB</span> <span class="k">else</span> <span class="mf">1e-4</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ConvLNP&quot;</span><span class="p">]</span> 
+    <span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ConvLNP&quot;</span><span class="p">]</span> 
     <span class="k">for</span> <span class="n">is_elbo</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
@@ -642,7 +635,7 @@ This is a total of 24 models, so we will do in a loop. Note that besides trainin
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>24
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>8
 </pre></div>
 </div>
 </div>
@@ -694,39 +687,7 @@ See its docstring for possible parameters.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Loading RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
-
-RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: 72.4308 | valid loss: None | test log likelihood: -40.7837
-
---- Loading RBF_Kernel/LNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 ---
-
-RBF_Kernel/LNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 | best epoch: None | train loss: 58.7151 | valid loss: None | test log likelihood: -37.0549
-
---- Loading RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 ---
-
-RBF_Kernel/LNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 | best epoch: None | train loss: 75.1233 | valid loss: None | test log likelihood: -82.8405
-
---- Loading RBF_Kernel/LNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 ---
-
-RBF_Kernel/LNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 | best epoch: None | train loss: 51.1187 | valid loss: None | test log likelihood: -11.1532
-
---- Loading RBF_Kernel/AttnLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
-
-RBF_Kernel/AttnLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: -158.36 | valid loss: None | test log likelihood: 151.1364
-
---- Loading RBF_Kernel/AttnLNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 ---
-
-RBF_Kernel/AttnLNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 | best epoch: None | train loss: -160.7666 | valid loss: None | test log likelihood: 147.9072
-
---- Loading RBF_Kernel/AttnLNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 ---
-
-RBF_Kernel/AttnLNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 | best epoch: None | train loss: -164.3203 | valid loss: None | test log likelihood: 171.4075
-
---- Loading RBF_Kernel/AttnLNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 ---
-
-RBF_Kernel/AttnLNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 | best epoch: None | train loss: -170.6351 | valid loss: None | test log likelihood: 162.0783
-
---- Loading RBF_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Loading RBF_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
 
 RBF_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: -228.0125 | valid loss: None | test log likelihood: -181.2631
 
@@ -742,79 +703,37 @@ RBF_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 | best epoch: None | trai
 
 RBF_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 | best epoch: None | train loss: -96.4013 | valid loss: None | test log likelihood: -181.2617
 
---- Loading RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 ---
+--- Loading Periodic_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
 
-RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: 52.3808 | valid loss: None | test log likelihood: -57.0787
+Periodic_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: 181.2732 | valid loss: None | test log likelihood: -180.7769
 
---- Loading RBF_Kernel/LNP_ELBOFalse_LatLBFalse_SigLBTrue/run_0 ---
+--- Loading Periodic_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 ---
 
-RBF_Kernel/LNP_ELBOFalse_LatLBFalse_SigLBTrue/run_0 | best epoch: None | train loss: 40.5703 | valid loss: None | test log likelihood: -45.6232
+Periodic_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 | best epoch: None | train loss: 181.2716 | valid loss: None | test log likelihood: -180.7768
 
---- Loading RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBFalse/run_0 ---
+--- Loading Periodic_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 ---
 
-RBF_Kernel/LNP_ELBOFalse_LatLBTrue_SigLBFalse/run_0 | best epoch: None | train loss: 38.3913 | valid loss: None | test log likelihood: -44.0328
+Periodic_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 | best epoch: None | train loss: 181.2729 | valid loss: None | test log likelihood: -180.7768
 
---- Loading RBF_Kernel/LNP_ELBOFalse_LatLBFalse_SigLBFalse/run_0 ---
+--- Loading Periodic_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 ---
 
-RBF_Kernel/LNP_ELBOFalse_LatLBFalse_SigLBFalse/run_0 | best epoch: None | train loss: 45.1695 | valid loss: None | test log likelihood: -50.116
+Periodic_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 | best epoch: None | train loss: 181.2718 | valid loss: None | test log likelihood: -180.7768
 
---- Loading RBF_Kernel/AttnLNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 ---
+--- Loading Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 ---
 
-RBF_Kernel/AttnLNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: -165.5698 | valid loss: None | test log likelihood: 152.2615
+Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: 187.496 | valid loss: None | test log likelihood: -187.6484
 
---- Loading RBF_Kernel/AttnLNP_ELBOFalse_LatLBFalse_SigLBTrue/run_0 ---
+--- Loading Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 ---
 
-RBF_Kernel/AttnLNP_ELBOFalse_LatLBFalse_SigLBTrue/run_0 | best epoch: None | train loss: -172.192 | valid loss: None | test log likelihood: 157.0887
+Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBTrue/run_0 | best epoch: None | train loss: 87.0643 | valid loss: None | test log likelihood: -187.6492
 
---- Loading RBF_Kernel/AttnLNP_ELBOFalse_LatLBTrue_SigLBFalse/run_0 ---
+--- Loading Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 ---
 
-RBF_Kernel/AttnLNP_ELBOFalse_LatLBTrue_SigLBFalse/run_0 | best epoch: None | train loss: -178.4257 | valid loss: None | test log likelihood: 180.1441
+Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBTrue_SigLBFalse/run_0 | best epoch: None | train loss: 187.4964 | valid loss: None | test log likelihood: -187.6485
 
---- Loading RBF_Kernel/AttnLNP_ELBOFalse_LatLBFalse_SigLBFalse/run_0 ---
+--- Loading Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 ---
 
-RBF_Kernel/AttnLNP_ELBOFalse_LatLBFalse_SigLBFalse/run_0 | best epoch: None | train loss: -186.7489 | valid loss: None | test log likelihood: 170.8015
-
---- Loading RBF_Kernel/ConvLNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 ---
-
-RBF_Kernel/ConvLNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 | best epoch: None | train loss: -208.294 | valid loss: None | test log likelihood: 232.0912
-
---- Loading RBF_Kernel/ConvLNP_ELBOFalse_LatLBFalse_SigLBTrue/run_0 ---
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">18</span><span class="o">-</span><span class="mi">7</span><span class="n">b8e04d472d1</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">     </span><span class="mi">28</span> 
-<span class="g g-Whitespace">     </span><span class="mi">29</span> <span class="c1">#NPML</span>
-<span class="ne">---&gt; </span><span class="mi">30</span> <span class="n">trainers_1d_NPML</span> <span class="o">=</span> <span class="n">train_models</span><span class="p">(</span>
-<span class="g g-Whitespace">     </span><span class="mi">31</span>     <span class="n">gp_datasets</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">32</span>     <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;ELBOTrue&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k</span><span class="p">},</span>
-
-<span class="nn">/Neural-Process-Family/utils/train.py</span> in <span class="ni">train_models</span><span class="nt">(datasets, models, criterion, test_datasets, valid_datasets, chckpnt_dirname, is_continue_train, is_retrain, runs, starting_run, train_split, device, max_epochs, batch_size, lr, optimizer, callbacks, patience, decay_lr, is_reeval, seed, datasets_kwargs, models_kwargs, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">261</span>                 <span class="c1"># load in all case =&gt; even when training loads the best checkpoint</span>
-<span class="g g-Whitespace">    </span><span class="mi">262</span>                 <span class="n">trainer</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
-<span class="ne">--&gt; </span><span class="mi">263</span>                 <span class="n">trainer</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">checkpoint</span><span class="o">=</span><span class="n">chckpt</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">264</span> 
-<span class="g g-Whitespace">    </span><span class="mi">265</span>                 <span class="c1"># return the training rather than testing history as dflt</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/skorch/net.py</span> in <span class="ni">load_params</span><span class="nt">(self, f_params, f_optimizer, f_history, checkpoint)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1654</span>             <span class="bp">self</span><span class="o">.</span><span class="n">check_is_fitted</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1655</span>             <span class="n">state_dict</span> <span class="o">=</span> <span class="n">_get_state_dict</span><span class="p">(</span><span class="n">f_params</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">1656</span>             <span class="bp">self</span><span class="o">.</span><span class="n">module_</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1657</span> 
-<span class="g g-Whitespace">   </span><span class="mi">1658</span>         <span class="k">if</span> <span class="n">f_optimizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
-<span class="nn">/usr/local/lib/python3.8/dist-packages/torch/nn/modules/module.py</span> in <span class="ni">load_state_dict</span><span class="nt">(self, state_dict, strict)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1042</span> 
-<span class="g g-Whitespace">   </span><span class="mi">1043</span>         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1044</span>             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Error(s) in loading state_dict for </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1045</span>                                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)))</span>
-<span class="g g-Whitespace">   </span><span class="mi">1046</span>         <span class="k">return</span> <span class="n">_IncompatibleKeys</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">,</span> <span class="n">unexpected_keys</span><span class="p">)</span>
-
-<span class="ne">RuntimeError</span>: Error(s) in loading state_dict for ConvLNP:
-	<span class="n">Missing</span> <span class="n">key</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="p">:</span> <span class="s2">&quot;reshaper_z.weight&quot;</span><span class="p">,</span> <span class="s2">&quot;reshaper_z.bias&quot;</span><span class="o">.</span> 
-	<span class="n">size</span> <span class="n">mismatch</span> <span class="k">for</span> <span class="n">latent_encoder</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">weight</span><span class="p">:</span> <span class="n">copying</span> <span class="n">a</span> <span class="n">param</span> <span class="k">with</span> <span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span> <span class="kn">from</span> <span class="nn">checkpoint</span><span class="p">,</span> <span class="n">the</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">current</span> <span class="n">model</span> <span class="ow">is</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">32</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span><span class="o">.</span>
-	<span class="n">size</span> <span class="n">mismatch</span> <span class="k">for</span> <span class="n">latent_encoder</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">bias</span><span class="p">:</span> <span class="n">copying</span> <span class="n">a</span> <span class="n">param</span> <span class="k">with</span> <span class="n">shape</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">256</span><span class="p">])</span> <span class="kn">from</span> <span class="nn">checkpoint</span><span class="p">,</span> <span class="n">the</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">current</span> <span class="n">model</span> <span class="ow">is</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">32</span><span class="p">])</span><span class="o">.</span>
+Noisy_Matern_Kernel/ConvLNP_ELBOTrue_LatLBFalse_SigLBFalse/run_0 | best epoch: None | train loss: 87.0521 | valid loss: None | test log likelihood: -187.6467
 </pre></div>
 </div>
 </div>
@@ -865,7 +784,7 @@ RBF_Kernel/ConvLNP_ELBOFalse_LatLBTrue_SigLBTrue/run_0 | best epoch: None | trai
     <span class="sd">&quot;&quot;&quot;Select only data form single GP.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">get_name</span><span class="p">(</span><span class="n">lnpf</span><span class="p">,</span> <span class="n">is_elbo</span><span class="p">,</span> <span class="n">is_lat_LB</span><span class="p">,</span> <span class="n">is_sigma_LB</span><span class="p">)</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
 
-<span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LNP&quot;</span><span class="p">,</span> <span class="s2">&quot;AttnLNP&quot;</span><span class="p">,</span> <span class="s2">&quot;ConvLNP&quot;</span><span class="p">]:</span>
+<span class="k">for</span> <span class="n">lnpf</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ConvLNP&quot;</span><span class="p">]:</span>
     <span class="k">for</span> <span class="n">is_sigma_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">is_lat_LB</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
             <span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
@@ -1010,8 +929,6 @@ The models for NPVI and NPML are thus slighlty different.</p>
     
     <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="ConvLNP.html" title="previous page">Convolutional Latent Neural Process (ConvLNP)</a>
-    <a class='right-next' id="next-link" href="../zbibliography.html" title="next page">Bibliography</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">
