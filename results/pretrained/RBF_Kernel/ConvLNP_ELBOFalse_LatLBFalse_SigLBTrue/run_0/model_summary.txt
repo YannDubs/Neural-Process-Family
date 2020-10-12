@@ -5,7 +5,7 @@ ConvLNP(
   )
   (p_y_loc_transformer): Identity()
   (cntxt_to_induced): SetConv(
-    (radial_basis_func): GaussianRBF()
+    (radial_basis_func): ExpRBF()
     (resizer): Linear(in_features=2, out_features=128, bias=True)
   )
   (induced_to_induced): CNN(
@@ -57,7 +57,7 @@ ConvLNP(
     )
   )
   (induced_to_trgt): SetConv(
-    (radial_basis_func): GaussianRBF()
+    (radial_basis_func): ExpRBF()
     (resizer): Linear(in_features=129, out_features=128, bias=True)
   )
   (latent_encoder): MLP(
@@ -65,9 +65,10 @@ ConvLNP(
     (activation): ReLU()
     (to_hidden): Linear(in_features=128, out_features=128, bias=True)
     (linears): ModuleList()
-    (out): Linear(in_features=128, out_features=256, bias=True)
+    (out): Linear(in_features=128, out_features=32, bias=True)
   )
   (q_z_loc_transformer): Identity()
+  (reshaper_z): Linear(in_features=16, out_features=128, bias=True)
   (induced_to_induced_post_sampling): CNN(
     (conv_blocks): ModuleList(
       (0): ResConvBlock(
