@@ -36,6 +36,7 @@ def plot_config(
     palette="colorblind",
     font_scale=1,
     font="sans-serif",
+    is_ax_off=False,
     rc=dict(),
     set_kwargs=dict(),
     despine_kwargs=dict(),
@@ -60,6 +61,9 @@ def plot_config(
         Separate scaling factor to independently scale the size of the
         font elements.
 
+    is_ax_off : bool, optional
+        Whether to turn off all axes.
+
     rc : dict, optional
         Parameter mappings to override the values in the preset seaborn
         style dictionaries.
@@ -83,6 +87,9 @@ def plot_config(
             last_fig = plt.gcf()
             for i, ax in enumerate(last_fig.axes):
                 ax.set(**set_kwargs)
+
+                if is_ax_off:
+                    ax.axis("off")
 
         sns.despine(**despine_kwargs)
 

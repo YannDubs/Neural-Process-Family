@@ -400,11 +400,14 @@ def plot_multi_posterior_samples_1d(
                 data_name = k.split("/")[0]
                 model_name = k.split("/")[1]
                 dataset = datasets[data_name]
-                curr_title = title.format(
-                    model_name=pretty_renamer[model_name],
-                    n_cntxt=n_cntxt,
-                    data_name=pretty_renamer[data_name],
-                )
+                if title is not None:
+                    curr_title = title.format(
+                        model_name=pretty_renamer[model_name],
+                        n_cntxt=n_cntxt,
+                        data_name=pretty_renamer[data_name],
+                    )
+                else:
+                    curr_title = None
 
                 test_min_max = dataset.min_max
                 if (left_extrap != 0) or (right_extrap != 0):

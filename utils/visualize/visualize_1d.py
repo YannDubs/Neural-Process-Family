@@ -110,6 +110,7 @@ def plot_posterior_samples_1d(
     seed=None,
     is_fill_generator_std=True,
     y_lim=(None, None),
+    is_legend=True,
     plot_config_kwargs={},
     **kwargs,
 ):
@@ -154,6 +155,9 @@ def plot_posterior_samples_1d(
     y_lim : tuple of int, optional
         Min max y limit. If one is None, then auto.
 
+    is_legend : bool, optional
+        Whether to add a legend.
+
     plot_config_kwargs : dict, optional
         Other arguments to `plot_config_kwargs`.
 
@@ -179,6 +183,7 @@ def plot_posterior_samples_1d(
             alpha_init=alpha_init,
             mean_std_colors=("b", "tab:blue"),
             ax=ax,
+            is_legend=is_legend,
             **kwargs,
         )
 
@@ -193,6 +198,7 @@ def plot_posterior_samples_1d(
                 ax=ax,
                 alpha_init=alpha_init,
                 mean_std_colors=("m", "tab:pink"),
+                is_legend=is_legend,
                 **kwargs,
             )
 
@@ -240,7 +246,8 @@ def plot_posterior_samples_1d(
                     linestyle="--",
                 )
 
-            ax.legend()
+            if is_legend:
+                ax.legend()
             ax.set_ylim([y_lim[0], y_lim[1]])
 
     return ax
@@ -316,6 +323,7 @@ def _plot_posterior_predefined_cntxt(
     figsize=DFLT_FIGSIZE,
     ax=None,
     is_smooth=True,
+    is_legend=True,
     scatter_kwargs={},
     kwargs_std={},
     **kwargs,
@@ -366,6 +374,9 @@ def _plot_posterior_predefined_cntxt(
 
     is_smooth : bool, optional
         Whether to plot a smooth function instead of a scatter plot.
+
+    is_legend : bool, optional
+        Whether to add a legend.
 
     scatter_kwargs : dict, optional
         Kwargs for the scatter function.
@@ -506,6 +517,7 @@ def _plot_posterior_predefined_cntxt(
     if title is not None:
         ax.set_title(title, fontsize=14)
 
-    ax.legend()
+    if is_legend:
+        ax.legend()
 
     return ax

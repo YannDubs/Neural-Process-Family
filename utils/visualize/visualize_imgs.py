@@ -227,6 +227,7 @@ def plot_posterior_samples(
     is_add_annot=True,
     rotate_annot=None,
     is_mask_cntxt=True,
+    labels=dict(mean="Pred. Mean", std="Pred. Std.", baseline="{baseline} Interp."),
 ):
     """
     Plot the mean of the estimated posterior for images.
@@ -296,6 +297,9 @@ def plot_posterior_samples(
         Whether to mask the context. If false plors the entire image, this is especially usefull
         when doing superresolution as all the image corresponds to the downscaled image. In this
         case, `get_cntxt_trgt` should be `SuperresolutionCntxtTrgtGetter`.
+
+    labels : dict, optional
+        Labels to use.
     """
     if outs is None:
         y_pred, mask_cntxt, X, mask_trgt = get_posterior_samples(
@@ -366,7 +370,7 @@ def plot_posterior_samples(
         if n_samples > 1:
             y_ticks_labels += [f"Sample {i+1}"]
         else:
-            y_ticks_labels += [f"Pred. Mean"]
+            y_ticks_labels += [labels["mean"]]
 
     if is_plot_std:
         out_std, _ = get_img_toplot(
@@ -381,7 +385,7 @@ def plot_posterior_samples(
         if n_samples > 1:
             y_ticks_labels += [f"Std {n_samples}"]
         else:
-            y_ticks_labels += [f"Pred. Std"]
+            y_ticks_labels += [labels["std"]]
 
     for interp in interp_baselines:
         # removing batch and channel from mask
@@ -404,7 +408,7 @@ def plot_posterior_samples(
         out_interp = torch.stack(out_interps, dim=0)
         outs.append(out_interp)
 
-        y_ticks_labels += [f"{interp} Interp.".title()]
+        y_ticks_labels += [labels["baseline"].format(baseline=interp.title())]
 
     outs = channels_to_2nd_dim(torch.cat(outs, dim=0)).detach()
     if is_hrztl_cat:
