@@ -22,8 +22,8 @@
     title: AttnLNP
   - file: reproducibility/ConvLNP
     title: ConvLNP
-  - file: reproducibility/Losses
-    title: LNPF Losses
+  #- file: reproducibility/Losses
+  #  title: LNPF Losses
 
 - part: Reference
   chapters:
