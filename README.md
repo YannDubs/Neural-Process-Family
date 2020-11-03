@@ -12,7 +12,7 @@ This repository contains:
     - AttnCNP and AttnLNP from [Attentive Neural Processes](https://arxiv.org/abs/1901.05761)
     - ConvCNP from [Convolutional Conditional Neural Processes](https://arxiv.org/abs/1910.13556) 
     - ConvLNP from [Meta-Learning Stationary Stochastic Process Prediction with Convolutional Neural Processes](https://arxiv.org/abs/2007.01332) 
-- the ("official") code to replicate all the image experiments from [Convolutional Conditional Neural Processes](https://arxiv.org/abs/1910.13556) and [Meta-Learning Stationary Stochastic Process Prediction with Convolutional Neural Processes](https://arxiv.org/abs/2007.01332)
+- the ("official") code to replicate all the image experiments from [Convolutional Conditional Neural Processes](https://arxiv.org/abs/1910.13556) and [Meta-Learning Stationary Stochastic Process Prediction with Convolutional Neural Processes](https://arxiv.org/abs/2007.01332). For 1D experiments see [ConvNP](https://github.com/wesselb/NeuralProcesses.jl) and [ConvCNP](https://github.com/cambridge-mlg/convcnp).
 
 For tutorials on how to use the npf library refer to the [reproducability section](https://yanndubs.github.io/Neural-Process-Family/reproducibility/CNP.html) of the [NPF website](https://yanndubs.github.io/Neural-Process-Family/text/Intro.html).
 
