@@ -182,7 +182,7 @@ Schematic representation of the forward pass of members of the CNP taken from [M
 
 Notice that the computational cost of making predictions for $T$ target points conditioned on $C$ context points with this design is $\mathcal{O}(T+C)$.
 Indeed, each $(x,y)$ pair of the context set is encoded independently ($\mathcal{O}(C)$) and the representation $R$ can then be re-used for predicting at each target location ($\mathcal{O}(T)$).
-This means that once trained, CNPs are much more efficient than GPs (which scale as $\mathcal{O}((C+T)^3)$).
+This means that once trained, CNPs are much more efficient than GPs (which scale as $\mathcal{O}(C^3+T*C^2)$).
 
 Let's see what prediction using a CNP looks like in practice.
 We first consider a simple 1D regression task trained on samples from a GP with a radial basis function (RBF) kernel (data details in {doc}`Datasets Notebook <../reproducibility/Datasets>`).
