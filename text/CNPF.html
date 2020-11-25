@@ -449,7 +449,7 @@ Finally, the global representation <span class="math notranslate nohighlight">\(
 </div>
 <p>Notice that the computational cost of making predictions for <span class="math notranslate nohighlight">\(T\)</span> target points conditioned on <span class="math notranslate nohighlight">\(C\)</span> context points with this design is <span class="math notranslate nohighlight">\(\mathcal{O}(T+C)\)</span>.
 Indeed, each <span class="math notranslate nohighlight">\((x,y)\)</span> pair of the context set is encoded independently (<span class="math notranslate nohighlight">\(\mathcal{O}(C)\)</span>) and the representation <span class="math notranslate nohighlight">\(R\)</span> can then be re-used for predicting at each target location (<span class="math notranslate nohighlight">\(\mathcal{O}(T)\)</span>).
-This means that once trained, CNPs are much more efficient than GPs (which scale as <span class="math notranslate nohighlight">\(\mathcal{O}((C+T)^3)\)</span>).</p>
+This means that once trained, CNPs are much more efficient than GPs (which scale as <span class="math notranslate nohighlight">\(\mathcal{O}(C^3+T*C^2)\)</span>).</p>
 <p>Let’s see what prediction using a CNP looks like in practice.
 We first consider a simple 1D regression task trained on samples from a GP with a radial basis function (RBF) kernel (data details in <a class="reference internal" href="../reproducibility/Datasets.html"><span class="doc">Datasets Notebook</span></a>).
 Besides providing useful (and aesthetically pleasing) visualisations, the GPs admit closed form posterior predictive distributions, which allow us to compare to the “best possible” distributions for a given context set.

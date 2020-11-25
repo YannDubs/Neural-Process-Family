@@ -916,16 +916,38 @@ We will directly evaluate in the “harder” extrapolation regime.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">filter_single_gp</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Periodic&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;RBF&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">single_gp_datasets</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;RBF_Kernel&#39;: &lt;utils.data.gaussian_process.GPDataset at 0x7f0f568f5bb0&gt;,
+ &#39;Periodic_Kernel&#39;: &lt;utils.data.gaussian_process.GPDataset at 0x7f0f568f59d0&gt;,
+ &#39;Noisy_Matern_Kernel&#39;: &lt;utils.data.gaussian_process.GPDataset at 0x7f0f568f5dc0&gt;}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">multi_posterior_gp_gif</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;ConvLNP_kernel_gp_simple&quot;</span><span class="p">,</span>
-    <span class="n">trainers</span><span class="o">=</span><span class="n">replicated_trainers</span><span class="p">,</span>
-    <span class="n">datasets</span><span class="o">=</span><span class="n">single_gp_datasets</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">&quot;ConvLNP_kernel_gp_simple_short&quot;</span><span class="p">,</span>
+    <span class="n">trainers</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">replicated_trainers</span><span class="p">),</span>
+    <span class="n">datasets</span><span class="o">=</span><span class="n">filter_single_gp</span><span class="p">(</span><span class="n">single_gp_datasets</span><span class="p">),</span>
     <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">is_plot_generator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  
     <span class="n">plot_config_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">set_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]),</span> <span class="n">is_ax_off</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
     <span class="n">is_legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Data: </span><span class="si">{data_name}</span><span class="s2"> | Num. Context: </span><span class="si">{n_cntxt}</span><span class="s2">&quot;</span><span class="p">,</span>
-    <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="n">sweep_values</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
     <span class="n">fps</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>  
     <span class="n">seed</span><span class="o">=</span><span class="mi">3</span>
 <span class="p">)</span>
@@ -1022,9 +1044,9 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP_30_0.png" src="../_images/ConvLNP_30_0.png" />
-<img alt="../_images/ConvLNP_30_1.png" src="../_images/ConvLNP_30_1.png" />
-<img alt="../_images/ConvLNP_30_2.png" src="../_images/ConvLNP_30_2.png" />
+<img alt="../_images/ConvLNP_32_0.png" src="../_images/ConvLNP_32_0.png" />
+<img alt="../_images/ConvLNP_32_1.png" src="../_images/ConvLNP_32_1.png" />
+<img alt="../_images/ConvLNP_32_2.png" src="../_images/ConvLNP_32_2.png" />
 </div>
 </div>
 <p>We have seen that a latent variable enable coherent sampling and to “switch kernel”. Let us now see whether it enables a non Gaussian marginal posterior predictive.</p>
@@ -1052,7 +1074,7 @@ Also note that compared to AttnLNP (<a class="reference internal" href="AttnLNP.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ConvLNP_32_0.png" src="../_images/ConvLNP_32_0.png" />
+<img alt="../_images/ConvLNP_34_0.png" src="../_images/ConvLNP_34_0.png" />
 </div>
 </div>
 <p>In the last figure, we see that, as desired, LNPFs can:</p>

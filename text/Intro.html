@@ -469,7 +469,7 @@ In order to do this, each member of the NPF has to address these questions: 1) H
 <p><a class="reference internal" href="#convlnp"><span class="std std-numref">Fig. 1</span></a> also shows the predictive mean and error-bars of the ground truth <em>Gaussian process</em> (GP) used to generate the data.
 Unlike NPs, GPs require the user to specify a kernel function to model the data.
 GPs are attractive due to the fact that exact prediction in GPs can be done <em>in closed form</em>.
-However, this has computational complexity <span class="math notranslate nohighlight">\(\mathcal{O}(N^3)\)</span> in the dataset size, which limits the application of exact GPs for large datasets.
+However, this has computational complexity <span class="math notranslate nohighlight">\(\mathcal{O}(|\mathcal{C}|^3)\)</span> in the dataset size, which limits the application of exact GPs for large datasets.
 Many accessible introductions to GPs are available online.
 Some prime examples are <a class="reference external" href="https://distill.pub/2019/visual-exploration-gaussian-processes/">Distill’s visual exploration</a>, <a class="reference external" href="http://inverseprobability.com/talks/notes/gaussian-processes.html">Neil Lawrence’s post</a>, or <a class="reference external" href="https://www.youtube.com/watch?v=NegVuuHwa8Q">David Mackay’s video lecture</a>.</p>
 <p>We note that there is a close relationship between GPs and NPs.

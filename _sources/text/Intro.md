@@ -194,7 +194,7 @@ class: note, dropdown
 {numref}`ConvLNP` also shows the predictive mean and error-bars of the ground truth _Gaussian process_ (GP) used to generate the data.
 Unlike NPs, GPs require the user to specify a kernel function to model the data.
 GPs are attractive due to the fact that exact prediction in GPs can be done _in closed form_.
-However, this has computational complexity $\mathcal{O}(N^3)$ in the dataset size, which limits the application of exact GPs for large datasets.
+However, this has computational complexity $\mathcal{O}(|\mathcal{C}|^3)$ in the dataset size, which limits the application of exact GPs for large datasets.
 Many accessible introductions to GPs are available online.
 Some prime examples are [Distill's visual exploration](https://distill.pub/2019/visual-exploration-gaussian-processes/), [Neil Lawrence's post](http://inverseprobability.com/talks/notes/gaussian-processes.html), or [David Mackay's video lecture](https://www.youtube.com/watch?v=NegVuuHwa8Q).
 
