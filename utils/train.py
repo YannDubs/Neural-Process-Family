@@ -205,10 +205,18 @@ def train_models(
                     test_eval_file = os.path.join(chckpnt_dirname, EVAL_FILENAME)
                     if curr_train_split is None:
                         # checkpoints only last
-                        chckpt = Checkpoint(dirname=chckpnt_dirname, monitor=None)
+                        chckpt = Checkpoint(
+                            dirname=chckpnt_dirname,
+                            monitor=None,
+                            # uncomment to load pretrained even with more recent skorch
+                            # f_criterion=None
+                        )
                     else:
                         chckpt = Checkpoint(
-                            dirname=chckpnt_dirname, monitor="valid_loss_best"
+                            dirname=chckpnt_dirname,
+                            monitor="valid_loss_best",
+                            # uncomment to load pretrained even with more recent skorch
+                            # f_criterion=None,
                         )
                     callbacks.extend([chckpt])
 
