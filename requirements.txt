@@ -8,3 +8,4 @@ joblib
 h5py
 seaborn
 scikit-image
+imageio<=2.27
