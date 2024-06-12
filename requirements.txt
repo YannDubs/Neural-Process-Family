@@ -1,7 +1,7 @@
 skorch==0.8 # use the correct skorch version if you want to use the pretrained models
 torch
 torchvision
-matplotlib
+matplotlib<=3.7.5 # reqd as of 12 June 2024 - see https://github.com/YannDubs/Neural-Process-Family/issues/13
 tqdm
 scikit-learn
 joblib
