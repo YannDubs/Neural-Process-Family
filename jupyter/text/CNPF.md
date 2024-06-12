@@ -841,7 +841,7 @@ alt: Sampling from ConvCNP on GP with RBF kernel
 Samples form the posterior predictive of a ConvCNP (Blue), and the predictive distribution of the oracle GP (Green) with RBF kernel.
 ```
 
-Similarly, sampled images from a member of the CPNF are not coherent and look like random noise added to a picture:
+Similarly, sampled images from a member of the CNPF are not coherent and look like random noise added to a picture:
 
 ```{figure} ../images/ConvCNP_img_sampling.png
 ---
